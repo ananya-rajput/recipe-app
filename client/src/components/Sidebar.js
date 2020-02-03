@@ -25,7 +25,7 @@ const Sidebar = () => {
 						}}
 					>
 						{' '}
-						Ingredients{' '}
+						Recipes{' '}
 					</li>
 					<li
 						onClick={() => {

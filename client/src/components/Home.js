@@ -11,13 +11,12 @@ const Home = () => {
 	return (
 		<Style>
 			<div className="header">
-				<PageHeading text="Ingredient App" />
-				<PageHeading text="Ingredient App" />
+				<PageHeading text="Recipe App" />
 			</div>
 			<div className="content">
 				<div className="card">
 					<div className="card-text">
-						<h2> Ingredients </h2>
+						<h2> Recipes </h2>
 						<p> 29 created so far </p>
 						<i> All available </i>
 					</div>
@@ -28,7 +27,7 @@ const Home = () => {
 							}
 						>
 							{' '}
-							Go To Ingredients &gt;{' '}
+							Go To Recipes &gt;{' '}
 						</span>
 					</div>
 				</div>

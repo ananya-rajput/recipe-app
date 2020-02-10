@@ -2,7 +2,7 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
-import { Home, Ingredients, Stations, Ingredient } from './';
+import { Home, Recipes, Stations, Ingredient } from './';
 
 const Body = () => {
 	const { currentTab } = useSelector(state => state.tabs);
@@ -10,11 +10,7 @@ const Body = () => {
 	const whatToDisplay = () => {
 		switch (currentTab?.type) {
 			case 'list':
-				return currentTab.title === 'Ingredients' ? (
-					<Ingredients />
-				) : (
-					<Stations />
-				);
+				return currentTab.title === 'Recipes' ? <Recipes /> : <Stations />;
 			case 'form':
 				return currentTab.data === undefined ? (
 					<Ingredient />

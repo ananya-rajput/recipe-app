@@ -1,6 +1,6 @@
 import Header from './Header';
 import Home from './Home';
-import Ingredients from './Ingredients';
+import Recipes from './Recipes';
 import Ingredient from './Ingredient';
 import Body from './Body';
 import Loader from './Loader';
@@ -16,7 +16,7 @@ import Tab from './Tab';
 export {
 	Header,
 	Home,
-	Ingredients,
+	Recipes,
 	Ingredient,
 	Body,
 	Loader,

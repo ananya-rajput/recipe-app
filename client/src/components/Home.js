@@ -23,11 +23,10 @@ const Home = () => {
 					<div className="card-link">
 						<span
 							onClick={() =>
-								dispatch(newTab({ type: 'list', title: 'Ingredients' }))
+								dispatch(newTab({ type: 'list', title: 'Recipes' }))
 							}
 						>
-							{' '}
-							Go To Recipes &gt;{' '}
+							Go To Recipes &gt;
 						</span>
 					</div>
 				</div>

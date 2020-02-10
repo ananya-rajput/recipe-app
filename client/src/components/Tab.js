@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 import { tabClose, tabSwitch } from '../state/actions';
 
+import { FaTimes } from 'react-icons/fa';
+
 const Tab = ({ data, active }) => {
 	const dispatch = useDispatch();
 
@@ -11,9 +13,8 @@ const Tab = ({ data, active }) => {
 			active={active}
 			onClick={() => dispatch(tabSwitch({ currentTab: data }))}
 		>
-			{data.title}{' '}
-			<i
-				className="fa fa-times"
+			{data.title}
+			<FaTimes
 				onClick={e => {
 					e.stopPropagation();
 					dispatch(tabClose());

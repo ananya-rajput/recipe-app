@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
 import { newTab } from '../state/actions';
+import { FaBars, FaCogs, FaTimes } from 'react-icons/fa';
 
 const Sidebar = () => {
 	const dispatch = useDispatch();
@@ -11,21 +12,20 @@ const Sidebar = () => {
 	return (
 		<>
 			<Icon onClick={() => setIsOpen(true)}>
-				<i className="fas fa-bars" />
+				<FaBars />
 			</Icon>
 			<Content open={isOpen}>
 				<span className="close-icon" onClick={() => setIsOpen(false)}>
-					<i className="fas fa-times"></i>
+					<FaTimes />
 				</span>
 				<ul className="nav-list-top">
 					<li
 						onClick={() => {
-							dispatch(newTab({ type: 'list', title: 'Ingredients' }));
+							dispatch(newTab({ type: 'list', title: 'Recipes' }));
 							setIsOpen(false);
 						}}
 					>
-						{' '}
-						Recipes{' '}
+						Recipes
 					</li>
 					<li
 						onClick={() => {
@@ -33,14 +33,12 @@ const Sidebar = () => {
 							setIsOpen(false);
 						}}
 					>
-						{' '}
-						Stations{' '}
+						Stations
 					</li>
 				</ul>
 				<ul className="nav-list-bottom">
 					<li>
-						{' '}
-						<i className="fas fa-cog"></i> Manage Settings{' '}
+						<FaCogs /> Manage Settings
 					</li>
 				</ul>
 			</Content>

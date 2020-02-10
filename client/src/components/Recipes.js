@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useDispatch } from 'react-redux';
 
-import { Table, Loader } from './';
+import { Table, Loader } from '.';
 import { newTab } from '../state/actions';
 
 const Ingredients = () => {

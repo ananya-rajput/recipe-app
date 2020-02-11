@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyledTabView } from './';
+import { StyledTabView } from './Styled/Tabs';
 
 export default function TabView() {
 	return (

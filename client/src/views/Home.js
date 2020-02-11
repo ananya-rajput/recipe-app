@@ -1,7 +1,9 @@
 import React from 'react';
 
-import { Menu, ViewWrapper } from '../components';
+import Menu from '../components/Menu';
+
 import { StyledCardList, StyledCard } from '../components/Styled/Card';
+import { ViewWrapper } from '../components/Styled/ViewWrapper';
 
 export default function Home() {
 	return (

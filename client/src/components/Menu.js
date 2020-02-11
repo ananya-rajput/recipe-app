@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { StyledNavigator } from './';
+import { StyledNavigator } from './Styled/Navigation';
 
 export default function Menu() {
 	return (

@@ -8,7 +8,9 @@ import { ViewWrapper } from '../components/Styled/ViewWrapper';
 export default function Home() {
 	return (
 		<ViewWrapper>
-			<Menu title="Home" />
+			<Menu>
+				<h1>Home</h1>
+			</Menu>
 
 			<StyledCardList>
 				<StyledCard>

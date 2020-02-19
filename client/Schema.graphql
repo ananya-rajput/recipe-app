@@ -6,7 +6,8 @@
 # types like sachet and processing can also be contained in the 'ingredients' collection but with a predefined schema
 
 # TODO:
-# 1. completing the Sachet schema
+# 1. Edit the Sachet Schema
+# 2. Describe a Flow on top of this file.
 
 # NOTE: A processing can have multiple sachets.
 type Sachet {

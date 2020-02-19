@@ -12,6 +12,7 @@
 # NOTE: A processing can have multiple sachets.
 type Sachet {
 	id: ID
+	serving: Number
 	quantity: Number # in grams or whatever decided
 	price: Number # in whatever unit decided. For example, rupees.
 }
@@ -35,6 +36,11 @@ type Ingredient {
 type Recipe {
 	id: ID # this id will be generated for each new recipe stored in a DB
 	name: String
+	chefName: String
+	cost: Number
+	cuisine: String
+	cookingTime: Number # in minutes maybe
+	difficulty: String # ['Easy', 'Normal', 'Hard']
 	image: String # image url
 	video: String # video url
 	createdAt: String # date

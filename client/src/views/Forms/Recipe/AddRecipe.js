@@ -66,7 +66,7 @@ export default function AddRecipe() {
 					width: '70%'
 				}}
 			>
-				<ButtonTile type="primary" size="lg" text="Add Title" />
+				<ButtonTile type="primary" size="lg" text="Add Image to your Recipe" />
 			</div>
 		</ViewWrapper>
 	);

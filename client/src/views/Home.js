@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Menu from '../components/Menu';
-
+import { DashboardTile } from '@dailykit/ui';
 import { StyledCardList, StyledCard } from '../components/Styled/Card';
 import { ViewWrapper } from '../components/Styled/ViewWrapper';
 
@@ -13,22 +13,19 @@ export default function Home() {
 			</Menu>
 
 			<StyledCardList>
-				<StyledCard>
-					<h2>Recipes</h2>
-					<p>76 created so far</p>
-					<span data-type="status">All available</span>
-					<span data-type="link" onClick={() => {}}>
-						Go to Users >
-					</span>
-				</StyledCard>
-				<StyledCard>
-					<h2>Ingredients</h2>
-					<p>54 created so far</p>
-					<span data-type="status">All available</span>
-					<span data-type="link" onClick={() => {}}>
-						Go to Users >
-					</span>
-				</StyledCard>
+				<DashboardTile
+					title="Recipes"
+					count="76"
+					conf="All available"
+					onClick={() => console.log('Navigate')}
+				/>
+
+				<DashboardTile
+					title="Ingredients"
+					count="29"
+					conf="All available"
+					onClick={() => console.log('Navigate')}
+				/>
 			</StyledCardList>
 		</ViewWrapper>
 	);

@@ -4,7 +4,7 @@ import { DashboardTile } from '@dailykit/ui'
 // State
 import { Context } from '../../store/tabs'
 
-import { StyledHome, StyledCardList, StyledCard } from './styled'
+import { StyledHome, StyledCardList } from './styled'
 
 const Home = () => {
    const { dispatch } = React.useContext(Context)
@@ -22,7 +22,7 @@ const Home = () => {
                 onClick={() => addTab('Recipes', 'recipes')}
             />
             <DashboardTile
-                title="Recipes"
+                title="Ingredients"
                 count="29"
                 conf="All available"
                 onClick={() => addTab('Ingredients', 'ingredients')}

@@ -35,3 +35,14 @@ export const StyledIcon = styled.div`
    border-radius: 4px;
    background: rgba(40, 193, 247, 0.48);
 `
+
+export const StyledTableHeader = styled.div`
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+`
+
+export const StyledTableActions = styled.div`
+
+`

@@ -1,7 +1,7 @@
 import React from 'react'
 
 // Styled
-import { StyledWrapper, StyledIcon, StyledHeader } from '../styled'
+import { StyledWrapper, StyledHeader } from '../styled'
 
 const IngredientForm = () => {
    return (

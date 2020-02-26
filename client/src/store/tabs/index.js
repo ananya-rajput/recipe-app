@@ -10,6 +10,13 @@ const state = {
 
 const reducers = (state, { type, payload }) => {
    switch (type) {
+      case 'SET_FORM_DATA': {
+         const index = state[payload.type].findIndex(
+            tab => tab.type === payload.type && tab.view === payload.view
+         )
+         state[payload.type][index] = payload
+         return state
+      }
       // Add Tab
       case 'ADD_TAB': {
          const alreadyExists = state[payload.type].find(
@@ -37,26 +44,44 @@ const reducers = (state, { type, payload }) => {
          const listingsLength = state.listings.length
          const formsLength = state.forms.length
 
-         if (type === 'listings' && listingsLength > 1) {
-            state.current =
-               payload.index > 0
-                  ? { ...state[type][payload.index - 1] }
-                  : { ...state[type][payload.index + 1] }
+         // Listings
+
+         // Switch to right tab
+         if (type === 'listings' && listingsLength > 1 && payload.index === 0) {
+            state.current = state.listings[payload.index + 1]
+         }
+         // Switch to left tab
+         if (type === 'listings' && listingsLength > 1 && payload.index > 0) {
+            state.current = state.listings[payload.index - 1]
+         }
+         // Switch to first tab in forms
+         if (
+            type === 'listings' &&
+            listingsLength === 1 &&
+            formsLength >= 1 &&
+            payload.index === 0
+         ) {
+            state.current = state.forms[0]
          }
 
-         if (type === 'listings' && listingsLength === 1 && formsLength > 1) {
-            state.current = { ...state.forms[0] }
-         }
+         // Forms
 
-         if (type === 'forms' && formsLength > 1) {
-            state.current =
-               payload.index > 0
-                  ? { ...state[type][payload.index - 1] }
-                  : { ...state[type][payload.index + 1] }
+         // Switch to right tab
+         if (type === 'forms' && formsLength > 1 && payload.index === 0) {
+            state.current = state.forms[payload.index + 1]
          }
-
-         if (type === 'forms' && formsLength === 1 && listingsLength > 1) {
-            state.current = { ...state.listings[listingsLength - 1] }
+         // Switch to left tab
+         if (type === 'forms' && formsLength > 1 && payload.index > 0) {
+            state.current = state.forms[payload.index - 1]
+         }
+         // Switch to last tab in listings
+         if (
+            type === 'forms' &&
+            formsLength === 1 &&
+            listingsLength >= 1 &&
+            payload.index === 0
+         ) {
+            state.current = state.listings[listingsLength - 1]
          }
 
          return { ...state, [type]: tabs }

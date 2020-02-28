@@ -105,7 +105,10 @@ function Ingredients() {
                <AddServings close={closeTunnel} next={openTunnel} />
             </Tunnel>
             <Tunnel layer={2}>
-               <AddIngredients close={closeTunnel} />
+               <AddIngredients close={closeTunnel} next={openTunnel} />
+            </Tunnel>
+            <Tunnel layer={3} size='lg'>
+               <AddSachets close={closeTunnel} />
             </Tunnel>
          </Tunnels>
          <div style={{ width: '100%', marginTop: '20px' }}>
@@ -170,7 +173,7 @@ function AddServings({ close, next }) {
    )
 }
 
-function AddIngredients({ close }) {
+function AddIngredients({ close, next }) {
    const [search, setSearch] = React.useState('')
    const [list, selected, selectOption] = useMultiList([
       { id: 1, title: 'Potato' },
@@ -188,7 +191,7 @@ function AddIngredients({ close }) {
                <h1>Add Ingredients</h1>
             </div>
             <div>
-               <TextButton type='solid' onClick={() => {}}>
+               <TextButton type='solid' onClick={() => next(3)}>
                   Next
                </TextButton>
             </div>
@@ -234,6 +237,30 @@ function AddIngredients({ close }) {
                </ListOptions>
             </List>
          </div>
+      </div>
+   )
+}
+
+function AddSachets({ close }) {
+   return (
+      <div style={{ padding: '30px' }}>
+         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+               <TextButton onClick={() => close(3)} type='ghost'>
+                  X
+               </TextButton>
+               <h1>Add Ingredients</h1>
+            </div>
+            <div>
+               <TextButton type='solid' onClick={() => {}}>
+                  Next
+               </TextButton>
+            </div>
+         </div>
+         <br />
+         <hr style={{ border: '1px solid #E4E4E4' }} />
+         <br />
+         {/* <div>TODO: start from here tomorrow</div> */}
       </div>
    )
 }

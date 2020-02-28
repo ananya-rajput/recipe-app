@@ -1,5 +1,0 @@
-//TODO: refactor on sunday:
-  1. separate the components in addRecipe Form view.
-  2. create styles in styled-components
-
-//TODO: for tomorrow: add ui for the rest of the tunnels in the add ingredients phase.

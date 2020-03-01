@@ -1,17 +1,30 @@
-import React, { useState } from 'react'
-
+import React, { useState, useContext } from 'react'
 import { Input, TextButton, RadioGroup, ButtonTile } from '@dailykit/ui/'
+
+import { Context } from '../../../store/tabs/index'
+
 import AddIngredients from './AddIngredients'
 import { ViewWrapper } from '../../../components/Styled/ViewWrapper'
 import Menu from '../../../components/Menu'
 
 export default function AddRecipeForm() {
    const [recipeName, setrecipeName] = useState('')
+   const { dispatch } = useContext(Context)
+
    const options = [
       { id: 1, title: 'Vegetarian' },
       { id: 2, title: 'Non-Vegetarian' },
       { id: 3, title: 'Vegan' }
    ]
+
+   const handleRecipeNameChange = e => {
+      const title = e.target.value
+      dispatch({
+         type: 'SET_RECIPE_TITLE',
+         payload: { title, type: 'forms', view: 'recipe' }
+      })
+      setrecipeName(title)
+   }
 
    return (
       <ViewWrapper>
@@ -22,9 +35,7 @@ export default function AddRecipeForm() {
                   type='text'
                   name='recipeName'
                   value={recipeName}
-                  onChange={e => {
-                     setrecipeName(e.target.value)
-                  }}
+                  onChange={handleRecipeNameChange}
                />
             </div>
 

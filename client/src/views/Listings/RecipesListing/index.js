@@ -2,18 +2,26 @@ import React from 'react'
 import { IconButton } from '@dailykit/ui'
 
 // Icons
-import { AddIcon } from '../../../assets/icons';
+import { AddIcon } from '../../../assets/icons'
 
 // State
 import { Context } from '../../../store/tabs'
 
 // Styled
-import { StyledWrapper, StyledTableHeader, StyledTableActions, StyledHeader } from '../styled'
+import {
+   StyledWrapper,
+   StyledTableHeader,
+   StyledTableActions,
+   StyledHeader
+} from '../styled'
 
 const RecipesListing = () => {
-   const { dispatch } = React.useContext(Context)
+   const { state, dispatch } = React.useContext(Context)
    const addTab = (title, view) => {
-      dispatch({ type: 'ADD_TAB', payload: { type: 'forms', title, view } })
+      dispatch({
+         type: 'ADD_TAB',
+         payload: { type: 'forms', title, view, index: state.forms.length }
+      })
    }
    return (
       <StyledWrapper>
@@ -25,10 +33,10 @@ const RecipesListing = () => {
             <p>filters</p>
             <StyledTableActions>
                <IconButton
-                  type="solid"
+                  type='solid'
                   onClick={() => addTab('Untitled Recipe', 'recipe')}
                >
-                  <AddIcon color="#fff" size={24} />
+                  <AddIcon color='#fff' size={24} />
                </IconButton>
             </StyledTableActions>
          </StyledTableHeader>
@@ -36,4 +44,4 @@ const RecipesListing = () => {
    )
 }
 
-export default RecipesListing;
+export default RecipesListing

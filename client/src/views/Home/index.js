@@ -16,16 +16,16 @@ const Home = () => {
          <h1>Recipe App</h1>
          <StyledCardList>
             <DashboardTile
-                title="Recipes"
-                count="29"
-                conf="All available"
-                onClick={() => addTab('Recipes', 'recipes')}
+               title='Recipes'
+               count='29'
+               conf='All available'
+               onClick={() => addTab('Recipes', 'recipes')}
             />
             <DashboardTile
-                title="Ingredients"
-                count="29"
-                conf="All available"
-                onClick={() => addTab('Ingredients', 'ingredients')}
+               title='Ingredients'
+               count='29'
+               conf='All available'
+               onClick={() => addTab('Ingredients', 'ingredients')}
             />
          </StyledCardList>
       </StyledHome>

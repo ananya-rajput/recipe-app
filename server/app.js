@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, "/../client/build")));
 
 // GraphQL
 app.use('/graphql', graphqlHTTP({
-  schema : require('./graphql/schema'),
+  schema : require('./graphql/schemas'),
   rootValue : require('./graphql/resolvers'),
   graphiql: true
 }))

@@ -6,9 +6,8 @@ const ProcessingSchema = new mongoose.Schema({
         default : false
     },
     type : {
-        // very much confused about this!
         type : mongoose.Schema.Types.ObjectId,
-        ref : ''
+        ref : 'ProcessingName'
     },
     sachets : [{
         type : mongoose.Schema.Types.ObjectId,

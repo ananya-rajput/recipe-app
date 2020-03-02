@@ -1,4 +1,4 @@
-### Recipe App - https://recipe-app-dailykit.netlify.com/
+### Recipe App
 
 This app is part of the DailyKit Platform
 

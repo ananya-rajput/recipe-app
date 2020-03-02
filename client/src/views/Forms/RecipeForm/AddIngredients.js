@@ -1,5 +1,7 @@
 import React from 'react'
-import { Tunnels, Tunnel, useTunnel, ButtonTile } from '@dailykit/ui'
+import { Tunnels, Tunnel, useTunnel, ButtonTile, Text } from '@dailykit/ui'
+
+import { IngredientsSection, IngredientStats } from './styled'
 
 import AddServings from './AddServings'
 import SelectIngredients from './SelectIngredients'
@@ -20,26 +22,17 @@ export default function AddIngredients() {
                <AddSachets close={closeTunnel} />
             </Tunnel>
          </Tunnels>
-         <div style={{ width: '100%', marginTop: '20px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-               <div>
-                  <h4
-                     style={{
-                        fontSize: 16,
-                        color: '#888D9D'
-                     }}
-                  >
-                     Ingredients (0)
-                  </h4>
-               </div>
-            </div>
+         <IngredientsSection>
+            <IngredientStats>
+               <Text as='subtitle'>Ingredients (0)</Text>
+            </IngredientStats>
             <ButtonTile
                as='button'
                type='secondary'
                text='Add Ingredient'
                onClick={() => openTunnel(1)}
             />
-         </div>
+         </IngredientsSection>
       </>
    )
 }

@@ -3,8 +3,10 @@ import { Input, TextButton, RadioGroup, ButtonTile } from '@dailykit/ui/'
 
 import { Context } from '../../../store/tabs/index'
 
-import AddIngredients from './AddIngredients'
 import { ViewWrapper } from '../../../components/Styled/ViewWrapper'
+import { RecipeActions, RecipeType, RecipePhotos } from './styled'
+
+import AddIngredients from './AddIngredients'
 import Menu from '../../../components/Menu'
 
 export default function AddRecipeForm() {
@@ -39,7 +41,7 @@ export default function AddRecipeForm() {
                />
             </div>
 
-            <div style={{ width: '100%', textAlign: 'right' }}>
+            <RecipeActions>
                <TextButton type='ghost' style={{ margin: '0px 10px' }}>
                   open in editor
                </TextButton>
@@ -51,34 +53,20 @@ export default function AddRecipeForm() {
                <TextButton type='solid' style={{ margin: '0px 10px' }}>
                   Publish
                </TextButton>
-            </div>
+            </RecipeActions>
          </Menu>
 
-         <div
-            style={{ width: '100%', height: '96px', background: '#F3F3F3' }}
-         ></div>
+         {/* TODO: add stats here */}
 
-         <div
-            style={{
-               marginTop: '24px',
-               width: '100%',
-               display: 'flex',
-               justifyContent: 'center'
-            }}
-         >
+         <RecipeType>
             <RadioGroup
                options={options}
                active={2}
                onChange={option => console.log(option)}
             />
-         </div>
+         </RecipeType>
 
-         <div
-            style={{
-               margin: '24px auto',
-               width: '50%'
-            }}
-         >
+         <RecipePhotos>
             <ButtonTile
                type='primary'
                size='lg'
@@ -87,7 +75,7 @@ export default function AddRecipeForm() {
             />
 
             <AddIngredients />
-         </div>
+         </RecipePhotos>
       </ViewWrapper>
    )
 }

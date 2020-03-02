@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const SachetSchema = new mongoose.model({
-    valid : {
+    isValid : {
         type : Boolean,
         default : false
     },
@@ -13,7 +13,8 @@ const SachetSchema = new mongoose.model({
         type : {
             type : String,
             enum : ['Real Time', 'Co-Packer', 'Planned Lot'],
-            required : ['Mode of fulfillment is required for a sachet.']
+            required : ['Mode of fulfillment is required for a sachet.'],
+            default : 'Real Time'
         },
         station : {
             // TBD

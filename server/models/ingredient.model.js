@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const IngredientSchema = new mongoose.Schema({
-    valid: {
+    isValid: {
         type : Boolean,
         default : false
     },

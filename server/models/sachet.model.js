@@ -5,11 +5,28 @@ const SachetSchema = new mongoose.model({
         type : Boolean,
         default : false
     },
+    quantity : {
+        value : {
+            type : Number,
+            required : ['Quantity is required for a sachet.']
+        },
+        unit : {
+            type : String,
+            required : ['Quantity unit is required for storing quantity.']
+        }
+    },
     tracking : {
         type : Boolean,
         required : ['Tracking value is required.']
     },
     modes : [{
+        isActive : {
+            type : Boolean,
+            default : false
+        },
+        priority : {
+            type : Number
+        },
         type : {
             type : String,
             enum : ['Real Time', 'Co-Packer', 'Planned Lot'],
@@ -17,13 +34,11 @@ const SachetSchema = new mongoose.model({
             default : 'Real Time'
         },
         station : {
-            // TBD
             type : mongoose.Schema.Types.ObjectId,
             ref: 'Station',
             required : ['Station is required for a sachet.']
         },
-        supplier_items : [{
-            // TBD
+        supplierItems : [{
             type : mongoose.Schema.Types.ObjectId,
             ref: 'Items',
             validate : [
@@ -31,22 +46,24 @@ const SachetSchema = new mongoose.model({
                 'Atleast one supplier item is required for a sachet.'
             ]
         }],
+        isWeighable : {
+            type : Boolean,
+            default : true
+        },
         accuracy : {
-            type : String,
-            enum : ['85% - 100%', 'Below 85%', 'don\'t weigh'],
+            type : Number,
             required : ['Accuracy is required for a sachet.'],
         },
         packaging : {
-            // TBD
             type : mongoose.Schema.Types.ObjectId,
             ref : 'Packaging',
             required : ['Packaging type is required for a sachet.']
         },
-        label : {
-            type : String,
-            required : ['Label is required for a sachet.']
+        isLabelled : {
+            type : Boolean,
+            default : false
         },
-        label_template : {
+        labelTemplate : {
             type : mongoose.Types.Schema.ObjectId,
             ref : 'Templates',
             required : ['Label template is required for a sachet.']

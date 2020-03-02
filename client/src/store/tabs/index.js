@@ -12,13 +12,8 @@ const reducers = (state, { type, payload }) => {
    switch (type) {
       case 'SET_RECIPE_TITLE': {
          const newState = { ...state }
-         if (payload.title.length > 0) {
-            newState.current.title = payload.title
-            newState.forms[state.current.index].title = payload.title
-         } else {
-            newState.current.title = 'Untitled Recipe'
-            newState.forms[state.current.index].title = 'Untitled Recipe'
-         }
+         newState.current.title = payload.title
+         newState.forms[state.current.index].title = payload.title
          return newState
       }
       case 'SET_FORM_DATA': {

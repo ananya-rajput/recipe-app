@@ -21,10 +21,17 @@ export default function AddRecipeForm() {
 
    const handleRecipeNameChange = e => {
       const title = e.target.value
-      dispatch({
-         type: 'SET_RECIPE_TITLE',
-         payload: { title, type: 'forms', view: 'recipe' }
-      })
+      if (title.length > 0) {
+         dispatch({
+            type: 'SET_RECIPE_TITLE',
+            payload: { title, type: 'forms', view: 'recipe' }
+         })
+      } else {
+         dispatch({
+            type: 'SET_RECIPE_TITLE',
+            payload: { title: 'Untitled Recipe', type: 'forms', view: 'recipe' }
+         })
+      }
       setrecipeName(title)
    }
 

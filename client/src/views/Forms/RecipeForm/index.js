@@ -1,88 +1,96 @@
-import React, { useState, useContext } from 'react'
-import { Input, TextButton, RadioGroup, ButtonTile } from '@dailykit/ui/'
+import React, { useState, useContext } from 'react';
+import { Input, TextButton, RadioGroup, ButtonTile } from '@dailykit/ui/';
 
-import { Context } from '../../../store/tabs/index'
+import { Context } from '../../../store/tabs/index';
 
-import { ViewWrapper } from '../../../components/Styled/ViewWrapper'
-import { RecipeActions, RecipeType, RecipePhotos } from './styled'
+import { ViewWrapper } from '../../../components/Styled/ViewWrapper';
+import { RecipeActions, RecipeType, RecipePhotos } from './styled';
 
-import AddIngredients from './AddIngredients'
-import Menu from '../../../components/Menu'
+import AddIngredients from './AddIngredients';
+import Menu from '../../../components/Menu';
 
 export default function AddRecipeForm() {
-   const [recipeName, setrecipeName] = useState('')
-   const { dispatch } = useContext(Context)
+	const [recipeName, setrecipeName] = useState('');
+	const { dispatch } = useContext(Context);
 
-   const options = [
-      { id: 1, title: 'Vegetarian' },
-      { id: 2, title: 'Non-Vegetarian' },
-      { id: 3, title: 'Vegan' }
-   ]
+	const options = [
+		{ id: 1, title: 'Vegetarian' },
+		{ id: 2, title: 'Non-Vegetarian' },
+		{ id: 3, title: 'Vegan' }
+	];
 
-   const handleRecipeNameChange = e => {
-      const title = e.target.value
-      if (title.length > 0) {
-         dispatch({
-            type: 'SET_RECIPE_TITLE',
-            payload: { title, type: 'forms', view: 'recipe' }
-         })
-      } else {
-         dispatch({
-            type: 'SET_RECIPE_TITLE',
-            payload: { title: 'Untitled Recipe', type: 'forms', view: 'recipe' }
-         })
-      }
-      setrecipeName(title)
-   }
+	const handlePublish = () => {
+		console.log(recipeName);
+	};
 
-   return (
-      <ViewWrapper>
-         <Menu>
-            <div>
-               <Input
-                  label='Untitled Recipe'
-                  type='text'
-                  name='recipeName'
-                  value={recipeName}
-                  onChange={handleRecipeNameChange}
-               />
-            </div>
+	const handleRecipeNameChange = e => {
+		const title = e.target.value;
+		if (title.length > 0) {
+			dispatch({
+				type: 'SET_RECIPE_TITLE',
+				payload: { title, type: 'forms', view: 'recipe' }
+			});
+		} else {
+			dispatch({
+				type: 'SET_RECIPE_TITLE',
+				payload: { title: 'Untitled Recipe', type: 'forms', view: 'recipe' }
+			});
+		}
+		setrecipeName(title);
+	};
 
-            <RecipeActions>
-               <TextButton type='ghost' style={{ margin: '0px 10px' }}>
-                  open in editor
-               </TextButton>
+	return (
+		<ViewWrapper>
+			<Menu>
+				<div>
+					<Input
+						label="Untitled Recipe"
+						type="text"
+						name="recipeName"
+						value={recipeName}
+						onChange={handleRecipeNameChange}
+					/>
+				</div>
 
-               <TextButton type='ghost' style={{ margin: '0px 10px' }}>
-                  save and exit
-               </TextButton>
+				<RecipeActions>
+					<TextButton type="ghost" style={{ margin: '0px 10px' }}>
+						open in editor
+					</TextButton>
 
-               <TextButton type='solid' style={{ margin: '0px 10px' }}>
-                  Publish
-               </TextButton>
-            </RecipeActions>
-         </Menu>
+					<TextButton type="ghost" style={{ margin: '0px 10px' }}>
+						save and exit
+					</TextButton>
 
-         {/* TODO: add stats here */}
+					<TextButton
+						onClick={handlePublish}
+						type="solid"
+						style={{ margin: '0px 10px' }}
+					>
+						Publish
+					</TextButton>
+				</RecipeActions>
+			</Menu>
 
-         <RecipeType>
-            <RadioGroup
-               options={options}
-               active={2}
-               onChange={option => console.log(option)}
-            />
-         </RecipeType>
+			{/* TODO: add stats here */}
 
-         <RecipePhotos>
-            <ButtonTile
-               type='primary'
-               size='lg'
-               text='Add photos to your recipe'
-               helper='upto 1MB &#8226; only JPGs, PNGs, and PDFs are allowed.'
-            />
+			<RecipeType>
+				<RadioGroup
+					options={options}
+					active={2}
+					onChange={option => console.log(option)}
+				/>
+			</RecipeType>
 
-            <AddIngredients />
-         </RecipePhotos>
-      </ViewWrapper>
-   )
+			<RecipePhotos>
+				<ButtonTile
+					type="primary"
+					size="lg"
+					text="Add photos to your recipe"
+					helper="upto 1MB &#8226; only JPGs, PNGs, and PDFs are allowed."
+				/>
+
+				<AddIngredients />
+			</RecipePhotos>
+		</ViewWrapper>
+	);
 }

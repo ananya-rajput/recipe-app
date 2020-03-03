@@ -36,7 +36,16 @@ const IngredientForm = () => {
 
    const { dispatch } = React.useContext(Context)
    const [selectedView, setSelectedView] = React.useState('modes')
-   // const [ingredient, dispatchIngredient] = React.useReducer(reducer, initialState)
+   const [ingredient, setIngredient] = React.useState({ name : '', image : '' });
+
+   const createIngredient = async () => {
+      try {
+         
+      } catch(err) {
+         console.log(err);
+      }
+   }
+
 
    return (
       <>
@@ -46,9 +55,10 @@ const IngredientForm = () => {
                <Input
                   type='text'
                   placeholder='Untitled Ingredient'
-                  name='username'
-                  value={''}
-                  onChange={e => console.log(e)}
+                  name='ingredient'
+                  value={ ingredient.name }
+                  onChange={e => setIngredient({ ...ingredient, name : e.target.value })}
+                  onBlur={ createIngredient }
                />
             </InputWrapper>
             <ActionsWrapper>

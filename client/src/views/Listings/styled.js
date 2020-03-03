@@ -9,10 +9,6 @@ export const StyledWrapper = styled.div`
       font-weight: 500;
       line-height: 23px;
    }
-   table {
-      width: 980px;
-      margin: 0 auto;
-   }
 `
 
 export const StyledHeader = styled.div`
@@ -45,4 +41,7 @@ export const StyledTableHeader = styled.div`
 
 export const StyledTableActions = styled.div`
 
+`
+export const StyledContent = styled.div`
+   margin-top: 32px;
 `

@@ -1,14 +1,31 @@
 import React from 'react'
-import { Input, ComboButton, TextButton, ButtonTile } from '@dailykit/ui'
+import { useMutation } from '@apollo/react-hooks'
+import { gql } from 'apollo-boost'
+import { 
+   Input,
+   ComboButton,
+   TextButton,
+   ButtonTile,
+   Tunnel,
+   Tunnels,
+   useTunnel,
+   ListItem,
+   List,
+   ListOptions,
+   ListSearch,
+   TagGroup,
+   Tag,
+   useMultiList
+} from '@dailykit/ui'
 
 // Global State
 import { Context } from '../../../store/tabs'
 
 // Icons
-import { CodeIcon, AddIcon } from '../../../assets/icons'
+import { CodeIcon, AddIcon, CloseIcon } from '../../../assets/icons'
 
 // Styled
-import { StyledWrapper } from '../styled'
+import { StyledWrapper, StyledTunnelHeader, StyledTunnelMain } from '../styled'
 import {
    StyledHeader,
    InputWrapper,
@@ -32,20 +49,40 @@ import {
 // Internal State
 // const initialState = ()
 
-const IngredientForm = () => {
-
-   const { dispatch } = React.useContext(Context)
-   const [selectedView, setSelectedView] = React.useState('modes')
-   const [ingredient, setIngredient] = React.useState({ name : '', image : '' });
-
-   const createIngredient = async () => {
-      try {
-         
-      } catch(err) {
-         console.log(err);
+const CREATE_INGREDIENT = gql`
+   mutation CreateIngredient($ingredient: IngredientInput) {
+      createIngredient(input: $ingredient) {
+         _id
+         name
       }
    }
+`
+const FETCH_PROCESSING_NAMES = gql`
+   processingNames {
+      _id
+      title
+   }
+`
 
+const IngredientForm = () => {
+   const { dispatch } = React.useContext(Context)
+   const { loading, error, data : processingNames } = useQuery(FETCH_PROCESSING_NAMES);
+   const [ingredient, setIngredient] = React.useState({ name : '', image : '', processings: [] })
+   const [createIngredient] = useMutation(CREATE_INGREDIENT, { onCompleted : (data) => setIngredient(data) })
+   
+   const [selectedView, setSelectedView] = React.useState('modes')
+
+   // Processing Tunnel
+   const [processingTunnel, openProcessingTunnel, closeProcessingTunnel] = useTunnel(1)
+   const [search, setSearch] = React.useState('')
+   const [list, selected, selectOption] = useMultiList(processingNames)
+   const addProcessings = () => {
+      console.log(selected);
+   }
+
+   const createIngredientHandler = () => {
+      createIngredient({ variables : {ingredient : { name : ingredient.name } }})
+   }
 
    return (
       <>
@@ -58,7 +95,7 @@ const IngredientForm = () => {
                   name='ingredient'
                   value={ ingredient.name }
                   onChange={e => setIngredient({ ...ingredient, name : e.target.value })}
-                  onBlur={ createIngredient }
+                  onBlur={ createIngredientHandler }
                />
             </InputWrapper>
             <ActionsWrapper>
@@ -75,7 +112,7 @@ const IngredientForm = () => {
             <StyledTop>
                <StyledStatsContainer>
                   <StyledStat>
-                     <h2>0</h2>
+                     <h2>{ ingredient.processings.length }</h2>
                      <p>Processings</p>
                   </StyledStat>
                   <StyledStat>
@@ -90,7 +127,7 @@ const IngredientForm = () => {
             <StyledSection>
                <StyledListing>
                   <StyledListingHeader>
-                     <h3>Processings (1)</h3>
+                     <h3>Processings ({ ingredient.processings.length })</h3>
                      <AddIcon color="#555B6E" size="18" stroke="2.5"/>
                   </StyledListingHeader>
                   <StyledListingTile active={ true }>
@@ -103,7 +140,54 @@ const IngredientForm = () => {
                      <p>Sachets: 50</p>
                      <p>Recipes: 20</p>
                   </StyledListingTile>
-                  <ButtonTile type="primary" size="lg" />
+                  <ButtonTile type="primary" size="lg" onClick={ () => openProcessingTunnel(1) }/>
+                  <Tunnels tunnels={processingTunnel}>
+                     <Tunnel layer={1}>
+                        <StyledTunnelHeader>
+                           <div>
+                              <CloseIcon size="20px" color="#888D9D" onClick={ () => closeProcessingTunnel(1) }/>
+                              <h1>Select Processings</h1>
+                           </div>
+                           <TextButton type="solid" onClick={ addProcessings }>
+                              Save
+                           </TextButton>
+                        </StyledTunnelHeader>
+                        <StyledTunnelMain>
+                           <List>
+                              <ListSearch
+                                 onChange={value => setSearch(value)}
+                                 placeholder='type what you’re looking for...'
+                              />
+                              {selected.length > 0 && (
+                                 <TagGroup style={{ margin: '8px 0' }}>
+                                    {selected.map(option => (
+                                       <Tag
+                                          key={option.id}
+                                          title={option.title}
+                                          onClick={() => selectOption('id', option.id)}
+                                       >
+                                          {option.title}
+                                       </Tag>
+                                    ))}
+                                 </TagGroup>
+                              )}
+                              <ListOptions>
+                                 {list
+                                    .filter(option => option.title.toLowerCase().includes(search))
+                                    .map(option => (
+                                       <ListItem
+                                          type='MSL1'
+                                          key={option.id}
+                                          title={option.title}
+                                          onClick={() => selectOption('id', option.id)}
+                                          isActive={selected.find(item => item.id === option.id)}
+                                       />
+                                    ))}
+                              </ListOptions>
+                           </List>
+                        </StyledTunnelMain>
+                     </Tunnel>
+                  </Tunnels>
                </StyledListing>
                <StyledDisplay>
                   <StyledSection spacing="md">

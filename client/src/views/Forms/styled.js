@@ -57,6 +57,10 @@ export const StyledTunnelHeader = styled.div`
    > div {
       display: flex;
       align-items: center;
+
+      svg {
+         cursor: pointer;
+      }
    }
    h1 {
       color: #888d9d;

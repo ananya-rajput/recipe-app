@@ -6,7 +6,7 @@ module.exports = {
     ingredients: async () => {
         try {
             const ingredients = await Ingredient.find();
-            return {ingredients};
+            return ingredients;
         } catch(err) {
             throw err;
         }
@@ -17,7 +17,7 @@ module.exports = {
                 name : args.input.name
             });
             const doc = await ingredient.save();
-            return {ingredient : doc};
+            return doc;
         } catch(err) {
             throw err;
         }

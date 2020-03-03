@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SachetSchema = new mongoose.model({
+const SachetSchema = new mongoose.Schema({
     isValid : {
         type : Boolean,
         default : false
@@ -64,7 +64,7 @@ const SachetSchema = new mongoose.model({
             default : false
         },
         labelTemplate : {
-            type : mongoose.Types.Schema.ObjectId,
+            type : mongoose.Schema.Types.ObjectId,
             ref : 'Templates',
             required : ['Label template is required for a sachet.']
         }

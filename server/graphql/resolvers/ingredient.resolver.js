@@ -47,11 +47,16 @@ module.exports = {
                 processing.save();
                 return processing._id;
             });
-            console.log(processings);
             ingredient.processings.push(...processings);
-            const doc = await ingredient.save();
-            console.log(doc);
-            return doc;
+            await ingredient.save();
+            const updatedIngredient = await Ingredient.findOne({ _id : args.input.ingredientId }).populate({
+                path : 'processings',
+                populate : {
+                    path : 'name'
+                }
+            });
+            console.log(updatedIngredient);
+            return updatedIngredient;
         } catch(err) {
            throw err; 
         }

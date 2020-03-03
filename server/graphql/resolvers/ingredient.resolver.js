@@ -11,6 +11,17 @@ module.exports = {
             throw err;
         }
     },
+    processingNames: async () => {
+        try {
+            return [
+                { _id : '5e5e0c51c963f738184e8933', title : 'Raw' },
+                { _id : '5e5e0c5dc963f738184e8934', title : 'Mashed' },
+                { _id : '5e5e0c69c963f738184e8935', title : 'Chopped' }
+            ]
+        } catch(err) {
+            throw err;
+        }
+    },
     createIngredient: async (args) => {
         try {
             const ingredient = new Ingredient({

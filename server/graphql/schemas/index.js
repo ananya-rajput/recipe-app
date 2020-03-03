@@ -21,7 +21,7 @@ module.exports = buildSchema(`
 
     type ProcessingName {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type Sachet {
@@ -76,6 +76,7 @@ module.exports = buildSchema(`
     type RootQuery {
         ingredients: [Ingredient!]!
         ingredient(id: ID!): Ingredient
+        processingNames: [ProcessingName!]!
     }
 
 

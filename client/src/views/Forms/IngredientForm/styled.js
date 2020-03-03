@@ -81,7 +81,7 @@ export const StyledListing = styled.div`
 export const StyledDisplay = styled.div`
     background: #fff;
     padding: ${ props => props.contains === 'sachets' ? '0px' : '32px 28px' };
-    margin-top: ${ props => props.contains === 'sachets' ? '32px' : '0' };
+    margin-top: ${ props => props.contains === 'sachets' ? '16px' : '0' };
 `
 
 export const StyledListingHeader = styled.div`
@@ -122,5 +122,33 @@ export const StyledListingTile = styled.div`
         &:not(:last-child) {
             margin-bottom: 8px;
         }
+    }
+`
+
+export const StyledTabsContainer = styled.div`
+    display: flex;
+    border-bottom: 1px solid rgba(206, 206, 206, 0.3);
+`
+
+export const StyledTab = styled.div`
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 14px;
+    color: #888D9D;
+    cursor: pointer;
+    margin-right: 80px;
+    padding: 16px 0;
+
+    &.active {
+        color: #00A7E1;
+        border-bottom: 3px solid #00A7E1;
+    }
+`
+
+export const StyledTabContent = styled.div`
+    display: none;
+
+    &.active {
+        display: block;
     }
 `

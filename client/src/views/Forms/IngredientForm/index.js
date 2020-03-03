@@ -23,7 +23,10 @@ import {
    StyledListing,
    StyledDisplay,
    StyledListingHeader,
-   StyledListingTile
+   StyledListingTile,
+   StyledTabsContainer,
+   StyledTab,
+   StyledTabContent
 } from './styled'
 
 // Internal State
@@ -32,6 +35,7 @@ import {
 const IngredientForm = () => {
 
    const { dispatch } = React.useContext(Context)
+   const [selectedView, setSelectedView] = React.useState('modes')
    // const [ingredient, dispatchIngredient] = React.useReducer(reducer, initialState)
 
    return (
@@ -106,7 +110,27 @@ const IngredientForm = () => {
                         <ButtonTile type="primary" size="lg" />
                      </StyledListing>
                      <StyledDisplay contains="sachets">
-                        {/* Upon clicking, Sachet info will be displayed here! */}
+                        <StyledTabsContainer>
+                           <StyledTab
+                              className={ selectedView === 'modes' ? 'active' : '' }
+                              onClick={ () => setSelectedView('modes') }
+                           >
+                              Modes of fulfillment
+                           </StyledTab>
+                           <StyledTab
+                              className={ selectedView === 'inventory' ? 'active' : '' }
+                              onClick={ () => setSelectedView('inventory') }
+                           >
+                              Inventory
+                           </StyledTab>
+                        </StyledTabsContainer>
+                        <StyledTabContent className={ selectedView === 'modes' ? 'active' : '' }>
+
+                        </StyledTabContent>
+                        <StyledTabContent className={ selectedView === 'inventory' ? 'active' : '' }>
+                           Inventory
+                           {/* Content for inventory will come here! */}
+                        </StyledTabContent>
                      </StyledDisplay>
                   </StyledSection>
                </StyledDisplay>

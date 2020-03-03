@@ -32,5 +32,28 @@ module.exports = {
         } catch(err) {
             throw err;
         }
+    },
+    addProcessings: async (args) => {
+        try {
+            const ingredient = await Ingredient.findOne({ _id : args.input.ingredientId });
+            if(!ingredient) {
+                throw Error('No ingredient found!')
+            }
+            const processings = await args.input.processingNames.map((processingName) => {
+                const processing = new Processing({
+                    name : processingName,
+                    sachets: []
+                });
+                processing.save();
+                return processing._id;
+            });
+            console.log(processings);
+            ingredient.processings.push(...processings);
+            const doc = await ingredient.save();
+            console.log(doc);
+            return doc;
+        } catch(err) {
+           throw err; 
+        }
     }
 }

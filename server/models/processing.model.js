@@ -5,7 +5,7 @@ const ProcessingSchema = new mongoose.Schema({
         type : Boolean,
         default : false
     },
-    type : {
+    name : {
         type : mongoose.Schema.Types.ObjectId,
         ref : 'ProcessingName'
     },

@@ -15,7 +15,7 @@ module.exports = buildSchema(`
     type Processing {
         _id: ID!
         isValid: Boolean!
-        type: ProcessingName!
+        name: ProcessingName!
         sachets: [Sachet!]!
     }
 
@@ -86,8 +86,14 @@ module.exports = buildSchema(`
         name: String!
     }
 
+    input AddProcessingsInput {
+        ingredientId: ID!
+        processingNames: [ID!]!
+    }
+
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
+        addProcessings(input: AddProcessingsInput): Ingredient!
     }
 
 

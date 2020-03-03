@@ -1,5 +1,5 @@
 import React from 'react'
-import { useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import { 
    Input,
@@ -57,27 +57,46 @@ const CREATE_INGREDIENT = gql`
       }
    }
 `
+
 const FETCH_PROCESSING_NAMES = gql`
-   processingNames {
-      _id
-      title
+   {
+      processingNames {
+         _id
+         title
+      }
+   }
+`
+
+const ADD_PROCESSINGS = gql`
+   mutation AddProcessings($ingredientId : ID!, $processings: [ProcessingNames!]!) {
+      addProcessing(input: {ingredientId : $ingredientId, processings : $processings}) {
+         name
+         processings {
+            _id
+            type {
+               title
+            }
+            sachets
+         }
+      }
    }
 `
 
 const IngredientForm = () => {
    const { dispatch } = React.useContext(Context)
-   const { loading, error, data : processingNames } = useQuery(FETCH_PROCESSING_NAMES);
-   const [ingredient, setIngredient] = React.useState({ name : '', image : '', processings: [] })
+   const { loading, error, data } = useQuery(FETCH_PROCESSING_NAMES, { onCompleted : (data) => {processingNamesList.push(...data.processingNames)} });
+   const [ingredient, setIngredient] = React.useState({ _id : '', name : '', image : '', processings: [] })
    const [createIngredient] = useMutation(CREATE_INGREDIENT, { onCompleted : (data) => setIngredient(data) })
+   const [addProcessings] = useMutation(ADD_PROCESSINGS, { onCompleted : (data) => setIngredient(data) })
    
    const [selectedView, setSelectedView] = React.useState('modes')
 
    // Processing Tunnel
    const [processingTunnel, openProcessingTunnel, closeProcessingTunnel] = useTunnel(1)
    const [search, setSearch] = React.useState('')
-   const [list, selected, selectOption] = useMultiList(processingNames)
-   const addProcessings = () => {
-      console.log(selected);
+   const [processingNamesList, selectedProcessingNames, selectProcessingName] = useMultiList([])
+   const addProcessingsHandler = () => {
+      addProcessings({ variables : {ingredientId : ingredient._id, processings : selectedProcessingNames}})
    }
 
    const createIngredientHandler = () => {
@@ -130,16 +149,16 @@ const IngredientForm = () => {
                      <h3>Processings ({ ingredient.processings.length })</h3>
                      <AddIcon color="#555B6E" size="18" stroke="2.5"/>
                   </StyledListingHeader>
-                  <StyledListingTile active={ true }>
-                     <h3>Raw</h3>
-                     <p>Sachets: 50</p>
-                     <p>Recipes: 20</p>
-                  </StyledListingTile>
-                  <StyledListingTile active={ false }>
-                     <h3>Raw</h3>
-                     <p>Sachets: 50</p>
-                     <p>Recipes: 20</p>
-                  </StyledListingTile>
+                  {
+                     ingredient.processings &&
+                     ingredient.processings.map(processing =>
+                        <StyledListingTile active={ false }>
+                           <h3>{ processing.type.title }</h3>
+                           <p>Sachets: { processing.sachets.length }</p>
+                           <p>Recipes: 2000</p>
+                        </StyledListingTile>
+                     )
+                  }
                   <ButtonTile type="primary" size="lg" onClick={ () => openProcessingTunnel(1) }/>
                   <Tunnels tunnels={processingTunnel}>
                      <Tunnel layer={1}>
@@ -148,7 +167,7 @@ const IngredientForm = () => {
                               <CloseIcon size="20px" color="#888D9D" onClick={ () => closeProcessingTunnel(1) }/>
                               <h1>Select Processings</h1>
                            </div>
-                           <TextButton type="solid" onClick={ addProcessings }>
+                           <TextButton type="solid" onClick={ addProcessingsHandler }>
                               Save
                            </TextButton>
                         </StyledTunnelHeader>
@@ -158,13 +177,13 @@ const IngredientForm = () => {
                                  onChange={value => setSearch(value)}
                                  placeholder='type what you’re looking for...'
                               />
-                              {selected.length > 0 && (
+                              {selectedProcessingNames.length > 0 && (
                                  <TagGroup style={{ margin: '8px 0' }}>
-                                    {selected.map(option => (
+                                    {selectedProcessingNames.map(option => (
                                        <Tag
-                                          key={option.id}
+                                          key={option._id}
                                           title={option.title}
-                                          onClick={() => selectOption('id', option.id)}
+                                          onClick={() => selectProcessingName('_id', option._id)}
                                        >
                                           {option.title}
                                        </Tag>
@@ -172,15 +191,15 @@ const IngredientForm = () => {
                                  </TagGroup>
                               )}
                               <ListOptions>
-                                 {list
+                                 {processingNamesList
                                     .filter(option => option.title.toLowerCase().includes(search))
                                     .map(option => (
                                        <ListItem
                                           type='MSL1'
-                                          key={option.id}
+                                          key={option._id}
                                           title={option.title}
-                                          onClick={() => selectOption('id', option.id)}
-                                          isActive={selected.find(item => item.id === option.id)}
+                                          onClick={() => selectProcessingName('_id', option._id)}
+                                          isActive={selectedProcessingNames.find(item => item._id === option._id)}
                                        />
                                     ))}
                               </ListOptions>

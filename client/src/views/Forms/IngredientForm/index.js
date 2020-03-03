@@ -54,6 +54,12 @@ const CREATE_INGREDIENT = gql`
       createIngredient(input: $ingredient) {
          _id
          name
+         image
+         processings {
+            name {
+               title
+            }
+         }
       }
    }
 `
@@ -68,15 +74,15 @@ const FETCH_PROCESSING_NAMES = gql`
 `
 
 const ADD_PROCESSINGS = gql`
-   mutation AddProcessings($ingredientId : ID!, $processings: [ProcessingNames!]!) {
-      addProcessing(input: {ingredientId : $ingredientId, processings : $processings}) {
+   mutation AddProcessings($ingredientId : ID!, $processingNames: [ID!]!) {
+      addProcessings(input: {ingredientId : $ingredientId, processingNames : $processingNames}) {
+         _id
          name
+         image
          processings {
-            _id
-            type {
+            name {
                title
             }
-            sachets
          }
       }
    }
@@ -86,8 +92,8 @@ const IngredientForm = () => {
    const { dispatch } = React.useContext(Context)
    const { loading, error, data } = useQuery(FETCH_PROCESSING_NAMES, { onCompleted : (data) => {processingNamesList.push(...data.processingNames)} });
    const [ingredient, setIngredient] = React.useState({ _id : '', name : '', image : '', processings: [] })
-   const [createIngredient] = useMutation(CREATE_INGREDIENT, { onCompleted : (data) => setIngredient(data) })
-   const [addProcessings] = useMutation(ADD_PROCESSINGS, { onCompleted : (data) => setIngredient(data) })
+   const [createIngredient] = useMutation(CREATE_INGREDIENT, { onCompleted : (data) => setIngredient(data.createIngredient) })
+   const [addProcessings] = useMutation(ADD_PROCESSINGS, { onCompleted : (data) => setIngredient(data.addProcessings) })
    
    const [selectedView, setSelectedView] = React.useState('modes')
 
@@ -96,7 +102,11 @@ const IngredientForm = () => {
    const [search, setSearch] = React.useState('')
    const [processingNamesList, selectedProcessingNames, selectProcessingName] = useMultiList([])
    const addProcessingsHandler = () => {
-      addProcessings({ variables : {ingredientId : ingredient._id, processings : selectedProcessingNames}})
+      const names = selectedProcessingNames.map(item => item._id);
+      console.log(ingredient._id)
+      console.log(names);
+      addProcessings({ variables : {ingredientId : ingredient._id, processingNames : names}})
+      closeProcessingTunnel(1);
    }
 
    const createIngredientHandler = () => {

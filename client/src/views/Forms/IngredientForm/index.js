@@ -108,11 +108,12 @@ const IngredientForm = () => {
          processingNamesList.push(...data.processingNames)
       }
    })
+   const [sachets, setSachets] = React.useState([])
+   const [processings, setProcessings] = React.useState([])
    const [ingredient, setIngredient] = React.useState({
       _id: '',
       name: '',
-      image: '',
-      processings: []
+      image: ''
    })
    const [createIngredient] = useMutation(CREATE_INGREDIENT, {
       onCompleted: data => {
@@ -123,10 +124,24 @@ const IngredientForm = () => {
       onCompleted: data => {
          console.log(data)
          setIngredient(data.addProcessings)
+         setProcessings(data.addProcessings.processings)
       }
    })
 
+   // Side Effects
+   React.useEffect(() => {
+      if (processings.length) {
+         setSelectedProcessingID(processings[0]._id)
+      } else {
+         setSelectedProcessingID(undefined)
+      }
+   }, [processings])
+
+   // View States
    const [selectedView, setSelectedView] = React.useState('modes')
+   const [selectedProcessingID, setSelectedProcessingID] = React.useState(
+      undefined
+   )
 
    // Processing Tunnel
    const [
@@ -182,7 +197,7 @@ const IngredientForm = () => {
                <StyledTop>
                   <StyledStatsContainer>
                      <StyledStat>
-                        <h2>{ingredient.processings.length}</h2>
+                        <h2>{processings.length}</h2>
                         <p>Processings</p>
                      </StyledStat>
                      <StyledStat>
@@ -202,12 +217,17 @@ const IngredientForm = () => {
                <StyledSection>
                   <StyledListing>
                      <StyledListingHeader>
-                        <h3>Processings ({ingredient.processings.length})</h3>
+                        <h3>Processings ({processings.length})</h3>
                         <AddIcon color='#555B6E' size='18' stroke='2.5' />
                      </StyledListingHeader>
-                     {ingredient.processings &&
-                        ingredient.processings.map(processing => (
-                           <StyledListingTile active={false}>
+                     {processings.length > 0 &&
+                        processings.map(processing => (
+                           <StyledListingTile
+                              active={processing._id === selectedProcessingID}
+                              onClick={() =>
+                                 setSelectedProcessingID(processing._id)
+                              }
+                           >
                               <h3>{processing.name.title}</h3>
                               <p>Sachets: {processing.sachets.length}</p>
                               <p>Recipes: 2000</p>

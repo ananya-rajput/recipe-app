@@ -5,11 +5,17 @@ const Context = React.createContext()
 const state = {
    listings: [],
    forms: [],
-   current: {},
+   current: {}
 }
 
 const reducers = (state, { type, payload }) => {
    switch (type) {
+      case 'SET_RECIPE_TITLE': {
+         const newState = { ...state }
+         newState.current.title = payload.title
+         newState.forms[state.current.index].title = payload.title
+         return newState
+      }
       case 'SET_FORM_DATA': {
          const index = state[payload.type].findIndex(
             tab => tab.type === payload.type && tab.view === payload.view
@@ -29,7 +35,7 @@ const reducers = (state, { type, payload }) => {
             return {
                ...state,
                current: { ...payload },
-               [payload.type]: [...state[payload.type], { ...payload }],
+               [payload.type]: [...state[payload.type], { ...payload }]
             }
          }
       }

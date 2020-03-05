@@ -41,7 +41,7 @@ export const RecipeType = styled.div`
    display: flex;
    justify-content: center;
 `
-export const RecipePhotos = styled.div`
+export const Container = styled.div`
    margin: 24px auto;
    width: 50%;
 `

@@ -15,7 +15,8 @@ import {
    ListSearch,
    TagGroup,
    Tag,
-   useMultiList
+   useMultiList,
+   Toggle
 } from '@dailykit/ui'
 
 // Global State
@@ -25,7 +26,7 @@ import { Context } from '../../../store/tabs'
 import { CodeIcon, AddIcon, CloseIcon } from '../../../assets/icons'
 
 // Styled
-import { StyledWrapper, StyledTunnelHeader, StyledTunnelMain } from '../styled'
+import { StyledWrapper, StyledTunnelHeader, StyledTunnelMain, StyledSelect } from '../styled'
 import {
    StyledHeader,
    InputWrapper,
@@ -43,7 +44,9 @@ import {
    StyledListingTile,
    StyledTabsContainer,
    StyledTab,
-   StyledTabContent
+   StyledTabContent,
+   StyledTextAndSelect,
+   ToggleWrapper
 } from './styled'
 
 // Internal State
@@ -142,6 +145,15 @@ const IngredientForm = () => {
    const [selectedProcessingID, setSelectedProcessingID] = React.useState(
       undefined
    )
+   const [currentProcessing, setCurrentProcessing] = React.useState({})
+   const [currentSachet, setCurrentSachet] = React.useState({})
+
+   React.useEffect(() => {
+      if(selectedProcessingID != undefined) {
+         const processing = processings.find(processing => processing._id === selectedProcessingID);
+         setCurrentProcessing(processing);
+      }
+   }, [selectedProcessingID])
 
    // Processing Tunnel
    const [
@@ -161,6 +173,25 @@ const IngredientForm = () => {
          variables: { ingredientId: ingredient._id, processingNames: names }
       })
       closeProcessingTunnel(1)
+   }
+
+   // Sachet Tunnel
+   const [
+      sachetTunnel,
+      openSachetTunnel,
+      closeSachetTunnel
+   ] = useTunnel(3)
+   const [sachetForm, setSachetForm] = React.useState({ quantity : { value : '', unit : '' }, tracking : true, modes : [] })
+   const units = [
+      { _id : '1', title : 'gms' },
+      { _id : '2', title : 'kgs' },
+      { _id : '3', title : 'lbs' }
+   ]
+   const [modeForm, setModeForm] = React.useState({
+
+   });
+   const addSachetHandler = () => {
+      console.log('Sachet saved!');
    }
 
    const createIngredientHandler = () => {
@@ -311,51 +342,109 @@ const IngredientForm = () => {
                   </StyledListing>
                   <StyledDisplay>
                      <StyledSection spacing='md'>
-                        <StyledListing>
-                           <StyledListingHeader>
-                              <h3>Sachets (1)</h3>
-                              <AddIcon color='#555B6E' size='18' stroke='2.5' />
-                           </StyledListingHeader>
-                           <StyledListingTile active={true}>
-                              <h3>200 gm</h3>
-                              <p>Active: Real-time</p>
-                              <p>Available: 12/40 pkt</p>
-                           </StyledListingTile>
-                           <ButtonTile type='primary' size='lg' />
-                        </StyledListing>
-                        <StyledDisplay contains='sachets'>
-                           <StyledTabsContainer>
-                              <StyledTab
-                                 className={
-                                    selectedView === 'modes' ? 'active' : ''
-                                 }
-                                 onClick={() => setSelectedView('modes')}
-                              >
-                                 Modes of fulfillment
-                              </StyledTab>
-                              <StyledTab
-                                 className={
-                                    selectedView === 'inventory' ? 'active' : ''
-                                 }
-                                 onClick={() => setSelectedView('inventory')}
-                              >
-                                 Inventory
-                              </StyledTab>
-                           </StyledTabsContainer>
-                           <StyledTabContent
-                              className={
-                                 selectedView === 'modes' ? 'active' : ''
-                              }
-                           ></StyledTabContent>
-                           <StyledTabContent
-                              className={
-                                 selectedView === 'inventory' ? 'active' : ''
-                              }
-                           >
-                              Inventory
-                              {/* Content for inventory will come here! */}
-                           </StyledTabContent>
-                        </StyledDisplay>
+                        {
+                           currentProcessing.sachets && currentProcessing.sachets.length > 0 ?
+                           (
+                              <>
+                                 <StyledListing>
+                                    <StyledListingHeader>
+                                       <h3>Sachets (1)</h3>
+                                       <AddIcon color='#555B6E' size='18' stroke='2.5' />
+                                    </StyledListingHeader>
+                                    <StyledListingTile active={true}>
+                                       <h3>200 gm</h3>
+                                       <p>Active: Real-time</p>
+                                       <p>Available: 12/40 pkt</p>
+                                    </StyledListingTile>
+                                    <ButtonTile type='primary' size='lg' />
+                                 </StyledListing>
+                                 <StyledDisplay contains='sachets'>
+                                    <StyledTabsContainer>
+                                       <StyledTab
+                                          className={
+                                             selectedView === 'modes' ? 'active' : ''
+                                          }
+                                          onClick={() => setSelectedView('modes')}
+                                       >
+                                          Modes of fulfillment
+                                       </StyledTab>
+                                       <StyledTab
+                                          className={
+                                             selectedView === 'inventory' ? 'active' : ''
+                                          }
+                                          onClick={() => setSelectedView('inventory')}
+                                       >
+                                          Inventory
+                                       </StyledTab>
+                                    </StyledTabsContainer>
+                                    <StyledTabContent
+                                       className={
+                                          selectedView === 'modes' ? 'active' : ''
+                                       }
+                                    ></StyledTabContent>
+                                    <StyledTabContent
+                                       className={
+                                          selectedView === 'inventory' ? 'active' : ''
+                                       }
+                                    >
+                                       Inventory
+                                       {/* Content for inventory will come here! */}
+                                    </StyledTabContent>
+                                 </StyledDisplay>
+                              </>
+                           )
+                           :
+                           (
+                              <ButtonTile
+                                 type="primary"
+                                 size="lg"
+                                 text="Add Sachet"
+                                 onClick={ () => openSachetTunnel(1) }
+                              />
+                           )
+                        }
+                        <Tunnels tunnels={sachetTunnel}>
+                           <Tunnel layer={1} size='lg'>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closeSachetTunnel(1)}
+                                    />
+                                    <h1>Add Sachet for Processing: { currentProcessing?.name?.title }</h1>
+                                 </div>
+                                 <TextButton
+                                    type='solid'
+                                    onClick={addSachetHandler}
+                                 >
+                                    Save
+                                 </TextButton>
+                              </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <StyledTextAndSelect>
+                                    <Input
+                                       type='text'
+                                       placeholder='Enter Quantity'
+                                       value={sachetForm.quantity?.value}
+                                       onChange={e => setSachetForm({ ...sachetForm, quantity : { ...sachetForm.quantity , value : e.target.value } })}
+                                    />
+                                    <StyledSelect onChange={ e => setSachetForm({ ...sachetForm, quantity : { ...sachetForm.quantity , unit : e.target.value } })}>
+                                       {
+                                          units.map(unit => <option key={ unit._id } value={ unit._id }>{ unit.title }</option>)
+                                       }
+                                    </StyledSelect>
+                                 </StyledTextAndSelect>
+                                 <ToggleWrapper>
+                                    <Toggle
+                                       checked={sachetForm.tracking}
+                                       label='Take Inventory'
+                                       setChecked={value => setSachetForm({ ...sachetForm, tracking : value })}
+                                    />
+                                 </ToggleWrapper>
+                              </StyledTunnelMain>
+                           </Tunnel>   
+                        </Tunnels>
                      </StyledSection>
                   </StyledDisplay>
                </StyledSection>

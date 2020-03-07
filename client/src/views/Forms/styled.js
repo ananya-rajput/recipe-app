@@ -73,3 +73,12 @@ export const StyledTunnelHeader = styled.div`
 export const StyledTunnelMain = styled.div`
    padding: 0 24px 24px 24px;
 `
+
+export const StyledSelect = styled.select`
+   border: none;
+   font-weight: 500;
+   font-size: 14px;
+   line-height: 16px;
+   color: #555B6E;
+   outline: none;
+`

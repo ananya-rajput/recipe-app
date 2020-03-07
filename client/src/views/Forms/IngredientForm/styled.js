@@ -152,3 +152,18 @@ export const StyledTabContent = styled.div`
         display: block;
     }
 `
+
+export const StyledTextAndSelect = styled.div`
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 48px;
+
+    > div {
+        max-width: 180px;
+        margin-right: 16px;
+    }
+`
+
+export const ToggleWrapper = styled.div`
+    max-width: 156px;
+`

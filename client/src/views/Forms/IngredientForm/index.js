@@ -16,7 +16,8 @@ import {
    TagGroup,
    Tag,
    useMultiList,
-   Toggle
+   Toggle,
+   Checkbox
 } from '@dailykit/ui'
 
 // Global State
@@ -46,7 +47,8 @@ import {
    StyledTab,
    StyledTabContent,
    StyledTextAndSelect,
-   ToggleWrapper
+   ToggleWrapper,
+   StyledTable
 } from './styled'
 
 // Internal State
@@ -181,7 +183,24 @@ const IngredientForm = () => {
       openSachetTunnel,
       closeSachetTunnel
    ] = useTunnel(3)
-   const [sachetForm, setSachetForm] = React.useState({ quantity : { value : '', unit : '' }, tracking : true, modes : [] })
+   const [sachetForm, setSachetForm] = React.useState({
+      quantity : { value : '', unit : '' },
+      tracking : true,
+      modes : [
+         {
+            isActive : false,
+            type : 'Real Time'
+         },
+         {
+            isActive : false,
+            type : 'Co-Packer'
+         },
+         {
+            isActive : false,
+            type : 'Planned Lot'
+         }
+      ]
+   })
    const units = [
       { _id : '1', title : 'gms' },
       { _id : '2', title : 'kgs' },
@@ -442,6 +461,32 @@ const IngredientForm = () => {
                                        setChecked={value => setSachetForm({ ...sachetForm, tracking : value })}
                                     />
                                  </ToggleWrapper>
+                                 <StyledTable cellSpacing={0}>
+                                       <thead>
+                                          <tr>
+                                             <th>Mode of fulfillment</th>
+                                             <th>Station</th>
+                                             <th>Supplier items</th>
+                                             <th>Accuracy range</th>
+                                             <th>Packaging</th>
+                                             <th>Label</th>
+                                          </tr>
+                                       </thead>
+                                       <tbody>
+                                          {
+                                             sachetForm.modes.map(mode => 
+                                                <tr key={ mode.type }>
+                                                   <td> <Checkbox checked={ mode.isActive }  /> { mode.type } </td>
+                                                   <td> { mode.type } </td>
+                                                   <td> { mode.type } </td>
+                                                   <td> { mode.type } </td>
+                                                   <td> { mode.type } </td>
+                                                   <td> { mode.type } </td>
+                                                </tr>
+                                             )
+                                          }
+                                       </tbody>
+                                 </StyledTable>
                               </StyledTunnelMain>
                            </Tunnel>   
                         </Tunnels>

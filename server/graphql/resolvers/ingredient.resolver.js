@@ -12,6 +12,15 @@ module.exports = {
          throw err
       }
    },
+   ingredient: async (args) => {
+      try {
+         const ingredient = await Ingredient.findOne({ _id : args.id })
+         console.log(ingredient)
+         return ingredient
+      } catch(err) {
+         throw err
+      }
+   },
    processingNames: async () => {
       try {
          const processingNames = await ProcessingName.find()

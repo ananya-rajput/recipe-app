@@ -54,9 +54,9 @@ import {
 // Internal State
 // const initialState = ()
 
-const FETCH_INGREDIENT = gql`
-   mutation FetchIngredient($ID: ID!) {
-      fetchIngredient(id: $ID) {
+const INGREDIENT = gql`
+   query Ingredient($ID: ID!) {
+      ingredient(id: $ID) {
          _id
          name
       }
@@ -114,10 +114,11 @@ const IngredientForm = () => {
       name: '',
       image: ''
    })
-   const { loading, error, data } = useQuery(FETCH_INGREDIENT, {
+   const { loading, error, data } = useQuery(INGREDIENT, {
       variables : { ID : '5e651eb92ecd3b1c30dffa02' },
       onCompleted: data => {
-         setIngredient(data.fetchIngredient)
+         console.log(data);
+         setIngredient(data.ingredient)
       }
    })
    
@@ -209,10 +210,6 @@ const IngredientForm = () => {
       console.log('Sachet saved!');
    }
 
-   const createIngredientHandler = () => {
-      
-   }
-
    return (
       <>
          <StyledWrapper>
@@ -226,7 +223,6 @@ const IngredientForm = () => {
                      onChange={e =>
                         setIngredient({ ...ingredient, name: e.target.value })
                      }
-                     onBlur={createIngredientHandler}
                   />
                </InputWrapper>
                <ActionsWrapper>

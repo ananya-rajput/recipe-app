@@ -3,6 +3,7 @@ const path = require('path')
 const cors = require('cors')
 const graphqlHTTP = require('express-graphql')
 const mongoose = require('mongoose')
+const logger = require('morgan')
 const app = express()
 
 // MongoDB Connection
@@ -16,6 +17,7 @@ mongoose
 
 // Middlewares
 app.use(cors({}))
+app.use(logger('dev'))
 
 // Static Files
 app.use(express.static(path.join(__dirname, '/../client/build')))

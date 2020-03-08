@@ -46,7 +46,7 @@ const IngredientsListing = () => {
    }
    const [createIngredient] = useMutation(CREATE_INGREDIENT, {
       onCompleted: data => {
-         addTab(data.createIngredient.name, 'forms')
+         addTab(data.createIngredient.name, 'ingredient')
       }
    })
 

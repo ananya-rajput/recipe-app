@@ -41,12 +41,12 @@ const CREATE_INGREDIENT = gql`
 const IngredientsListing = () => {
    const { dispatch } = React.useContext(Context)
    const { loading, error, data } = useQuery(GET_INGREDIENTS);
-   const addTab = (title, view) => {
-      dispatch({ type: 'ADD_TAB', payload: { type: 'forms', title, view } })
+   const addTab = (title, view, ID) => {
+      dispatch({ type: 'ADD_TAB', payload: { type: 'forms', title, view, ID } })
    }
    const [createIngredient] = useMutation(CREATE_INGREDIENT, {
       onCompleted: data => {
-         addTab(data.createIngredient.name, 'ingredient')
+         addTab(data.createIngredient.name, 'ingredient', data.createIngredient._id)
       }
    })
 

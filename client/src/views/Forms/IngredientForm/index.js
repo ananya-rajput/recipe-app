@@ -101,7 +101,7 @@ const ADD_PROCESSINGS = gql`
 `
 
 const IngredientForm = () => {
-   const { dispatch } = React.useContext(Context)
+   const { state, dispatch } = React.useContext(Context)
    const { loading : processingNamesLoading, error : processingNamesError, data : processingNamesData } = useQuery(FETCH_PROCESSING_NAMES, {
       onCompleted: data => {
          processingNamesList.push(...data.processingNames)
@@ -115,16 +115,14 @@ const IngredientForm = () => {
       image: ''
    })
    const { loading, error, data } = useQuery(INGREDIENT, {
-      variables : { ID : '5e651eb92ecd3b1c30dffa02' },
+      variables : { ID : state.current.ID },
       onCompleted: data => {
-         console.log(data);
          setIngredient(data.ingredient)
       }
    })
    
    const [addProcessings] = useMutation(ADD_PROCESSINGS, {
       onCompleted: data => {
-         console.log(data)
          setIngredient(data.addProcessings)
          setProcessings(data.addProcessings.processings)
       }

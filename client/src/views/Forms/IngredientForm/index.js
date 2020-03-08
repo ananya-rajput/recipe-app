@@ -54,17 +54,11 @@ import {
 // Internal State
 // const initialState = ()
 
-const CREATE_INGREDIENT = gql`
-   mutation CreateIngredient($ingredient: IngredientInput) {
-      createIngredient(input: $ingredient) {
+const FETCH_INGREDIENT = gql`
+   mutation FetchIngredient($ID: ID!) {
+      fetchIngredient(id: $ID) {
          _id
          name
-         image
-         processings {
-            name {
-               title
-            }
-         }
       }
    }
 `
@@ -108,7 +102,7 @@ const ADD_PROCESSINGS = gql`
 
 const IngredientForm = () => {
    const { dispatch } = React.useContext(Context)
-   const { loading, error, data } = useQuery(FETCH_PROCESSING_NAMES, {
+   const { loading : processingNamesLoading, error : processingNamesError, data : processingNamesData } = useQuery(FETCH_PROCESSING_NAMES, {
       onCompleted: data => {
          processingNamesList.push(...data.processingNames)
       }
@@ -120,11 +114,13 @@ const IngredientForm = () => {
       name: '',
       image: ''
    })
-   const [createIngredient] = useMutation(CREATE_INGREDIENT, {
+   const { loading, error, data } = useQuery(FETCH_INGREDIENT, {
+      variables : { ID : '5e651eb92ecd3b1c30dffa02' },
       onCompleted: data => {
-         setIngredient(data.createIngredient)
+         setIngredient(data.fetchIngredient)
       }
    })
+   
    const [addProcessings] = useMutation(ADD_PROCESSINGS, {
       onCompleted: data => {
          console.log(data)
@@ -214,7 +210,7 @@ const IngredientForm = () => {
    }
 
    const createIngredientHandler = () => {
-      createIngredient({ variables: { ingredient: { name: ingredient.name } } })
+      
    }
 
    return (

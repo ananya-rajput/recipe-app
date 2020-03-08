@@ -1,5 +1,5 @@
 import React from 'react'
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import { gql } from 'apollo-boost'
 import {
    IconButton,
@@ -29,11 +29,40 @@ const GET_INGREDIENTS = gql`
    }
 `
 
+const CREATE_INGREDIENT = gql`
+   mutation CreateIngredient($ingredient: IngredientInput) {
+      createIngredient(input: $ingredient) {
+         _id
+         name
+      }
+   }
+`
+
 const IngredientsListing = () => {
    const { dispatch } = React.useContext(Context)
    const { loading, error, data } = useQuery(GET_INGREDIENTS);
    const addTab = (title, view) => {
       dispatch({ type: 'ADD_TAB', payload: { type: 'forms', title, view } })
+   }
+   const [createIngredient] = useMutation(CREATE_INGREDIENT, {
+      onCompleted: data => {
+         addTab(data.createIngredient.name, 'forms')
+      }
+   })
+
+   const generateRandomString = () => {
+      let result           = '';
+      const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      let charactersLength = characters.length;
+      for ( let i = 0; i < 6; i++ ) {
+         result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      }
+      return result;
+   }
+
+   const createIngredientHandler = async () => {
+      let name = 'ingredient-' + generateRandomString();
+      createIngredient({ variables: { ingredient: { name } } })
    }
 
    return (
@@ -47,7 +76,7 @@ const IngredientsListing = () => {
             <StyledTableActions>
                <IconButton
                   type="solid"
-                  onClick={() => addTab('Untitled Ingredient', 'ingredient')}
+                  onClick={createIngredientHandler}
                >
                   <AddIcon color="#fff" size={24} />
                </IconButton>

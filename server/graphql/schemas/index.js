@@ -87,7 +87,7 @@ module.exports = buildSchema(`
     }
 
     input UpdateIngredientInput {
-        _id : ID!
+        ingredientId : ID!
         name: String!
         image: String
     }

@@ -1,4 +1,4 @@
-const { buildSchema } = require('graphql');
+const { buildSchema } = require('graphql')
 
 module.exports = buildSchema(`
 
@@ -86,6 +86,12 @@ module.exports = buildSchema(`
         name: String!
     }
 
+    input UpdateIngredientInput {
+        _id : ID!
+        name: String!
+        image: String
+    }
+
     input AddProcessingsInput {
         ingredientId: ID!
         processingNames: [ID!]!
@@ -93,6 +99,7 @@ module.exports = buildSchema(`
 
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
+        updateIngredient(input: UpdateIngredientInput): Ingredient!
         addProcessings(input: AddProcessingsInput): Ingredient!
     }
 
@@ -102,4 +109,4 @@ module.exports = buildSchema(`
         query: RootQuery
         mutation: RootMutation
     }
-`);
+`)

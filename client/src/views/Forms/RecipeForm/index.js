@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react'
+import React, { useState, useContext } from 'react'
 
 import { Input, TextButton, RadioGroup, ButtonTile } from '@dailykit/ui/'
 
@@ -16,9 +16,7 @@ export default function AddRecipeForm() {
       id: 2,
       title: 'Non-Vegetarian'
    })
-   const [recipePictures, setRecipePictures] = useState([])
 
-   const imageRef = useRef(null)
    const { dispatch } = useContext(Context)
 
    const recipeTypeOptions = [
@@ -28,7 +26,10 @@ export default function AddRecipeForm() {
    ]
 
    const handlePublish = () => {
-      console.log('%c values', 'color: #28c1f7', { recipeName, recipeType })
+      console.log('%c values', 'color: #28c1f7', {
+         recipeName,
+         recipeType
+      })
    }
 
    const handleRecipeNameChange = e => {
@@ -49,18 +50,6 @@ export default function AddRecipeForm() {
             payload: { title: 'Untitled Recipe', type: 'forms', view: 'recipe' }
          })
       }
-   }
-
-   const handleRecipePictures = e => {
-      const rawPictures = imageRef.current.files
-      const pictureArrays = []
-
-      Object.keys(rawPictures).map(key => {
-         const url = URL.createObjectURL(rawPictures[key])
-         pictureArrays.push({ file: rawPictures[key], url })
-      })
-      console.log(pictureArrays)
-      setRecipePictures(pictureArrays)
    }
 
    return (
@@ -101,40 +90,18 @@ export default function AddRecipeForm() {
          <RecipeType>
             <RadioGroup
                options={recipeTypeOptions}
-               active={2}
+               active={recipeType.id}
                onChange={type => setRecipeType(type)}
             />
          </RecipeType>
 
          <Container>
-            {recipePictures.length === 0 ? (
-               <ButtonTile
-                  onClick={() => imageRef.current.click()}
-                  type='primary'
-                  size='lg'
-                  text='Add photos to your recipe'
-                  helper='upto 1MB &#8226; only JPGs, PNGs, and PDFs are allowed.'
-               />
-            ) : null}
-
-            {recipePictures.map(pic => {
-               return (
-                  <img
-                     width='200'
-                     height='200'
-                     src={pic.url}
-                     style={{ margin: '5px' }}
-                  />
-               )
-            })}
-
-            <input
-               type='file'
-               accept='image/png, image/jpeg'
-               hidden
-               ref={imageRef}
-               multiple
-               onChange={handleRecipePictures}
+            <ButtonTile
+               onClick={() => {}}
+               type='primary'
+               size='lg'
+               text='Add photos to your recipe'
+               helper='upto 1MB &#8226; only JPGs, PNGs, and PDFs are allowed.'
             />
 
             <AddIngredients />

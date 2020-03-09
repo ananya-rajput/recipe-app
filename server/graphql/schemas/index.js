@@ -75,7 +75,7 @@ module.exports = buildSchema(`
 
     type RootQuery {
         ingredients: [Ingredient!]!
-        ingredient(id: ID!): Ingredient
+        ingredient(id: ID!): Ingredient!
         processingNames: [ProcessingName!]!
     }
 

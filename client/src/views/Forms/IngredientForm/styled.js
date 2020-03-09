@@ -152,3 +152,68 @@ export const StyledTabContent = styled.div`
         display: block;
     }
 `
+
+export const StyledTextAndSelect = styled.div`
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 48px;
+
+    > div {
+        max-width: 180px;
+        margin-right: 16px;
+    }
+`
+
+export const ToggleWrapper = styled.div`
+    max-width: 156px;
+    margin-bottom: 20px;
+`
+
+export const StyledTable = styled.table`
+    width: 100%;
+    border: 1px solid #E4E4E4;
+
+    thead {
+        background: #F3F3F3;
+        
+        tr {
+            font-size: 12px;
+            line-height: 14px;
+            color: #888D9D;
+
+            th {
+                padding: 8px 0;
+                font-weight: normal;
+            }
+        }
+    }
+
+    tbody {
+
+        tr {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 14px;
+            color: #888D9D;
+
+            &:not(:last-child) {
+                
+                td {
+                    border-bottom: 1px solid #E4E4E4;
+                }
+            }
+
+            td {
+                padding: 20px;
+
+                &:first-child {
+                    display: flex;
+
+                    > div {
+                        margin-right: 12px;
+                    }
+                }
+            }
+        }
+    }
+`

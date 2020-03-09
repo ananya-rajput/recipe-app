@@ -12,12 +12,12 @@ module.exports = {
          throw err
       }
    },
-   ingredient: async (args) => {
+   ingredient: async args => {
       try {
-         const ingredient = await Ingredient.findOne({ _id : args.id })
+         const ingredient = await Ingredient.findOne({ _id: args.id })
          console.log(ingredient)
          return ingredient
-      } catch(err) {
+      } catch (err) {
          throw err
       }
    },
@@ -36,6 +36,25 @@ module.exports = {
          })
          const doc = await ingredient.save()
          return doc
+      } catch (err) {
+         throw err
+      }
+   },
+   updateIngredient: async args => {
+      try {
+         const ingredient = await Ingredient.findByIdAndUpdate(
+            { _id: args.input.ingredientId },
+            {
+               $set: {
+                  name: args.input.name,
+                  image: args.input.image
+               }
+            },
+            {
+               new: true
+            }
+         )
+         return ingredient
       } catch (err) {
          throw err
       }

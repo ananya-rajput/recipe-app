@@ -11,6 +11,8 @@ import {
    Checkbox
 } from '@dailykit/ui'
 
+import { generateRandomString } from '../../../utils'
+
 // Icons
 import { AddIcon } from '../../../assets/icons'
 
@@ -18,7 +20,13 @@ import { AddIcon } from '../../../assets/icons'
 import { Context } from '../../../store/tabs'
 
 // Styled
-import { StyledWrapper, StyledTableHeader, StyledTableActions, StyledHeader, StyledContent } from '../styled'
+import {
+   StyledWrapper,
+   StyledTableHeader,
+   StyledTableActions,
+   StyledHeader,
+   StyledContent
+} from '../styled'
 
 // Queries
 const GET_INGREDIENTS = gql`
@@ -40,28 +48,22 @@ const CREATE_INGREDIENT = gql`
 
 const IngredientsListing = () => {
    const { dispatch } = React.useContext(Context)
-   const { loading, error, data } = useQuery(GET_INGREDIENTS);
+   const { loading, error, data } = useQuery(GET_INGREDIENTS)
    const addTab = (title, view, ID) => {
       dispatch({ type: 'ADD_TAB', payload: { type: 'forms', title, view, ID } })
    }
    const [createIngredient] = useMutation(CREATE_INGREDIENT, {
       onCompleted: data => {
-         addTab(data.createIngredient.name, 'ingredient', data.createIngredient._id)
+         addTab(
+            data.createIngredient.name,
+            'ingredient',
+            data.createIngredient._id
+         )
       }
    })
 
-   const generateRandomString = () => {
-      let result           = '';
-      const characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-      let charactersLength = characters.length;
-      for ( let i = 0; i < 6; i++ ) {
-         result += characters.charAt(Math.floor(Math.random() * charactersLength));
-      }
-      return result;
-   }
-
    const createIngredientHandler = async () => {
-      let name = 'ingredient-' + generateRandomString();
+      let name = 'ingredient-' + generateRandomString()
       createIngredient({ variables: { ingredient: { name } } })
    }
 
@@ -74,11 +76,8 @@ const IngredientsListing = () => {
          <StyledTableHeader>
             <p>filters</p>
             <StyledTableActions>
-               <IconButton
-                  type="solid"
-                  onClick={createIngredientHandler}
-               >
-                  <AddIcon color="#fff" size={24} />
+               <IconButton type='solid' onClick={createIngredientHandler}>
+                  <AddIcon color='#fff' size={24} />
                </IconButton>
             </StyledTableActions>
          </StyledTableHeader>
@@ -86,7 +85,10 @@ const IngredientsListing = () => {
             <Table>
                <TableHead>
                   <TableRow>
-                     <TableCell> <Checkbox checked={ false }/> </TableCell>
+                     <TableCell>
+                        {' '}
+                        <Checkbox checked={false} />{' '}
+                     </TableCell>
                      <TableCell> Name </TableCell>
                      <TableCell> Variant </TableCell>
                      <TableCell> Quantity </TableCell>
@@ -94,28 +96,28 @@ const IngredientsListing = () => {
                      <TableCell> Stations </TableCell>
                      <TableCell> Supplier Item </TableCell>
                      <TableCell> Availability </TableCell>
-                     <TableCell>  </TableCell>
+                     <TableCell> </TableCell>
                   </TableRow>
                </TableHead>
                <TableBody>
-                  {
-                     !loading && !error &&
-                     data.ingredients.map(ingredient => 
+                  {!loading &&
+                     !error &&
+                     data.ingredients.map(ingredient => (
                         <TableRow>
-                           <TableCell> <Checkbox checked={ false }/> </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
-                           <TableCell> { ingredient.name } </TableCell>
                            <TableCell>
-
+                              {' '}
+                              <Checkbox checked={false} />{' '}
                            </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell> {ingredient.name} </TableCell>
+                           <TableCell></TableCell>
                         </TableRow>
-                     )
-                  }
+                     ))}
                </TableBody>
             </Table>
          </StyledContent>

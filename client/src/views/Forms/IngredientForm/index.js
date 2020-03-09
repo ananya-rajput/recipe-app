@@ -27,7 +27,12 @@ import { Context } from '../../../store/tabs'
 import { CodeIcon, AddIcon, CloseIcon } from '../../../assets/icons'
 
 // Styled
-import { StyledWrapper, StyledTunnelHeader, StyledTunnelMain, StyledSelect } from '../styled'
+import {
+   StyledWrapper,
+   StyledTunnelHeader,
+   StyledTunnelMain,
+   StyledSelect
+} from '../styled'
 import {
    StyledHeader,
    InputWrapper,
@@ -72,6 +77,22 @@ const FETCH_PROCESSING_NAMES = gql`
    }
 `
 
+const UPDATE_INGREDIENT = gql`
+   mutation UpdateIngredient(
+      $ingredientId: ID!
+      $name: String!
+      $image: String
+   ) {
+      updateIngredient(
+         input: { ingredientId: $ingredientId, name: $name, image: $image }
+      ) {
+         _id
+         name
+         image
+      }
+   }
+`
+
 const ADD_PROCESSINGS = gql`
    mutation AddProcessings($ingredientId: ID!, $processingNames: [ID!]!) {
       addProcessings(
@@ -102,7 +123,11 @@ const ADD_PROCESSINGS = gql`
 
 const IngredientForm = () => {
    const { state, dispatch } = React.useContext(Context)
-   const { loading : processingNamesLoading, error : processingNamesError, data : processingNamesData } = useQuery(FETCH_PROCESSING_NAMES, {
+   const {
+      loading: processingNamesLoading,
+      error: processingNamesError,
+      data: processingNamesData
+   } = useQuery(FETCH_PROCESSING_NAMES, {
       onCompleted: data => {
          processingNamesList.push(...data.processingNames)
       }
@@ -115,18 +140,33 @@ const IngredientForm = () => {
       image: ''
    })
    const { loading, error, data } = useQuery(INGREDIENT, {
-      variables : { ID : state.current.ID },
+      variables: { ID: state.current.ID },
       onCompleted: data => {
          setIngredient(data.ingredient)
       }
    })
-   
+
+   const [updateIngredient] = useMutation(UPDATE_INGREDIENT, {
+      onCompleted: data => {
+         setIngredient(data.updateIngredient)
+      }
+   })
    const [addProcessings] = useMutation(ADD_PROCESSINGS, {
       onCompleted: data => {
          setIngredient(data.addProcessings)
          setProcessings(data.addProcessings.processings)
       }
    })
+
+   const updateIngredientHandler = () => {
+      updateIngredient({
+         variables: {
+            ingredientId: ingredient._id,
+            name: ingredient.name,
+            image: ingredient.image
+         }
+      })
+   }
 
    // Side Effects
    React.useEffect(() => {
@@ -146,9 +186,11 @@ const IngredientForm = () => {
    const [currentSachet, setCurrentSachet] = React.useState({})
 
    React.useEffect(() => {
-      if(selectedProcessingID != undefined) {
-         const processing = processings.find(processing => processing._id === selectedProcessingID);
-         setCurrentProcessing(processing);
+      if (selectedProcessingID != undefined) {
+         const processing = processings.find(
+            processing => processing._id === selectedProcessingID
+         )
+         setCurrentProcessing(processing)
       }
    }, [selectedProcessingID])
 
@@ -173,39 +215,33 @@ const IngredientForm = () => {
    }
 
    // Sachet Tunnel
-   const [
-      sachetTunnel,
-      openSachetTunnel,
-      closeSachetTunnel
-   ] = useTunnel(3)
+   const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
    const [sachetForm, setSachetForm] = React.useState({
-      quantity : { value : '', unit : '' },
-      tracking : true,
-      modes : [
+      quantity: { value: '', unit: '' },
+      tracking: true,
+      modes: [
          {
-            isActive : false,
-            type : 'Real Time'
+            isActive: false,
+            type: 'Real Time'
          },
          {
-            isActive : false,
-            type : 'Co-Packer'
+            isActive: false,
+            type: 'Co-Packer'
          },
          {
-            isActive : false,
-            type : 'Planned Lot'
+            isActive: false,
+            type: 'Planned Lot'
          }
       ]
    })
    const units = [
-      { _id : '1', title : 'gms' },
-      { _id : '2', title : 'kgs' },
-      { _id : '3', title : 'lbs' }
+      { _id: '1', title: 'gms' },
+      { _id: '2', title: 'kgs' },
+      { _id: '3', title: 'lbs' }
    ]
-   const [modeForm, setModeForm] = React.useState({
-
-   });
+   const [modeForm, setModeForm] = React.useState({})
    const addSachetHandler = () => {
-      console.log('Sachet saved!');
+      console.log('Sachet saved!')
    }
 
    return (
@@ -221,6 +257,7 @@ const IngredientForm = () => {
                      onChange={e =>
                         setIngredient({ ...ingredient, name: e.target.value })
                      }
+                     onBlur={updateIngredientHandler}
                   />
                </InputWrapper>
                <ActionsWrapper>
@@ -351,67 +388,75 @@ const IngredientForm = () => {
                   </StyledListing>
                   <StyledDisplay>
                      <StyledSection spacing='md'>
-                        {
-                           currentProcessing.sachets && currentProcessing.sachets.length > 0 ?
-                           (
-                              <>
-                                 <StyledListing>
-                                    <StyledListingHeader>
-                                       <h3>Sachets (1)</h3>
-                                       <AddIcon color='#555B6E' size='18' stroke='2.5' />
-                                    </StyledListingHeader>
-                                    <StyledListingTile active={true}>
-                                       <h3>200 gm</h3>
-                                       <p>Active: Real-time</p>
-                                       <p>Available: 12/40 pkt</p>
-                                    </StyledListingTile>
-                                    <ButtonTile type='primary' size='lg' />
-                                 </StyledListing>
-                                 <StyledDisplay contains='sachets'>
-                                    <StyledTabsContainer>
-                                       <StyledTab
-                                          className={
-                                             selectedView === 'modes' ? 'active' : ''
-                                          }
-                                          onClick={() => setSelectedView('modes')}
-                                       >
-                                          Modes of fulfillment
-                                       </StyledTab>
-                                       <StyledTab
-                                          className={
-                                             selectedView === 'inventory' ? 'active' : ''
-                                          }
-                                          onClick={() => setSelectedView('inventory')}
-                                       >
-                                          Inventory
-                                       </StyledTab>
-                                    </StyledTabsContainer>
-                                    <StyledTabContent
+                        {currentProcessing.sachets &&
+                        currentProcessing.sachets.length > 0 ? (
+                           <>
+                              <StyledListing>
+                                 <StyledListingHeader>
+                                    <h3>Sachets (1)</h3>
+                                    <AddIcon
+                                       color='#555B6E'
+                                       size='18'
+                                       stroke='2.5'
+                                    />
+                                 </StyledListingHeader>
+                                 <StyledListingTile active={true}>
+                                    <h3>200 gm</h3>
+                                    <p>Active: Real-time</p>
+                                    <p>Available: 12/40 pkt</p>
+                                 </StyledListingTile>
+                                 <ButtonTile type='primary' size='lg' />
+                              </StyledListing>
+                              <StyledDisplay contains='sachets'>
+                                 <StyledTabsContainer>
+                                    <StyledTab
                                        className={
-                                          selectedView === 'modes' ? 'active' : ''
+                                          selectedView === 'modes'
+                                             ? 'active'
+                                             : ''
                                        }
-                                    ></StyledTabContent>
-                                    <StyledTabContent
+                                       onClick={() => setSelectedView('modes')}
+                                    >
+                                       Modes of fulfillment
+                                    </StyledTab>
+                                    <StyledTab
                                        className={
-                                          selectedView === 'inventory' ? 'active' : ''
+                                          selectedView === 'inventory'
+                                             ? 'active'
+                                             : ''
+                                       }
+                                       onClick={() =>
+                                          setSelectedView('inventory')
                                        }
                                     >
                                        Inventory
-                                       {/* Content for inventory will come here! */}
-                                    </StyledTabContent>
-                                 </StyledDisplay>
-                              </>
-                           )
-                           :
-                           (
-                              <ButtonTile
-                                 type="primary"
-                                 size="lg"
-                                 text="Add Sachet"
-                                 onClick={ () => openSachetTunnel(1) }
-                              />
-                           )
-                        }
+                                    </StyledTab>
+                                 </StyledTabsContainer>
+                                 <StyledTabContent
+                                    className={
+                                       selectedView === 'modes' ? 'active' : ''
+                                    }
+                                 ></StyledTabContent>
+                                 <StyledTabContent
+                                    className={
+                                       selectedView === 'inventory'
+                                          ? 'active'
+                                          : ''
+                                    }
+                                 >
+                                    Inventory
+                                    {/* Content for inventory will come here! */}
+                                 </StyledTabContent>
+                              </StyledDisplay>
+                           </>
+                        ) : (
+                           <ButtonTile
+                              type='primary'
+                              size='lg'
+                              text='Add Sachet'
+                              onClick={() => openSachetTunnel(1)}
+                           />
+                        )}
                         <Tunnels tunnels={sachetTunnel}>
                            <Tunnel layer={1} size='lg'>
                               <StyledTunnelHeader>
@@ -421,7 +466,10 @@ const IngredientForm = () => {
                                        color='#888D9D'
                                        onClick={() => closeSachetTunnel(1)}
                                     />
-                                    <h1>Add Sachet for Processing: { currentProcessing?.name?.title }</h1>
+                                    <h1>
+                                       Add Sachet for Processing:{' '}
+                                       {currentProcessing?.name?.title}
+                                    </h1>
                                  </div>
                                  <TextButton
                                     type='solid'
@@ -436,49 +484,81 @@ const IngredientForm = () => {
                                        type='text'
                                        placeholder='Enter Quantity'
                                        value={sachetForm.quantity?.value}
-                                       onChange={e => setSachetForm({ ...sachetForm, quantity : { ...sachetForm.quantity , value : e.target.value } })}
-                                    />
-                                    <StyledSelect onChange={ e => setSachetForm({ ...sachetForm, quantity : { ...sachetForm.quantity , unit : e.target.value } })}>
-                                       {
-                                          units.map(unit => <option key={ unit._id } value={ unit._id }>{ unit.title }</option>)
+                                       onChange={e =>
+                                          setSachetForm({
+                                             ...sachetForm,
+                                             quantity: {
+                                                ...sachetForm.quantity,
+                                                value: e.target.value
+                                             }
+                                          })
                                        }
+                                    />
+                                    <StyledSelect
+                                       onChange={e =>
+                                          setSachetForm({
+                                             ...sachetForm,
+                                             quantity: {
+                                                ...sachetForm.quantity,
+                                                unit: e.target.value
+                                             }
+                                          })
+                                       }
+                                    >
+                                       {units.map(unit => (
+                                          <option
+                                             key={unit._id}
+                                             value={unit._id}
+                                          >
+                                             {unit.title}
+                                          </option>
+                                       ))}
                                     </StyledSelect>
                                  </StyledTextAndSelect>
                                  <ToggleWrapper>
                                     <Toggle
                                        checked={sachetForm.tracking}
                                        label='Take Inventory'
-                                       setChecked={value => setSachetForm({ ...sachetForm, tracking : value })}
+                                       setChecked={value =>
+                                          setSachetForm({
+                                             ...sachetForm,
+                                             tracking: value
+                                          })
+                                       }
                                     />
                                  </ToggleWrapper>
                                  <StyledTable cellSpacing={0}>
-                                       <thead>
-                                          <tr>
-                                             <th>Mode of fulfillment</th>
-                                             <th>Station</th>
-                                             <th>Supplier items</th>
-                                             <th>Accuracy range</th>
-                                             <th>Packaging</th>
-                                             <th>Label</th>
+                                    <thead>
+                                       <tr>
+                                          <th>Mode of fulfillment</th>
+                                          <th>Station</th>
+                                          <th>Supplier items</th>
+                                          <th>Accuracy range</th>
+                                          <th>Packaging</th>
+                                          <th>Label</th>
+                                       </tr>
+                                    </thead>
+                                    <tbody>
+                                       {sachetForm.modes.map(mode => (
+                                          <tr key={mode.type}>
+                                             <td>
+                                                {' '}
+                                                <Checkbox
+                                                   checked={mode.isActive}
+                                                />{' '}
+                                                {mode.type}{' '}
+                                             </td>
+                                             <td> {mode.type} </td>
+                                             <td> {mode.type} </td>
+                                             <td> {mode.type} </td>
+                                             <td> {mode.type} </td>
+                                             <td> {mode.type} </td>
                                           </tr>
-                                       </thead>
-                                       <tbody>
-                                          {
-                                             sachetForm.modes.map(mode => 
-                                                <tr key={ mode.type }>
-                                                   <td> <Checkbox checked={ mode.isActive }  /> { mode.type } </td>
-                                                   <td> { mode.type } </td>
-                                                   <td> { mode.type } </td>
-                                                   <td> { mode.type } </td>
-                                                   <td> { mode.type } </td>
-                                                   <td> { mode.type } </td>
-                                                </tr>
-                                             )
-                                          }
-                                       </tbody>
+                                       ))}
+                                    </tbody>
                                  </StyledTable>
                               </StyledTunnelMain>
-                           </Tunnel>   
+                           </Tunnel>
                         </Tunnels>
                      </StyledSection>
                   </StyledDisplay>

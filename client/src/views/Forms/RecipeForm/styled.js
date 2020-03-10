@@ -12,6 +12,7 @@ export const TunnelContainer = styled.div`
    padding: 30px;
 `
 export const ServingsInput = styled.div`
+   margin: 20px 0;
    display: flex;
    align-items: center;
 

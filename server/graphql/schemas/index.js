@@ -39,15 +39,9 @@ module.exports = buildSchema(`
 
     type Mode {
         isActive: Boolean!
-        priority: Int!
         type: String!
         station: Station!
         supplierItems: [SupplierItem!]!
-        isWeighable: Boolean!
-        accuracy: Int
-        packaging: PackagingType!
-        isLabelled: Boolean!
-        labelTemplate: LabelTemplate
     }
 
     type Station {
@@ -56,6 +50,15 @@ module.exports = buildSchema(`
     }
 
     type SupplierItem {
+        type: Item!
+        isWeighable: Boolean!
+        accuracy: Int
+        packaging: PackagingType!
+        isLabelled: Boolean!
+        labelTemplate: LabelTemplate
+    }
+
+    type Item {
         _id: ID!
         title: String!
     }
@@ -99,10 +102,17 @@ module.exports = buildSchema(`
         processingNames: [ID!]!
     }
 
+    input AddSachetInput {
+        ingredientId: ID!
+        processingId: ID!
+        sachet: Sachet!
+    }
+
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
         updateIngredient(input: UpdateIngredientInput): Ingredient!
         addProcessings(input: AddProcessingsInput): Ingredient!
+        addSachet(input: AddSachetInput): Ingredient!
     }
 
 

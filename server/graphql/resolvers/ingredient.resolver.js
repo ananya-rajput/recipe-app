@@ -110,5 +110,16 @@ module.exports = {
       } catch (err) {
          throw err
       }
+   },
+   addSachet: async args => {
+      try {
+         console.log(args.input)
+         const ingredient = await Ingredient.findOne({
+            _id: args.input.ingredientId
+         })
+         return ingredient
+      } catch (err) {
+         throw err
+      }
    }
 }

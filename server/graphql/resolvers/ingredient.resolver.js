@@ -119,14 +119,19 @@ module.exports = {
          const sachet = new Sachet(args.input.sachet)
          await sachet.save()
          processing.sachets.push(sachet._id)
-         await processings.save()
+         await processing.save()
          const ingredient = await Ingredient.findOne({
             _id: args.input.ingredientId
          }).populate({
             path: 'processings',
-            populate: {
-               path: 'sachets'
-            }
+            populate: [
+               {
+                  path: 'name'
+               },
+               {
+                  path: 'sachets'
+               }
+            ]
          })
          return ingredient
       } catch (err) {

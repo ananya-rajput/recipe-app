@@ -223,7 +223,7 @@ const IngredientForm = () => {
    const [addSachet] = useMutation(ADD_SACHET, {
       onCompleted: data => {
          setIngredient(data.addSachet)
-         setProcessings(data.addProcessings.processings)
+         setProcessings(data.addSachet.processings)
       }
    })
 
@@ -417,13 +417,13 @@ const IngredientForm = () => {
             // fields below will be removed, and user will be able to configure these once data gets displayed in the table
             accuracy: 85,
             packaging: {
-               _id: '123',
-               title: 'Packaging'
+               _id: '5e691d58495e473a90167f88',
+               title: 'PKG 1'
             },
             isLabelled: true,
             labelTemplate: {
-               _id: '123',
-               title: 'Label'
+               _id: '5e691d58495e473a90167f8a',
+               title: 'TEMP 1'
             }
          }
       })

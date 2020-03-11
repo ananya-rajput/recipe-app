@@ -3,6 +3,8 @@
 const ProcessingNames = require('./models/processingName.model')
 const Station = require('./models/station.model')
 const Item = require('./models/item.model')
+const Packaging = require('./models/packaging.model')
+const LabelTemplate = require('./models/labelTemplate.model')
 
 // ProcessingNames.insertMany([
 //    {
@@ -49,5 +51,23 @@ const Item = require('./models/item.model')
 //    },
 //    {
 //       title: 'Item 6'
+//    }
+// ])
+
+// Packaging.insertMany([
+//    {
+//       title: 'PKG 1'
+//    },
+//    {
+//       title: 'PKG 2'
+//    }
+// ])
+
+// LabelTemplate.insertMany([
+//    {
+//       title: 'TEMP 1'
+//    },
+//    {
+//       title: 'TEMP 2'
 //    }
 // ])

@@ -87,6 +87,15 @@ const FETCH_STATIONS = gql`
    }
 `
 
+const FETCH_SUPPLIER_ITEMS = gql`
+   {
+      supplierItems {
+         _id
+         title
+      }
+   }
+`
+
 const UPDATE_INGREDIENT = gql`
    mutation UpdateIngredient(
       $ingredientId: ID!
@@ -149,6 +158,15 @@ const IngredientForm = () => {
    } = useQuery(FETCH_STATIONS, {
       onCompleted: data => {
          stationsList.push(...data.stations)
+      }
+   })
+   const {
+      loading: supplierItemsLoading,
+      error: supplierItemsError,
+      data: supplierItemsData
+   } = useQuery(FETCH_SUPPLIER_ITEMS, {
+      onCompleted: data => {
+         supplierItemsList.push(...data.supplierItems)
       }
    })
    const [sachets, setSachets] = React.useState([])
@@ -243,6 +261,11 @@ const IngredientForm = () => {
       selectProcessingName
    ] = useMultiList([])
    const [stationsList, currentStation, selectStation] = useSingleList([])
+   const [
+      supplierItemsList,
+      selectedSupplierItems,
+      selectSupplierItem
+   ] = useMultiList([])
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
       addProcessings({
@@ -316,7 +339,20 @@ const IngredientForm = () => {
       openSachetTunnel(3)
    }
    const addModeHandler = () => {
-      console.log(modeForm)
+      const supplierItems = selectedSupplierItems.map(item => {
+         return {
+            item
+         }
+      })
+      setModeForm({ ...modeForm, supplierItems })
+      const index = sachetForm.modes.findIndex(
+         mode => mode.type === modeForm.type
+      )
+      const copySachetForm = sachetForm
+      copySachetForm.modes[index] = modeForm
+      setSachetForm({ ...copySachetForm })
+      closeSachetTunnel(3)
+      closeSachetTunnel(2)
    }
 
    return (
@@ -708,6 +744,57 @@ const IngredientForm = () => {
                                     Save
                                  </TextButton>
                               </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <List>
+                                    <ListSearch
+                                       onChange={value => setSearch(value)}
+                                       placeholder='type what you’re looking for...'
+                                    />
+                                    {selectedSupplierItems.length > 0 && (
+                                       <TagGroup style={{ margin: '8px 0' }}>
+                                          {selectedSupplierItems.map(option => (
+                                             <Tag
+                                                key={option.id}
+                                                title={option.title}
+                                                onClick={() =>
+                                                   selectSupplierItem(
+                                                      '_id',
+                                                      option._id
+                                                   )
+                                                }
+                                             >
+                                                {option.title}
+                                             </Tag>
+                                          ))}
+                                       </TagGroup>
+                                    )}
+                                    <ListOptions>
+                                       {supplierItemsList
+                                          .filter(option =>
+                                             option.title
+                                                .toLowerCase()
+                                                .includes(search)
+                                          )
+                                          .map(option => (
+                                             <ListItem
+                                                type='MSL1'
+                                                key={option._id}
+                                                title={option.title}
+                                                onClick={() =>
+                                                   selectSupplierItem(
+                                                      '_id',
+                                                      option._id
+                                                   )
+                                                }
+                                                isActive={selectedSupplierItems.find(
+                                                   item =>
+                                                      item._id === option._id
+                                                )}
+                                             />
+                                          ))}
+                                    </ListOptions>
+                                 </List>
+                              </StyledTunnelMain>
                            </Tunnel>
                         </Tunnels>
                      </StyledSection>

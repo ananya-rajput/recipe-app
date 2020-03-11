@@ -1,4 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext } from 'react'
+
+import { Context as RecipeContext } from '../../../store/recipe/index'
 
 import { Text, Input, ButtonTile } from '@dailykit/ui'
 
@@ -7,21 +9,18 @@ import { TunnelContainer, ServingsInput } from './styled'
 import { TunnelHeader, Spacer } from '../../../components/index'
 
 export default function AddServings({ close, next }) {
-   const [servings, setservings] = useState([{ id: 1, value: 0 }])
+   const { recipeState, recipeDispatch } = useContext(RecipeContext)
 
    const addServingsHandler = () => {
-      const id = servings[servings.length - 1].id + 1
-      setservings([...servings, { id, value: 0 }])
+      recipeDispatch({ type: 'ADD_SERVING' })
    }
 
    const changeServingsHandler = e => {
       const index = e.target.name - 1
-      const match = servings[index]
-      match.value = e.target.value
-
-      const updatedServings = [...servings]
-      updatedServings[index] = match
-      setservings(updatedServings)
+      recipeDispatch({
+         type: 'CHANGE_SERVINGS',
+         payload: { index, value: e.target.value }
+      })
    }
 
    return (
@@ -34,7 +33,7 @@ export default function AddServings({ close, next }) {
          <Spacer />
          <Text as='subtitle'>Enter Servings:</Text>
          <br />
-         {servings.map(serving => (
+         {recipeState.servings.map(serving => (
             <ServingsInput key={serving.id}>
                <div>{serving.id}.</div>
                <Input

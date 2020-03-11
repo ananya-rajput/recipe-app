@@ -41,7 +41,7 @@ module.exports = buildSchema(`
         isActive: Boolean!
         priority: Int!
         type: String!
-        station: StationName!
+        station: Station!
         supplierItems: [SupplierItem!]!
         isWeighable: Boolean!
         accuracy: Int
@@ -50,9 +50,9 @@ module.exports = buildSchema(`
         labelTemplate: LabelTemplate
     }
 
-    type StationName {
+    type Station {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type SupplierItem {
@@ -77,6 +77,7 @@ module.exports = buildSchema(`
         ingredients: [Ingredient!]!
         ingredient(id: ID!): Ingredient!
         processingNames: [ProcessingName!]!
+        stations: [Station!]!
     }
 
 

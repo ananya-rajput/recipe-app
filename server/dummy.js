@@ -2,6 +2,7 @@
 
 const ProcessingNames = require('./models/processingName.model')
 const Station = require('./models/station.model')
+const Item = require('./models/item.model')
 
 // ProcessingNames.insertMany([
 //    {
@@ -27,5 +28,26 @@ const Station = require('./models/station.model')
 //    },
 //    {
 //       title: 'Station 4'
+//    }
+// ])
+
+// Item.insertMany([
+//    {
+//       title: 'Item 1'
+//    },
+//    {
+//       title: 'Item 2'
+//    },
+//    {
+//       title: 'Item 3'
+//    },
+//    {
+//       title: 'Item 4'
+//    },
+//    {
+//       title: 'Item 5'
+//    },
+//    {
+//       title: 'Item 6'
 //    }
 // ])

@@ -57,7 +57,7 @@ module.exports = buildSchema(`
 
     type SupplierItem {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type PackagingType {
@@ -78,6 +78,7 @@ module.exports = buildSchema(`
         ingredient(id: ID!): Ingredient!
         processingNames: [ProcessingName!]!
         stations: [Station!]!
+        supplierItems: [SupplierItem!]!
     }
 
 

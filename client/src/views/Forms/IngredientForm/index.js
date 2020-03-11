@@ -17,7 +17,8 @@ import {
    Tag,
    useMultiList,
    Toggle,
-   Checkbox
+   Checkbox,
+   useSingleList
 } from '@dailykit/ui'
 
 // Global State
@@ -71,6 +72,15 @@ const INGREDIENT = gql`
 const FETCH_PROCESSING_NAMES = gql`
    {
       processingNames {
+         _id
+         title
+      }
+   }
+`
+
+const FETCH_STATIONS = gql`
+   {
+      stations {
          _id
          title
       }
@@ -132,6 +142,15 @@ const IngredientForm = () => {
          processingNamesList.push(...data.processingNames)
       }
    })
+   const {
+      loading: stationsLoading,
+      error: stationsError,
+      data: stationsData
+   } = useQuery(FETCH_STATIONS, {
+      onCompleted: data => {
+         stationsList.push(...data.processingNames)
+      }
+   })
    const [sachets, setSachets] = React.useState([])
    const [processings, setProcessings] = React.useState([])
    const [ingredient, setIngredient] = React.useState({
@@ -172,16 +191,25 @@ const IngredientForm = () => {
    React.useEffect(() => {
       if (processings.length) {
          setSelectedProcessingID(processings[0]._id)
+         setSachets(processings[0].sachets)
       } else {
          setSelectedProcessingID(undefined)
       }
    }, [processings])
+   React.useEffect(() => {
+      if (sachets.length) {
+         setSelectedSachetID(sachets[0]._id)
+      } else {
+         setSelectedSachetID(undefined)
+      }
+   }, [sachets])
 
    // View States
    const [selectedView, setSelectedView] = React.useState('modes')
    const [selectedProcessingID, setSelectedProcessingID] = React.useState(
       undefined
    )
+   const [selectedSachetID, setSelectedSachetID] = React.useState(undefined)
    const [currentProcessing, setCurrentProcessing] = React.useState({})
    const [currentSachet, setCurrentSachet] = React.useState({})
 
@@ -193,6 +221,14 @@ const IngredientForm = () => {
          setCurrentProcessing(processing)
       }
    }, [selectedProcessingID])
+   React.useEffect(() => {
+      if (setSelectedSachetID != undefined) {
+         const sachet = sachets.find(
+            sachet => sachet._id === setSelectedSachetID
+         )
+         setCurrentSachet(sachet)
+      }
+   }, [selectedSachetID])
 
    // Processing Tunnel
    const [
@@ -206,6 +242,7 @@ const IngredientForm = () => {
       selectedProcessingNames,
       selectProcessingName
    ] = useMultiList([])
+   const [stationsList, currentStation, selectStation] = useSingleList([])
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
       addProcessings({
@@ -217,20 +254,27 @@ const IngredientForm = () => {
    // Sachet Tunnel
    const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
    const [sachetForm, setSachetForm] = React.useState({
+      _id: '',
       quantity: { value: '', unit: '' },
       tracking: true,
       modes: [
          {
             isActive: false,
-            type: 'Real Time'
+            type: 'Real Time',
+            station: '',
+            supplierItems: []
          },
          {
             isActive: false,
-            type: 'Co-Packer'
+            type: 'Co-Packer',
+            station: '',
+            supplierItems: []
          },
          {
             isActive: false,
-            type: 'Planned Lot'
+            type: 'Planned Lot',
+            station: '',
+            supplierItems: []
          }
       ]
    })
@@ -239,9 +283,32 @@ const IngredientForm = () => {
       { _id: '2', title: 'kgs' },
       { _id: '3', title: 'lbs' }
    ]
-   const [modeForm, setModeForm] = React.useState({})
+   const [modeForm, setModeForm] = React.useState({
+      isActive: false,
+      type: '',
+      station: '',
+      supplierItems: []
+   })
    const addSachetHandler = () => {
       console.log('Sachet saved!')
+   }
+
+   // Mode Ops
+   const toggleMode = (val, type) => {
+      let index = sachetForm.modes.findIndex(mode => mode.type === type)
+      sachetForm.modes[index].isActive = !sachetForm.modes[index].isActive
+      if (!val) {
+         return
+      } else {
+         // check if it is configured
+         if (sachetForm.modes[index].station.length > 0) {
+            return
+         } else {
+            // configure it - open tunnel
+            setModeForm(sachetForm.modes[index])
+            openSachetTunnel(2)
+         }
+      }
    }
 
    return (
@@ -545,6 +612,9 @@ const IngredientForm = () => {
                                                 {' '}
                                                 <Checkbox
                                                    checked={mode.isActive}
+                                                   onChange={val =>
+                                                      toggleMode(val, mode.type)
+                                                   }
                                                 />{' '}
                                                 {mode.type}{' '}
                                              </td>
@@ -557,6 +627,61 @@ const IngredientForm = () => {
                                        ))}
                                     </tbody>
                                  </StyledTable>
+                              </StyledTunnelMain>
+                           </Tunnel>
+                           <Tunnel layer={1}>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closeSachetTunnel(1)}
+                                    />
+                                    <h1>
+                                       Select station for:
+                                       {modeForm?.type}
+                                    </h1>
+                                 </div>
+                              </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <List>
+                                    {Object.keys(currentStation).length > 0 ? (
+                                       <ListItem
+                                          type='SSL1'
+                                          title={currentStation.title}
+                                       />
+                                    ) : (
+                                       <ListSearch
+                                          onChange={value => setSearch(value)}
+                                          placeholder='type what you’re looking for...'
+                                       />
+                                    )}
+                                    <ListOptions>
+                                       {stationsList
+                                          .filter(option =>
+                                             option.title
+                                                .toLowerCase()
+                                                .includes(search)
+                                          )
+                                          .map(option => (
+                                             <ListItem
+                                                type='SSL1'
+                                                key={option._id}
+                                                title={option.title}
+                                                isActive={
+                                                   option._id ===
+                                                   currentStation._id
+                                                }
+                                                onClick={() =>
+                                                   selectStation(
+                                                      '_id',
+                                                      option._id
+                                                   )
+                                                }
+                                             />
+                                          ))}
+                                    </ListOptions>
+                                 </List>
                               </StyledTunnelMain>
                            </Tunnel>
                         </Tunnels>

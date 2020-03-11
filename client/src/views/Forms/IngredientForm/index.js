@@ -148,7 +148,7 @@ const IngredientForm = () => {
       data: stationsData
    } = useQuery(FETCH_STATIONS, {
       onCompleted: data => {
-         stationsList.push(...data.processingNames)
+         stationsList.push(...data.stations)
       }
    })
    const [sachets, setSachets] = React.useState([])
@@ -309,6 +309,14 @@ const IngredientForm = () => {
             openSachetTunnel(2)
          }
       }
+   }
+   const selectStationHandler = station => {
+      setModeForm({ ...modeForm, station })
+      selectStation('_id', station._id)
+      openSachetTunnel(3)
+   }
+   const addModeHandler = () => {
+      console.log(modeForm)
    }
 
    return (
@@ -629,17 +637,16 @@ const IngredientForm = () => {
                                  </StyledTable>
                               </StyledTunnelMain>
                            </Tunnel>
-                           <Tunnel layer={1}>
+                           <Tunnel layer={2}>
                               <StyledTunnelHeader>
                                  <div>
                                     <CloseIcon
                                        size='20px'
                                        color='#888D9D'
-                                       onClick={() => closeSachetTunnel(1)}
+                                       onClick={() => closeSachetTunnel(2)}
                                     />
                                     <h1>
-                                       Select station for:
-                                       {modeForm?.type}
+                                       Select station for: {modeForm?.type}
                                     </h1>
                                  </div>
                               </StyledTunnelHeader>
@@ -673,16 +680,34 @@ const IngredientForm = () => {
                                                    currentStation._id
                                                 }
                                                 onClick={() =>
-                                                   selectStation(
-                                                      '_id',
-                                                      option._id
-                                                   )
+                                                   selectStationHandler(option)
                                                 }
                                              />
                                           ))}
                                     </ListOptions>
                                  </List>
                               </StyledTunnelMain>
+                           </Tunnel>
+                           <Tunnel layer={3}>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closeSachetTunnel(3)}
+                                    />
+                                    <h1>
+                                       Select Supplier items for:{' '}
+                                       {modeForm?.station.title}
+                                    </h1>
+                                 </div>
+                                 <TextButton
+                                    type='solid'
+                                    onClick={addModeHandler}
+                                 >
+                                    Save
+                                 </TextButton>
+                              </StyledTunnelHeader>
                            </Tunnel>
                         </Tunnels>
                      </StyledSection>

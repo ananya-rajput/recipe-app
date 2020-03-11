@@ -1,6 +1,7 @@
 const Ingredient = require('../../models/ingredient.model')
 const Processing = require('../../models/processing.model')
 const ProcessingName = require('../../models/processingName.model')
+const Station = require('../../models/station.model')
 const Sachet = require('../../models/sachet.model')
 
 module.exports = {
@@ -25,6 +26,14 @@ module.exports = {
       try {
          const processingNames = await ProcessingName.find()
          return processingNames
+      } catch (err) {
+         throw err
+      }
+   },
+   stations: async () => {
+      try {
+         const stations = await Station.find()
+         return stations
       } catch (err) {
          throw err
       }

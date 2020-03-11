@@ -140,6 +140,32 @@ const ADD_PROCESSINGS = gql`
    }
 `
 
+const ADD_SACHET = gql`
+   mutation AddSachet($input: SachetInput!) {
+      addSachet(input: $input) {
+         _id
+         name
+         processings {
+            _id
+            name {
+               _id
+               title
+            }
+            sachets {
+               _id
+               quantity {
+                  value
+                  unit
+               }
+               modes {
+                  type
+               }
+            }
+         }
+      }
+   }
+`
+
 const IngredientForm = () => {
    const { state, dispatch } = React.useContext(Context)
    const {
@@ -313,7 +339,8 @@ const IngredientForm = () => {
       supplierItems: []
    })
    const addSachetHandler = () => {
-      console.log('Sachet saved!')
+      console.log(sachetForm)
+      // Add Sachet here to DB here
    }
 
    // Mode Ops
@@ -339,17 +366,24 @@ const IngredientForm = () => {
       openSachetTunnel(3)
    }
    const addModeHandler = () => {
-      const supplierItems = selectedSupplierItems.map(item => {
+      const newSupplierItems = selectedSupplierItems.map(item => {
          return {
-            item
+            item,
+            // fields below will be removed, and user will be able to configure these once data gets displayed in the table
+            accuracy: 85,
+            packaging: 'some_packaging_id',
+            isLabelled: true,
+            labelTemplate: 'some_label_id'
          }
       })
-      setModeForm({ ...modeForm, supplierItems })
+      // setModeForm({ ...modeForm, supplierItems: newSupplierItems })
       const index = sachetForm.modes.findIndex(
          mode => mode.type === modeForm.type
       )
       const copySachetForm = sachetForm
       copySachetForm.modes[index] = modeForm
+      copySachetForm.modes[index].supplierItems = newSupplierItems
+      console.log(copySachetForm)
       setSachetForm({ ...copySachetForm })
       closeSachetTunnel(3)
       closeSachetTunnel(2)
@@ -652,21 +686,54 @@ const IngredientForm = () => {
                                     <tbody>
                                        {sachetForm.modes.map(mode => (
                                           <tr key={mode.type}>
-                                             <td>
-                                                {' '}
+                                             <td
+                                                rowSpan={
+                                                   mode.supplierItems.length
+                                                      ? mode.supplierItems
+                                                           .length
+                                                      : 1
+                                                }
+                                             >
                                                 <Checkbox
                                                    checked={mode.isActive}
                                                    onChange={val =>
                                                       toggleMode(val, mode.type)
                                                    }
-                                                />{' '}
-                                                {mode.type}{' '}
+                                                />
+                                                {mode.type}
                                              </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
+                                             <td
+                                                rowSpan={
+                                                   mode.supplierItems.length
+                                                      ? mode.supplierItems
+                                                           .length
+                                                      : 1
+                                                }
+                                             >
+                                                {mode.station.title}
+                                             </td>
+                                             <td>
+                                                <table>
+                                                   {mode.supplierItems.map(
+                                                      (item, index) => (
+                                                         <tr key={index}>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                         </tr>
+                                                      )
+                                                   )}
+                                                </table>
+                                             </td>
                                           </tr>
                                        ))}
                                     </tbody>

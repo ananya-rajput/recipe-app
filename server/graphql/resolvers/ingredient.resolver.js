@@ -113,9 +113,20 @@ module.exports = {
    },
    addSachet: async args => {
       try {
-         console.log(args.input)
+         const processing = await Processing.findOne({
+            _id: args.input.processingId
+         })
+         const sachet = new Sachet(args.input.sachet)
+         await sachet.save()
+         processing.sachets.push(sachet._id)
+         await processings.save()
          const ingredient = await Ingredient.findOne({
             _id: args.input.ingredientId
+         }).populate({
+            path: 'processings',
+            populate: {
+               path: 'sachets'
+            }
          })
          return ingredient
       } catch (err) {

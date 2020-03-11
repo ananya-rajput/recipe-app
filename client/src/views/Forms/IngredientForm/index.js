@@ -141,7 +141,7 @@ const ADD_PROCESSINGS = gql`
 `
 
 const ADD_SACHET = gql`
-   mutation AddSachet($input: SachetInput!) {
+   mutation AddSachet($input: AddSachetInput!) {
       addSachet(input: $input) {
          _id
          name
@@ -217,6 +217,12 @@ const IngredientForm = () => {
    const [addProcessings] = useMutation(ADD_PROCESSINGS, {
       onCompleted: data => {
          setIngredient(data.addProcessings)
+         setProcessings(data.addProcessings.processings)
+      }
+   })
+   const [addSachet] = useMutation(ADD_SACHET, {
+      onCompleted: data => {
+         setIngredient(data.addSachet)
          setProcessings(data.addProcessings.processings)
       }
    })
@@ -338,9 +344,48 @@ const IngredientForm = () => {
       station: '',
       supplierItems: []
    })
-   const addSachetHandler = () => {
-      console.log(sachetForm)
-      // Add Sachet here to DB here
+   const addSachetHandler = async () => {
+      let cleanSachet = {
+         quantity: {
+            value: +sachetForm.quantity.value,
+            unit: sachetForm.quantity.unit
+         },
+         tracking: sachetForm.tracking
+      }
+      let cleanModes = sachetForm.modes
+         .filter(mode => {
+            // This means mode is configured
+            return mode.station !== ''
+         })
+         .map(mode => {
+            let cleanSupplierItems = mode.supplierItems.map(item => {
+               return {
+                  item: item.item._id,
+                  accuracy: item.accuracy,
+                  packaging: item.packaging._id,
+                  isLabelled: item.isLabelled,
+                  labelTemplate: item.labelTemplate._id
+               }
+            })
+            return {
+               type: mode.type,
+               isActive: mode.isActive,
+               station: mode.station._id,
+               supplierItems: cleanSupplierItems
+            }
+         })
+      cleanSachet.modes = cleanModes
+      console.log(cleanSachet)
+      addSachet({
+         variables: {
+            input: {
+               ingredientId: ingredient._id,
+               processingId: selectedProcessingID,
+               sachet: cleanSachet
+            }
+         }
+      })
+      closeSachetTunnel(1)
    }
 
    // Mode Ops
@@ -371,9 +416,15 @@ const IngredientForm = () => {
             item,
             // fields below will be removed, and user will be able to configure these once data gets displayed in the table
             accuracy: 85,
-            packaging: 'some_packaging_id',
+            packaging: {
+               _id: '123',
+               title: 'Packaging'
+            },
             isLabelled: true,
-            labelTemplate: 'some_label_id'
+            labelTemplate: {
+               _id: '123',
+               title: 'Label'
+            }
          }
       })
       // setModeForm({ ...modeForm, supplierItems: newSupplierItems })

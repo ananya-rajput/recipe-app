@@ -81,7 +81,7 @@ module.exports = buildSchema(`
         ingredient(id: ID!): Ingredient!
         processingNames: [ProcessingName!]!
         stations: [Station!]!
-        supplierItems: [SupplierItem!]!
+        supplierItems: [Item!]!
     }
 
 
@@ -105,7 +105,34 @@ module.exports = buildSchema(`
     input AddSachetInput {
         ingredientId: ID!
         processingId: ID!
-        sachet: Sachet!
+        sachet: SachetInput!
+    }
+
+    input SachetInput {
+        quantity: QuantityInput!
+        tracking: Boolean!
+        modes: [ModeInput!]!
+    }
+
+    input QuantityInput {
+        value: Int!
+        unit: ID!
+    }
+
+    input ModeInput {
+        isActive: Boolean!
+        type: String!
+        station: ID!
+        supplierItems: [SupplierItemInput!]!
+    }
+
+    input SupplierItemInput {
+        item: ID!
+        isWeighable: Boolean
+        accuracy: Int
+        packaging: ID!
+        isLabelled: Boolean!
+        labelTemplate: ID
     }
 
     type RootMutation {

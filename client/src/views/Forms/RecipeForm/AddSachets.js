@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 
 import {
    Text,
@@ -12,15 +12,64 @@ import {
 
 import { Context as RecipeContext } from '../../../store/recipe/index'
 
-import { TunnelContainer, Content, FlexWidth, ManageIngredient } from './styled'
+import {
+   TunnelContainer,
+   Content,
+   FlexWidth,
+   ManageIngredient,
+   CustomButton
+} from './styled'
 import EditIcon from '../../../assets/icons/Edit'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 import SelectProcessing from './SelectProcessing'
+import SelectSachet from './SelectSachet'
 
 export default function AddSachets({ close }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [tunnels, openTunnel, closeTunnel] = useTunnel(2)
+
+   const renderSachets = serving => {
+      const availableSachet = recipeState.sachets.find(
+         sachet =>
+            sachet.serving.id === serving.id &&
+            sachet.ingredient.id === recipeState.view.id
+      )
+
+      if (
+         availableSachet &&
+         availableSachet.ingredient.id === recipeState.view.id
+      ) {
+         return (
+            <ButtonTile
+               onClick={() => {
+                  recipeDispatch({
+                     type: 'SET_ACTIVE_SERVING',
+                     payload: serving
+                  })
+                  openTunnel(2)
+               }}
+               type='secondary'
+               text={availableSachet.title}
+            />
+         )
+      } else {
+         return (
+            <ButtonTile
+               onClick={() => {
+                  recipeDispatch({
+                     type: 'SET_ACTIVE_SERVING',
+                     payload: serving
+                  })
+                  openTunnel(2)
+               }}
+               type='secondary'
+               text='Select Sachet'
+            />
+         )
+      }
+   }
+
    return (
       <>
          <Tunnels tunnels={tunnels}>
@@ -29,21 +78,12 @@ export default function AddSachets({ close }) {
                <SelectProcessing next={closeTunnel} />
             </Tunnel>
 
-            {/* tunnel 1 -> select processing */}
+            {/* tunnel 2 -> select Sachet */}
             <Tunnel layer={2}>
-               <TunnelContainer>
-                  <TunnelHeader
-                     title='Select a Sachet'
-                     close={() => {
-                        closeTunnel(2)
-                     }}
-                     next={() => {
-                        closeTunnel(2)
-                     }}
-                  />
-                  <Spacer />
-                  <Text as='subtitle'>Select a Sachet:</Text>
-               </TunnelContainer>
+               <SelectSachet
+                  next={closeTunnel}
+                  serving={recipeState.activeServing}
+               />
             </Tunnel>
          </Tunnels>
          <TunnelContainer>
@@ -75,10 +115,12 @@ export default function AddSachets({ close }) {
                      Ingredients ({recipeState.ingredients.length})
                   </Text>
 
+                  <br />
+
                   {recipeState.ingredients.map(ingredient => (
                      <div key={ingredient.id}>
-                        <TextButton
-                           type='solid'
+                        <CustomButton
+                           active={recipeState.view?.id === ingredient.id}
                            onClick={() => {
                               recipeDispatch({
                                  type: 'SET_VIEW',
@@ -87,7 +129,7 @@ export default function AddSachets({ close }) {
                            }}
                         >
                            {ingredient.title}
-                        </TextButton>
+                        </CustomButton>
                      </div>
                   ))}
                </FlexWidth>
@@ -135,7 +177,6 @@ export default function AddSachets({ close }) {
                            <Content>
                               <FlexWidth width='1'>
                                  <Text as='subtitle'>For serving</Text>
-                                 {/* TODO: functionality: add serving */}
                               </FlexWidth>
                            </Content>
                            <br />
@@ -152,13 +193,7 @@ export default function AddSachets({ close }) {
                                           </Text>
                                        </FlexWidth>
                                        <FlexWidth width='3'>
-                                          <ButtonTile
-                                             onClick={() => {
-                                                openTunnel(2)
-                                             }}
-                                             type='secondary'
-                                             text='Add Sachet'
-                                          />
+                                          {renderSachets(serving)}
                                        </FlexWidth>
                                     </Content>
                                     <br />

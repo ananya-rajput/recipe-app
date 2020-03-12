@@ -46,3 +46,15 @@ export const Container = styled.div`
    margin: 24px auto;
    width: 50%;
 `
+export const CustomButton = styled.button`
+   border: 0;
+   outline: 0;
+   border-bottom: ${props => (props.active ? '0' : '1px solid #ececec')};
+   width: 80%;
+   float: left;
+   padding: 20px;
+   padding-left: 5px;
+   text-align: left;
+   background-color: ${props => (props.active ? '#555b6e' : '#fff')};
+   color: ${props => (props.active ? '#fff' : '#555b6e')};
+`

@@ -7,7 +7,9 @@ const state = {
    recipeType: { id: 2, title: 'Non-Vegetarian' },
    servings: [{ id: 1, value: 0 }],
    ingredients: [],
-   view: {}
+   sachets: [],
+   view: {},
+   activeServing: {}
 }
 
 const reducers = (state, { type, payload }) => {
@@ -55,6 +57,21 @@ const reducers = (state, { type, payload }) => {
             currentIngredient
          )
          return state
+
+      case 'SET_ACTIVE_SERVING':
+         return { ...state, activeServing: payload }
+      case 'ADD_SACHET':
+         return {
+            ...state,
+            sachets: [
+               ...state.sachets,
+               {
+                  ...payload.sachet,
+                  ingredient: state.view,
+                  serving: state.activeServing
+               }
+            ]
+         }
       default:
          return state
    }

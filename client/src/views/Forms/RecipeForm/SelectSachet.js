@@ -14,26 +14,26 @@ import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 
-export default function SelectProcessing({ next }) {
-   const { recipeState, recipeDispatch } = useContext(RecipeContext)
+export default function SelectSachet({ next }) {
+   const { recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
    const [list, current, selectOption] = useSingleList([
-      { id: 1, title: 'Sliced' },
-      { id: 2, title: 'Washed' }
+      { id: 1, title: '200gm' },
+      { id: 2, title: '800gm' }
    ])
 
    return (
       <TunnelContainer>
          <TunnelHeader
-            title='Add Ingredients'
-            close={() => next(1)}
+            title='Select Sachet'
+            close={() => next(2)}
             next={() => {
                recipeDispatch({
-                  type: 'ADD_PROCESSING',
-                  payload: { processing: current, ingredient: recipeState.view }
+                  type: 'ADD_SACHET',
+                  payload: { sachet: current }
                })
 
-               next(1)
+               next(2)
             }}
          />
          <Spacer />

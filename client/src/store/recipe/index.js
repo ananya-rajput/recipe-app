@@ -29,7 +29,6 @@ const reducers = (state, { type, payload }) => {
          const updatedServings = [...state.servings]
          updatedServings[index] = match
          return { ...state, servings: updatedServings }
-
       case 'ADD_INGREDIENTS':
          return { ...state, ingredients: [...payload] }
 
@@ -45,6 +44,17 @@ const reducers = (state, { type, payload }) => {
       case 'SET_VIEW':
          return { ...state, view: payload }
 
+      case 'ADD_PROCESSING':
+         const currentIngredient = state.ingredients.find(
+            ing => ing.id === payload.ingredient.id
+         )
+         currentIngredient.processing = payload.processing
+         state.ingredients.splice(
+            state.ingredients.indexOf(state.view),
+            1,
+            currentIngredient
+         )
+         return state
       default:
          return state
    }

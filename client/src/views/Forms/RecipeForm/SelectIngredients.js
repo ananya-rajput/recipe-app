@@ -25,6 +25,7 @@ export default function SelectIngredients({ close, next }) {
       { id: 3, title: 'Ginger' },
       { id: 4, title: 'Onion' }
    ])
+
    return (
       <TunnelContainer>
          <TunnelHeader

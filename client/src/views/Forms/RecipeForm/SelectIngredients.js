@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useState, useContext } from 'react'
+
 import {
    List,
    ListSearch,
@@ -9,11 +10,15 @@ import {
    Tag
 } from '@dailykit/ui'
 
+import { Context as RecipeContext } from '../../../store/recipe/index'
+
 import { TunnelContainer } from './styled'
+
 import { TunnelHeader, Spacer } from '../../../components/index'
 
 export default function SelectIngredients({ close, next }) {
-   const [search, setSearch] = React.useState('')
+   const { recipeDispatch } = useContext(RecipeContext)
+   const [search, setSearch] = useState('')
    const [list, selected, selectOption] = useMultiList([
       { id: 1, title: 'Potato' },
       { id: 2, title: 'Tomato' },
@@ -25,7 +30,10 @@ export default function SelectIngredients({ close, next }) {
          <TunnelHeader
             title='Add Ingredients'
             close={() => close(2)}
-            next={() => next(3)}
+            next={() => {
+               recipeDispatch({ type: 'ADD_INGREDIENTS', payload: selected })
+               next(3)
+            }}
          />
          <Spacer />
 
@@ -55,7 +63,9 @@ export default function SelectIngredients({ close, next }) {
                         type='MSL1'
                         key={option.id}
                         title={option.title}
-                        onClick={() => selectOption('id', option.id)}
+                        onClick={() => {
+                           selectOption('id', option.id)
+                        }}
                         isActive={selected.find(item => item.id === option.id)}
                      />
                   ))}

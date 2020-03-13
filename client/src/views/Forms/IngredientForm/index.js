@@ -54,7 +54,8 @@ import {
    StyledTabContent,
    StyledTextAndSelect,
    ToggleWrapper,
-   StyledTable
+   StyledTable,
+   ImageContainer
 } from './styled'
 
 // Internal State
@@ -65,6 +66,7 @@ const INGREDIENT = gql`
       ingredient(id: $ID) {
          _id
          name
+         image
       }
    }
 `
@@ -280,13 +282,7 @@ const IngredientForm = () => {
       }
    }, [selectedSachetID])
 
-   // Processing Tunnel
-   const [
-      processingTunnel,
-      openProcessingTunnel,
-      closeProcessingTunnel
-   ] = useTunnel(1)
-   const [search, setSearch] = React.useState('')
+   // Lists
    const [
       processingNamesList,
       selectedProcessingNames,
@@ -298,6 +294,27 @@ const IngredientForm = () => {
       selectedSupplierItems,
       selectSupplierItem
    ] = useMultiList([])
+
+   // Photo Tunnel
+   const [photoTunnel, openPhotoTunnel, closePhotoTunnel] = useTunnel(1)
+   const addPhotoHandler = image => {
+      updateIngredient({
+         variables: {
+            ingredientId: ingredient._id,
+            name: ingredient.name,
+            image
+         }
+      })
+      closePhotoTunnel(1)
+   }
+
+   // Processing Tunnel
+   const [
+      processingTunnel,
+      openProcessingTunnel,
+      closeProcessingTunnel
+   ] = useTunnel(1)
+   const [search, setSearch] = React.useState('')
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
       addProcessings({
@@ -479,13 +496,49 @@ const IngredientForm = () => {
                      </StyledStat>
                   </StyledStatsContainer>
                   <PhotoTileWrapper>
-                     <ButtonTile
-                        type='primary'
-                        size='sm'
-                        text='Add photo to your ingredient'
-                        helper='upto 1MB - only JPG, PNG, PDF allowed'
-                     />
+                     {ingredient.image?.length > 0 ? (
+                        <ImageContainer>
+                           <span></span>
+                           <img src={ingredient.image} alt='Ingredient' />
+                        </ImageContainer>
+                     ) : (
+                        <ButtonTile
+                           type='primary'
+                           size='sm'
+                           text='Add photo to your ingredient'
+                           helper='upto 1MB - only JPG, PNG, PDF allowed'
+                           onClick={() => openPhotoTunnel(1)}
+                        />
+                     )}
                   </PhotoTileWrapper>
+                  <Tunnels tunnels={photoTunnel}>
+                     <Tunnel layer={1}>
+                        <StyledTunnelHeader>
+                           <div>
+                              <CloseIcon
+                                 size='20px'
+                                 color='#888D9D'
+                                 onClick={() => closePhotoTunnel(1)}
+                              />
+                              <h1>
+                                 Select Photo for ingredient: {ingredient.name}
+                              </h1>
+                           </div>
+                        </StyledTunnelHeader>
+                        <StyledTunnelMain>
+                           <TextButton
+                              type='solid'
+                              onClick={() =>
+                                 addPhotoHandler(
+                                    'https://source.unsplash.com/800x600/?food'
+                                 )
+                              }
+                           >
+                              Add Dummy Photo
+                           </TextButton>
+                        </StyledTunnelMain>
+                     </Tunnel>
+                  </Tunnels>
                </StyledTop>
                <StyledSection>
                   <StyledListing>
@@ -584,23 +637,32 @@ const IngredientForm = () => {
                   </StyledListing>
                   <StyledDisplay>
                      <StyledSection spacing='md'>
-                        {currentProcessing.sachets &&
-                        currentProcessing.sachets.length > 0 ? (
+                        {currentProcessing?.sachets?.length > 0 ? (
                            <>
                               <StyledListing>
                                  <StyledListingHeader>
-                                    <h3>Sachets (1)</h3>
+                                    <h3>
+                                       Sachets (
+                                       {currentProcessing.sachets.length})
+                                    </h3>
                                     <AddIcon
                                        color='#555B6E'
                                        size='18'
                                        stroke='2.5'
                                     />
                                  </StyledListingHeader>
-                                 <StyledListingTile active={true}>
-                                    <h3>200 gm</h3>
-                                    <p>Active: Real-time</p>
-                                    <p>Available: 12/40 pkt</p>
-                                 </StyledListingTile>
+                                 {currentProcessing.sachets.map(sachet => (
+                                    <StyledListingTile
+                                       active={sachet._id === selectedSachetID}
+                                    >
+                                       <h3>
+                                          {sachet.quantity.value}{' '}
+                                          {sachet.quantity.unit}
+                                       </h3>
+                                       <p>Active: Real-time</p>
+                                       <p>Available: 12/40 pkt</p>
+                                    </StyledListingTile>
+                                 ))}
                                  <ButtonTile type='primary' size='lg' />
                               </StyledListing>
                               <StyledDisplay contains='sachets'>

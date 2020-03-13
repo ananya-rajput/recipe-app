@@ -10,10 +10,13 @@ const state = {
 
 const reducers = (state, { type, payload }) => {
    switch (type) {
-      case 'SET_RECIPE_TITLE': {
+      case 'SET_TITLE': {
          const newState = { ...state }
          newState.current.title = payload.title
-         newState.forms[state.current.index].title = payload.title
+         const index = newState.forms.findIndex(
+            tab => tab.title === payload.oldTitle
+         )
+         newState.forms[index].title = payload.title
          return newState
       }
       case 'SET_FORM_DATA': {

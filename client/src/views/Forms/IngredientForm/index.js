@@ -243,6 +243,13 @@ const IngredientForm = () => {
             image: ingredient.image
          }
       })
+      console.log(state.current)
+      if (state.current.title !== ingredient.name) {
+         dispatch({
+            type: 'SET_TITLE',
+            payload: { title: ingredient.name, oldTitle: state.current.title }
+         })
+      }
    }
 
    // Side Effects

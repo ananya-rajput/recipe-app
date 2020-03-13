@@ -61,6 +61,7 @@ const reducers = (state, { type, payload }) => {
       case 'SET_ACTIVE_SERVING':
          return { ...state, activeServing: payload }
       case 'ADD_SACHET':
+         //TODO: bug: not push in the sachets as it will result in many sachets
          return {
             ...state,
             sachets: [

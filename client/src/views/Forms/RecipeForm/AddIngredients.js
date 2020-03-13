@@ -1,14 +1,30 @@
-import React from 'react'
-import { Tunnels, Tunnel, useTunnel, ButtonTile, Text } from '@dailykit/ui'
+import React, { useContext, useEffect } from 'react'
 
-import { IngredientsSection, IngredientStats } from './styled'
+import {
+   Tunnels,
+   Tunnel,
+   useTunnel,
+   ButtonTile,
+   Text,
+   Table,
+   TableHead,
+   TableBody,
+   TableRow,
+   TableCell
+} from '@dailykit/ui'
+
+import { Context as RecipeContext } from '../../../store/recipe/index'
+
+import { IngredientsSection, IngredientStats, IngredientTable } from './styled'
 
 import AddServings from './AddServings'
 import SelectIngredients from './SelectIngredients'
 import AddSachets from './AddSachets'
 
 export default function AddIngredients() {
+   const { recipeState } = useContext(RecipeContext)
    const [tunnels, openTunnel, closeTunnel] = useTunnel(3)
+
    return (
       <>
          <Tunnels tunnels={tunnels}>
@@ -24,7 +40,42 @@ export default function AddIngredients() {
          </Tunnels>
          <IngredientsSection>
             <IngredientStats>
-               <Text as='subtitle'>Ingredients (0)</Text>
+               <Text as='subtitle'>
+                  Ingredients ({recipeState.ingredients.length})
+               </Text>
+
+               <IngredientTable>
+                  <Table>
+                     <TableHead>
+                        <TableRow>
+                           <TableCell></TableCell>
+                           <TableCell>Ingredient Name</TableCell>
+                           <TableCell>Processing</TableCell>
+                           {recipeState.servings.map(serving => (
+                              <TableCell key={serving.id}>
+                                 {serving.value}
+                              </TableCell>
+                           ))}
+                        </TableRow>
+                     </TableHead>
+                     <TableBody>
+                        {recipeState.ingredients.map(ingredient => (
+                           <TableRow key={ingredient.id}>
+                              <TableCell></TableCell>
+                              <TableCell>{ingredient.title}</TableCell>
+                              <TableCell>
+                                 {ingredient?.processing?.title}
+                              </TableCell>
+                              {recipeState.servings.map(serving => (
+                                 <TableCell key={serving.id}>
+                                    <Sachet serving={serving} />
+                                 </TableCell>
+                              ))}
+                           </TableRow>
+                        ))}
+                     </TableBody>
+                  </Table>
+               </IngredientTable>
             </IngredientStats>
             <ButtonTile
                as='button'
@@ -35,4 +86,14 @@ export default function AddIngredients() {
          </IngredientsSection>
       </>
    )
+}
+
+function Sachet({ serving }) {
+   const { recipeState } = useContext(RecipeContext)
+
+   const sachet = recipeState.sachets.find(
+      sachet => sachet.serving.id === serving.id
+   )
+
+   return <>{sachet?.title}</>
 }

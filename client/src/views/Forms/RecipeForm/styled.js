@@ -6,8 +6,18 @@ export const IngredientsSection = styled.div`
 `
 export const IngredientStats = styled.div`
    display: flex;
-   justify-content: space-between;
+   flex-direction: column;
+   align-items: flex-start;
+   justify-content: center;
 `
+export const IngredientTable = styled.div`
+   display: flex;
+   align-items: flex-start;
+   width: 100%;
+   margin-top: 5px;
+   margin-bottom: 20px;
+`
+
 export const TunnelContainer = styled.div`
    padding: 30px;
 `

@@ -12,6 +12,7 @@ export const TunnelContainer = styled.div`
    padding: 30px;
 `
 export const ServingsInput = styled.div`
+   margin: 20px 0;
    display: flex;
    align-items: center;
 
@@ -41,7 +42,7 @@ export const RecipeType = styled.div`
    display: flex;
    justify-content: center;
 `
-export const RecipePhotos = styled.div`
+export const Container = styled.div`
    margin: 24px auto;
    width: 50%;
 `

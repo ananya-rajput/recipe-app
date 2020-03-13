@@ -25,7 +25,13 @@ import {
 import { Context } from '../../../store/tabs'
 
 // Icons
-import { CodeIcon, AddIcon, CloseIcon } from '../../../assets/icons'
+import {
+   CodeIcon,
+   AddIcon,
+   CloseIcon,
+   EditIcon,
+   DeleteIcon
+} from '../../../assets/icons'
 
 // Styled
 import {
@@ -495,13 +501,20 @@ const IngredientForm = () => {
                         <p> Sachets </p>
                      </StyledStat>
                   </StyledStatsContainer>
-                  <PhotoTileWrapper>
-                     {ingredient.image?.length > 0 ? (
-                        <ImageContainer>
-                           <span></span>
-                           <img src={ingredient.image} alt='Ingredient' />
-                        </ImageContainer>
-                     ) : (
+                  {ingredient.image?.length > 0 ? (
+                     <ImageContainer>
+                        <div>
+                           <span onClick={() => openPhotoTunnel(1)}>
+                              <EditIcon />
+                           </span>
+                           <span onClick={() => addPhotoHandler('')}>
+                              <DeleteIcon />
+                           </span>
+                        </div>
+                        <img src={ingredient.image} alt='Ingredient' />
+                     </ImageContainer>
+                  ) : (
+                     <PhotoTileWrapper>
                         <ButtonTile
                            type='primary'
                            size='sm'
@@ -509,8 +522,8 @@ const IngredientForm = () => {
                            helper='upto 1MB - only JPG, PNG, PDF allowed'
                            onClick={() => openPhotoTunnel(1)}
                         />
-                     )}
-                  </PhotoTileWrapper>
+                     </PhotoTileWrapper>
+                  )}
                   <Tunnels tunnels={photoTunnel}>
                      <Tunnel layer={1}>
                         <StyledTunnelHeader>

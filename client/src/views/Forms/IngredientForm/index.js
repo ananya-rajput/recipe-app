@@ -17,14 +17,21 @@ import {
    Tag,
    useMultiList,
    Toggle,
-   Checkbox
+   Checkbox,
+   useSingleList
 } from '@dailykit/ui'
 
 // Global State
 import { Context } from '../../../store/tabs'
 
 // Icons
-import { CodeIcon, AddIcon, CloseIcon } from '../../../assets/icons'
+import {
+   CodeIcon,
+   AddIcon,
+   CloseIcon,
+   EditIcon,
+   DeleteIcon
+} from '../../../assets/icons'
 
 // Styled
 import {
@@ -53,7 +60,8 @@ import {
    StyledTabContent,
    StyledTextAndSelect,
    ToggleWrapper,
-   StyledTable
+   StyledTable,
+   ImageContainer
 } from './styled'
 
 // Internal State
@@ -64,6 +72,7 @@ const INGREDIENT = gql`
       ingredient(id: $ID) {
          _id
          name
+         image
       }
    }
 `
@@ -71,6 +80,24 @@ const INGREDIENT = gql`
 const FETCH_PROCESSING_NAMES = gql`
    {
       processingNames {
+         _id
+         title
+      }
+   }
+`
+
+const FETCH_STATIONS = gql`
+   {
+      stations {
+         _id
+         title
+      }
+   }
+`
+
+const FETCH_SUPPLIER_ITEMS = gql`
+   {
+      supplierItems {
          _id
          title
       }
@@ -121,6 +148,32 @@ const ADD_PROCESSINGS = gql`
    }
 `
 
+const ADD_SACHET = gql`
+   mutation AddSachet($input: AddSachetInput!) {
+      addSachet(input: $input) {
+         _id
+         name
+         processings {
+            _id
+            name {
+               _id
+               title
+            }
+            sachets {
+               _id
+               quantity {
+                  value
+                  unit
+               }
+               modes {
+                  type
+               }
+            }
+         }
+      }
+   }
+`
+
 const IngredientForm = () => {
    const { state, dispatch } = React.useContext(Context)
    const {
@@ -130,6 +183,24 @@ const IngredientForm = () => {
    } = useQuery(FETCH_PROCESSING_NAMES, {
       onCompleted: data => {
          processingNamesList.push(...data.processingNames)
+      }
+   })
+   const {
+      loading: stationsLoading,
+      error: stationsError,
+      data: stationsData
+   } = useQuery(FETCH_STATIONS, {
+      onCompleted: data => {
+         stationsList.push(...data.stations)
+      }
+   })
+   const {
+      loading: supplierItemsLoading,
+      error: supplierItemsError,
+      data: supplierItemsData
+   } = useQuery(FETCH_SUPPLIER_ITEMS, {
+      onCompleted: data => {
+         supplierItemsList.push(...data.supplierItems)
       }
    })
    const [sachets, setSachets] = React.useState([])
@@ -157,6 +228,12 @@ const IngredientForm = () => {
          setProcessings(data.addProcessings.processings)
       }
    })
+   const [addSachet] = useMutation(ADD_SACHET, {
+      onCompleted: data => {
+         setIngredient(data.addSachet)
+         setProcessings(data.addSachet.processings)
+      }
+   })
 
    const updateIngredientHandler = () => {
       updateIngredient({
@@ -166,22 +243,38 @@ const IngredientForm = () => {
             image: ingredient.image
          }
       })
+      console.log(state.current)
+      if (state.current.title !== ingredient.name) {
+         dispatch({
+            type: 'SET_TITLE',
+            payload: { title: ingredient.name, oldTitle: state.current.title }
+         })
+      }
    }
 
    // Side Effects
    React.useEffect(() => {
       if (processings.length) {
          setSelectedProcessingID(processings[0]._id)
+         setSachets(processings[0].sachets)
       } else {
          setSelectedProcessingID(undefined)
       }
    }, [processings])
+   React.useEffect(() => {
+      if (sachets.length) {
+         setSelectedSachetID(sachets[0]._id)
+      } else {
+         setSelectedSachetID(undefined)
+      }
+   }, [sachets])
 
    // View States
    const [selectedView, setSelectedView] = React.useState('modes')
    const [selectedProcessingID, setSelectedProcessingID] = React.useState(
       undefined
    )
+   const [selectedSachetID, setSelectedSachetID] = React.useState(undefined)
    const [currentProcessing, setCurrentProcessing] = React.useState({})
    const [currentSachet, setCurrentSachet] = React.useState({})
 
@@ -193,6 +286,40 @@ const IngredientForm = () => {
          setCurrentProcessing(processing)
       }
    }, [selectedProcessingID])
+   React.useEffect(() => {
+      if (setSelectedSachetID != undefined) {
+         const sachet = sachets.find(
+            sachet => sachet._id === setSelectedSachetID
+         )
+         setCurrentSachet(sachet)
+      }
+   }, [selectedSachetID])
+
+   // Lists
+   const [
+      processingNamesList,
+      selectedProcessingNames,
+      selectProcessingName
+   ] = useMultiList([])
+   const [stationsList, currentStation, selectStation] = useSingleList([])
+   const [
+      supplierItemsList,
+      selectedSupplierItems,
+      selectSupplierItem
+   ] = useMultiList([])
+
+   // Photo Tunnel
+   const [photoTunnel, openPhotoTunnel, closePhotoTunnel] = useTunnel(1)
+   const addPhotoHandler = image => {
+      updateIngredient({
+         variables: {
+            ingredientId: ingredient._id,
+            name: ingredient.name,
+            image
+         }
+      })
+      closePhotoTunnel(1)
+   }
 
    // Processing Tunnel
    const [
@@ -201,11 +328,6 @@ const IngredientForm = () => {
       closeProcessingTunnel
    ] = useTunnel(1)
    const [search, setSearch] = React.useState('')
-   const [
-      processingNamesList,
-      selectedProcessingNames,
-      selectProcessingName
-   ] = useMultiList([])
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
       addProcessings({
@@ -217,20 +339,27 @@ const IngredientForm = () => {
    // Sachet Tunnel
    const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
    const [sachetForm, setSachetForm] = React.useState({
+      _id: '',
       quantity: { value: '', unit: '' },
       tracking: true,
       modes: [
          {
             isActive: false,
-            type: 'Real Time'
+            type: 'Real Time',
+            station: '',
+            supplierItems: []
          },
          {
             isActive: false,
-            type: 'Co-Packer'
+            type: 'Co-Packer',
+            station: '',
+            supplierItems: []
          },
          {
             isActive: false,
-            type: 'Planned Lot'
+            type: 'Planned Lot',
+            station: '',
+            supplierItems: []
          }
       ]
    })
@@ -239,9 +368,106 @@ const IngredientForm = () => {
       { _id: '2', title: 'kgs' },
       { _id: '3', title: 'lbs' }
    ]
-   const [modeForm, setModeForm] = React.useState({})
-   const addSachetHandler = () => {
-      console.log('Sachet saved!')
+   const [modeForm, setModeForm] = React.useState({
+      isActive: false,
+      type: '',
+      station: '',
+      supplierItems: []
+   })
+   const addSachetHandler = async () => {
+      let cleanSachet = {
+         quantity: {
+            value: +sachetForm.quantity.value,
+            unit: sachetForm.quantity.unit
+         },
+         tracking: sachetForm.tracking
+      }
+      let cleanModes = sachetForm.modes
+         .filter(mode => {
+            // This means mode is configured
+            return mode.station !== ''
+         })
+         .map(mode => {
+            let cleanSupplierItems = mode.supplierItems.map(item => {
+               return {
+                  item: item.item._id,
+                  accuracy: item.accuracy,
+                  packaging: item.packaging._id,
+                  isLabelled: item.isLabelled,
+                  labelTemplate: item.labelTemplate._id
+               }
+            })
+            return {
+               type: mode.type,
+               isActive: mode.isActive,
+               station: mode.station._id,
+               supplierItems: cleanSupplierItems
+            }
+         })
+      cleanSachet.modes = cleanModes
+      console.log(cleanSachet)
+      addSachet({
+         variables: {
+            input: {
+               ingredientId: ingredient._id,
+               processingId: selectedProcessingID,
+               sachet: cleanSachet
+            }
+         }
+      })
+      closeSachetTunnel(1)
+   }
+
+   // Mode Ops
+   const toggleMode = (val, type) => {
+      let index = sachetForm.modes.findIndex(mode => mode.type === type)
+      sachetForm.modes[index].isActive = !sachetForm.modes[index].isActive
+      if (!val) {
+         return
+      } else {
+         // check if it is configured
+         if (sachetForm.modes[index].station.length > 0) {
+            return
+         } else {
+            // configure it - open tunnel
+            setModeForm(sachetForm.modes[index])
+            openSachetTunnel(2)
+         }
+      }
+   }
+   const selectStationHandler = station => {
+      setModeForm({ ...modeForm, station })
+      selectStation('_id', station._id)
+      openSachetTunnel(3)
+   }
+   const addModeHandler = () => {
+      const newSupplierItems = selectedSupplierItems.map(item => {
+         return {
+            item,
+            // fields below will be removed, and user will be able to configure these once data gets displayed in the table
+            accuracy: 85,
+            packaging: {
+               _id: '5e691d58495e473a90167f88',
+               title: 'PKG 1'
+            },
+            isLabelled: true,
+            labelTemplate: {
+               _id: '5e691d58495e473a90167f8a',
+               title: 'TEMP 1'
+            }
+         }
+      })
+      // setModeForm({ ...modeForm, supplierItems: newSupplierItems })
+      const index = sachetForm.modes.findIndex(
+         mode => mode.type === modeForm.type
+      )
+      const copySachetForm = sachetForm
+      copySachetForm.modes[index] = modeForm
+      copySachetForm.modes[index].supplierItems = newSupplierItems
+      console.log(copySachetForm)
+      setSachetForm({ ...copySachetForm })
+      closeSachetTunnel(3)
+      closeSachetTunnel(2)
    }
 
    return (
@@ -282,14 +508,57 @@ const IngredientForm = () => {
                         <p> Sachets </p>
                      </StyledStat>
                   </StyledStatsContainer>
-                  <PhotoTileWrapper>
-                     <ButtonTile
-                        type='primary'
-                        size='sm'
-                        text='Add photo to your ingredient'
-                        helper='upto 1MB - only JPG, PNG, PDF allowed'
-                     />
-                  </PhotoTileWrapper>
+                  {ingredient.image?.length > 0 ? (
+                     <ImageContainer>
+                        <div>
+                           <span onClick={() => openPhotoTunnel(1)}>
+                              <EditIcon />
+                           </span>
+                           <span onClick={() => addPhotoHandler('')}>
+                              <DeleteIcon />
+                           </span>
+                        </div>
+                        <img src={ingredient.image} alt='Ingredient' />
+                     </ImageContainer>
+                  ) : (
+                     <PhotoTileWrapper>
+                        <ButtonTile
+                           type='primary'
+                           size='sm'
+                           text='Add photo to your ingredient'
+                           helper='upto 1MB - only JPG, PNG, PDF allowed'
+                           onClick={() => openPhotoTunnel(1)}
+                        />
+                     </PhotoTileWrapper>
+                  )}
+                  <Tunnels tunnels={photoTunnel}>
+                     <Tunnel layer={1}>
+                        <StyledTunnelHeader>
+                           <div>
+                              <CloseIcon
+                                 size='20px'
+                                 color='#888D9D'
+                                 onClick={() => closePhotoTunnel(1)}
+                              />
+                              <h1>
+                                 Select Photo for ingredient: {ingredient.name}
+                              </h1>
+                           </div>
+                        </StyledTunnelHeader>
+                        <StyledTunnelMain>
+                           <TextButton
+                              type='solid'
+                              onClick={() =>
+                                 addPhotoHandler(
+                                    'https://source.unsplash.com/800x600/?food'
+                                 )
+                              }
+                           >
+                              Add Dummy Photo
+                           </TextButton>
+                        </StyledTunnelMain>
+                     </Tunnel>
+                  </Tunnels>
                </StyledTop>
                <StyledSection>
                   <StyledListing>
@@ -388,23 +657,32 @@ const IngredientForm = () => {
                   </StyledListing>
                   <StyledDisplay>
                      <StyledSection spacing='md'>
-                        {currentProcessing.sachets &&
-                        currentProcessing.sachets.length > 0 ? (
+                        {currentProcessing?.sachets?.length > 0 ? (
                            <>
                               <StyledListing>
                                  <StyledListingHeader>
-                                    <h3>Sachets (1)</h3>
+                                    <h3>
+                                       Sachets (
+                                       {currentProcessing.sachets.length})
+                                    </h3>
                                     <AddIcon
                                        color='#555B6E'
                                        size='18'
                                        stroke='2.5'
                                     />
                                  </StyledListingHeader>
-                                 <StyledListingTile active={true}>
-                                    <h3>200 gm</h3>
-                                    <p>Active: Real-time</p>
-                                    <p>Available: 12/40 pkt</p>
-                                 </StyledListingTile>
+                                 {currentProcessing.sachets.map(sachet => (
+                                    <StyledListingTile
+                                       active={sachet._id === selectedSachetID}
+                                    >
+                                       <h3>
+                                          {sachet.quantity.value}{' '}
+                                          {sachet.quantity.unit}
+                                       </h3>
+                                       <p>Active: Real-time</p>
+                                       <p>Available: 12/40 pkt</p>
+                                    </StyledListingTile>
+                                 ))}
                                  <ButtonTile type='primary' size='lg' />
                               </StyledListing>
                               <StyledDisplay contains='sachets'>
@@ -541,22 +819,181 @@ const IngredientForm = () => {
                                     <tbody>
                                        {sachetForm.modes.map(mode => (
                                           <tr key={mode.type}>
-                                             <td>
-                                                {' '}
+                                             <td
+                                                rowSpan={
+                                                   mode.supplierItems.length
+                                                      ? mode.supplierItems
+                                                           .length
+                                                      : 1
+                                                }
+                                             >
                                                 <Checkbox
                                                    checked={mode.isActive}
-                                                />{' '}
-                                                {mode.type}{' '}
+                                                   onChange={val =>
+                                                      toggleMode(val, mode.type)
+                                                   }
+                                                />
+                                                {mode.type}
                                              </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
-                                             <td> {mode.type} </td>
+                                             <td
+                                                rowSpan={
+                                                   mode.supplierItems.length
+                                                      ? mode.supplierItems
+                                                           .length
+                                                      : 1
+                                                }
+                                             >
+                                                {mode.station.title}
+                                             </td>
+                                             <td>
+                                                <table>
+                                                   {mode.supplierItems.map(
+                                                      (item, index) => (
+                                                         <tr key={index}>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                            <td>
+                                                               {item.item.title}
+                                                            </td>
+                                                         </tr>
+                                                      )
+                                                   )}
+                                                </table>
+                                             </td>
                                           </tr>
                                        ))}
                                     </tbody>
                                  </StyledTable>
+                              </StyledTunnelMain>
+                           </Tunnel>
+                           <Tunnel layer={2}>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closeSachetTunnel(2)}
+                                    />
+                                    <h1>
+                                       Select station for: {modeForm?.type}
+                                    </h1>
+                                 </div>
+                              </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <List>
+                                    {Object.keys(currentStation).length > 0 ? (
+                                       <ListItem
+                                          type='SSL1'
+                                          title={currentStation.title}
+                                       />
+                                    ) : (
+                                       <ListSearch
+                                          onChange={value => setSearch(value)}
+                                          placeholder='type what you’re looking for...'
+                                       />
+                                    )}
+                                    <ListOptions>
+                                       {stationsList
+                                          .filter(option =>
+                                             option.title
+                                                .toLowerCase()
+                                                .includes(search)
+                                          )
+                                          .map(option => (
+                                             <ListItem
+                                                type='SSL1'
+                                                key={option._id}
+                                                title={option.title}
+                                                isActive={
+                                                   option._id ===
+                                                   currentStation._id
+                                                }
+                                                onClick={() =>
+                                                   selectStationHandler(option)
+                                                }
+                                             />
+                                          ))}
+                                    </ListOptions>
+                                 </List>
+                              </StyledTunnelMain>
+                           </Tunnel>
+                           <Tunnel layer={3}>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closeSachetTunnel(3)}
+                                    />
+                                    <h1>
+                                       Select Supplier items for:{' '}
+                                       {modeForm?.station.title}
+                                    </h1>
+                                 </div>
+                                 <TextButton
+                                    type='solid'
+                                    onClick={addModeHandler}
+                                 >
+                                    Save
+                                 </TextButton>
+                              </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <List>
+                                    <ListSearch
+                                       onChange={value => setSearch(value)}
+                                       placeholder='type what you’re looking for...'
+                                    />
+                                    {selectedSupplierItems.length > 0 && (
+                                       <TagGroup style={{ margin: '8px 0' }}>
+                                          {selectedSupplierItems.map(option => (
+                                             <Tag
+                                                key={option.id}
+                                                title={option.title}
+                                                onClick={() =>
+                                                   selectSupplierItem(
+                                                      '_id',
+                                                      option._id
+                                                   )
+                                                }
+                                             >
+                                                {option.title}
+                                             </Tag>
+                                          ))}
+                                       </TagGroup>
+                                    )}
+                                    <ListOptions>
+                                       {supplierItemsList
+                                          .filter(option =>
+                                             option.title
+                                                .toLowerCase()
+                                                .includes(search)
+                                          )
+                                          .map(option => (
+                                             <ListItem
+                                                type='MSL1'
+                                                key={option._id}
+                                                title={option.title}
+                                                onClick={() =>
+                                                   selectSupplierItem(
+                                                      '_id',
+                                                      option._id
+                                                   )
+                                                }
+                                                isActive={selectedSupplierItems.find(
+                                                   item =>
+                                                      item._id === option._id
+                                                )}
+                                             />
+                                          ))}
+                                    </ListOptions>
+                                 </List>
                               </StyledTunnelMain>
                            </Tunnel>
                         </Tunnels>

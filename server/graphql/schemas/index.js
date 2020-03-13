@@ -39,10 +39,18 @@ module.exports = buildSchema(`
 
     type Mode {
         isActive: Boolean!
-        priority: Int!
         type: String!
-        station: StationName!
+        station: Station!
         supplierItems: [SupplierItem!]!
+    }
+
+    type Station {
+        _id: ID!
+        title: String!
+    }
+
+    type SupplierItem {
+        type: Item!
         isWeighable: Boolean!
         accuracy: Int
         packaging: PackagingType!
@@ -50,14 +58,9 @@ module.exports = buildSchema(`
         labelTemplate: LabelTemplate
     }
 
-    type StationName {
+    type Item {
         _id: ID!
-        name: String!
-    }
-
-    type SupplierItem {
-        _id: ID!
-        name: String!
+        title: String!
     }
 
     type PackagingType {
@@ -77,6 +80,8 @@ module.exports = buildSchema(`
         ingredients: [Ingredient!]!
         ingredient(id: ID!): Ingredient!
         processingNames: [ProcessingName!]!
+        stations: [Station!]!
+        supplierItems: [Item!]!
     }
 
 
@@ -97,10 +102,44 @@ module.exports = buildSchema(`
         processingNames: [ID!]!
     }
 
+    input AddSachetInput {
+        ingredientId: ID!
+        processingId: ID!
+        sachet: SachetInput!
+    }
+
+    input SachetInput {
+        quantity: QuantityInput!
+        tracking: Boolean!
+        modes: [ModeInput!]!
+    }
+
+    input QuantityInput {
+        value: Int!
+        unit: ID!
+    }
+
+    input ModeInput {
+        isActive: Boolean!
+        type: String!
+        station: ID!
+        supplierItems: [SupplierItemInput!]!
+    }
+
+    input SupplierItemInput {
+        item: ID!
+        isWeighable: Boolean
+        accuracy: Int
+        packaging: ID!
+        isLabelled: Boolean!
+        labelTemplate: ID
+    }
+
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
         updateIngredient(input: UpdateIngredientInput): Ingredient!
         addProcessings(input: AddProcessingsInput): Ingredient!
+        addSachet(input: AddSachetInput): Ingredient!
     }
 
 

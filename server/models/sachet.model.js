@@ -47,7 +47,7 @@ const SachetSchema = new mongoose.Schema({
                },
                item: {
                   type: mongoose.Schema.Types.ObjectId,
-                  ref: 'Items'
+                  ref: 'Item'
                },
                isWeighable: {
                   type: Boolean,
@@ -68,7 +68,7 @@ const SachetSchema = new mongoose.Schema({
                },
                labelTemplate: {
                   type: mongoose.Schema.Types.ObjectId,
-                  ref: 'Templates',
+                  ref: 'LabelTemplate',
                   required: ['Label template is required for a sachet.']
                }
             }

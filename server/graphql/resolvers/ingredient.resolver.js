@@ -1,6 +1,8 @@
 const Ingredient = require('../../models/ingredient.model')
 const Processing = require('../../models/processing.model')
 const ProcessingName = require('../../models/processingName.model')
+const Station = require('../../models/station.model')
+const SupplierItem = require('../../models/item.model')
 const Sachet = require('../../models/sachet.model')
 
 module.exports = {
@@ -25,6 +27,22 @@ module.exports = {
       try {
          const processingNames = await ProcessingName.find()
          return processingNames
+      } catch (err) {
+         throw err
+      }
+   },
+   stations: async () => {
+      try {
+         const stations = await Station.find()
+         return stations
+      } catch (err) {
+         throw err
+      }
+   },
+   supplierItems: async () => {
+      try {
+         const supplierItems = await SupplierItem.find()
+         return supplierItems
       } catch (err) {
          throw err
       }
@@ -89,6 +107,33 @@ module.exports = {
          })
          console.log(updatedIngredient)
          return updatedIngredient
+      } catch (err) {
+         throw err
+      }
+   },
+   addSachet: async args => {
+      try {
+         const processing = await Processing.findOne({
+            _id: args.input.processingId
+         })
+         const sachet = new Sachet(args.input.sachet)
+         await sachet.save()
+         processing.sachets.push(sachet._id)
+         await processing.save()
+         const ingredient = await Ingredient.findOne({
+            _id: args.input.ingredientId
+         }).populate({
+            path: 'processings',
+            populate: [
+               {
+                  path: 'name'
+               },
+               {
+                  path: 'sachets'
+               }
+            ]
+         })
+         return ingredient
       } catch (err) {
          throw err
       }

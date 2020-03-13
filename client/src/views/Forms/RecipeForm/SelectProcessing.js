@@ -26,14 +26,14 @@ export default function SelectProcessing({ next }) {
       <TunnelContainer>
          <TunnelHeader
             title='Add Ingredients'
-            close={() => next(1)}
+            close={() => next(4)}
             next={() => {
                recipeDispatch({
                   type: 'ADD_PROCESSING',
                   payload: { processing: current, ingredient: recipeState.view }
                })
 
-               next(1)
+               next(4)
             }}
          />
          <Spacer />

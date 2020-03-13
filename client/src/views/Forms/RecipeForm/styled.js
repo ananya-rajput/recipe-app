@@ -68,3 +68,14 @@ export const CustomButton = styled.button`
    background-color: ${props => (props.active ? '#555b6e' : '#fff')};
    color: ${props => (props.active ? '#fff' : '#555b6e')};
 `
+export const SelectButton = styled.button`
+   font-weight: 400;
+   font-size: 16px;
+   cursor: pointer;
+   color: #00a7e1;
+   border: none;
+   background: transparent;
+   &:hover {
+      background: #f5f5f5;
+   }
+`

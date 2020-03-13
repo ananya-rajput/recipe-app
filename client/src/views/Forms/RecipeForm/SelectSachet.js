@@ -26,14 +26,14 @@ export default function SelectSachet({ next }) {
       <TunnelContainer>
          <TunnelHeader
             title='Select Sachet'
-            close={() => next(2)}
+            close={() => next(5)}
             next={() => {
                recipeDispatch({
                   type: 'ADD_SACHET',
                   payload: { sachet: current }
                })
 
-               next(2)
+               next(5)
             }}
          />
          <Spacer />

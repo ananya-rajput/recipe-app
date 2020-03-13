@@ -1,13 +1,6 @@
 import React, { useContext } from 'react'
 
-import {
-   Text,
-   ButtonTile,
-   Tunnels,
-   Tunnel,
-   useTunnel,
-   IconButton
-} from '@dailykit/ui'
+import { Text, ButtonTile, IconButton } from '@dailykit/ui'
 
 import { Context as RecipeContext } from '../../../store/recipe/index'
 
@@ -21,12 +14,9 @@ import {
 import EditIcon from '../../../assets/icons/Edit'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
-import SelectProcessing from './SelectProcessing'
-import SelectSachet from './SelectSachet'
 
-export default function AddSachets({ close }) {
+export default function AddSachets({ close, openTunnel }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
-   const [tunnels, openTunnel, closeTunnel] = useTunnel(2)
 
    const renderSachets = serving => {
       const availableSachet = recipeState.sachets.find(
@@ -46,7 +36,7 @@ export default function AddSachets({ close }) {
                      type: 'SET_ACTIVE_SERVING',
                      payload: serving
                   })
-                  openTunnel(2)
+                  openTunnel(5)
                }}
                type='secondary'
                text={availableSachet.title}
@@ -60,7 +50,7 @@ export default function AddSachets({ close }) {
                      type: 'SET_ACTIVE_SERVING',
                      payload: serving
                   })
-                  openTunnel(2)
+                  openTunnel(5)
                }}
                type='secondary'
                text='Select Sachet'
@@ -71,20 +61,6 @@ export default function AddSachets({ close }) {
 
    return (
       <>
-         <Tunnels tunnels={tunnels}>
-            {/* tunnel 1 -> select processing */}
-            <Tunnel layer={1}>
-               <SelectProcessing next={closeTunnel} />
-            </Tunnel>
-
-            {/* tunnel 2 -> select Sachet */}
-            <Tunnel layer={2}>
-               <SelectSachet
-                  next={closeTunnel}
-                  serving={recipeState.activeServing}
-               />
-            </Tunnel>
-         </Tunnels>
          <TunnelContainer>
             <TunnelHeader
                title='Add Ingredients'
@@ -152,7 +128,7 @@ export default function AddSachets({ close }) {
                                        >
                                           <IconButton
                                              type='outline'
-                                             onClick={() => openTunnel(1)}
+                                             onClick={() => openTunnel(4)}
                                           >
                                              <EditIcon />
                                           </IconButton>
@@ -165,7 +141,7 @@ export default function AddSachets({ close }) {
                                  <FlexWidth width='3'>
                                     <ButtonTile
                                        onClick={() => {
-                                          openTunnel(1)
+                                          openTunnel(4)
                                        }}
                                        type='secondary'
                                        text='Select Processing'

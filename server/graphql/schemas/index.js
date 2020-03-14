@@ -37,6 +37,11 @@ module.exports = buildSchema(`
         unit: String!
     }
 
+    type Unit {
+        _id : ID!
+        title : String!
+    }
+
     type Mode {
         isActive: Boolean!
         type: String!
@@ -88,6 +93,7 @@ module.exports = buildSchema(`
         processingNames: [ProcessingName!]!
         stations: [Station!]!
         supplierItems: [Item!]!
+        units: [Unit!]!
     }
 
 

@@ -5,6 +5,7 @@ const Station = require('./models/station.model')
 const Item = require('./models/item.model')
 const Packaging = require('./models/packaging.model')
 const LabelTemplate = require('./models/labelTemplate.model')
+const Unit = require('./models/unit.model')
 
 // ProcessingNames.insertMany([
 //    {
@@ -69,5 +70,17 @@ const LabelTemplate = require('./models/labelTemplate.model')
 //    },
 //    {
 //       title: 'TEMP 2'
+//    }
+// ])
+
+// Unit.insertMany([
+//    {
+//       title: 'gms'
+//    },
+//    {
+//       title: 'kgs'
+//    },
+//    {
+//       title: 'lbs'
 //    }
 // ])

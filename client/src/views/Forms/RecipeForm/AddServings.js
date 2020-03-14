@@ -48,7 +48,7 @@ export default function AddServings({ close, next }) {
                   <Input
                      onChange={changeServingsHandler}
                      type='text'
-                     label='enter'
+                     placeholder='enter'
                      name={serving.id}
                      value={serving.value || ''}
                   />

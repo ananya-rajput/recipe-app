@@ -6,8 +6,18 @@ export const IngredientsSection = styled.div`
 `
 export const IngredientStats = styled.div`
    display: flex;
-   justify-content: space-between;
+   flex-direction: column;
+   align-items: flex-start;
+   justify-content: center;
 `
+export const IngredientTable = styled.div`
+   display: flex;
+   align-items: flex-start;
+   width: 100%;
+   margin-top: 5px;
+   margin-bottom: 20px;
+`
+
 export const TunnelContainer = styled.div`
    padding: 30px;
 `
@@ -45,4 +55,27 @@ export const RecipeType = styled.div`
 export const Container = styled.div`
    margin: 24px auto;
    width: 50%;
+`
+export const CustomButton = styled.button`
+   border: 0;
+   outline: 0;
+   border-bottom: ${props => (props.active ? '0' : '1px solid #ececec')};
+   width: 80%;
+   float: left;
+   padding: 20px;
+   padding-left: 5px;
+   text-align: left;
+   background-color: ${props => (props.active ? '#555b6e' : '#fff')};
+   color: ${props => (props.active ? '#fff' : '#555b6e')};
+`
+export const SelectButton = styled.button`
+   font-weight: 400;
+   font-size: 16px;
+   cursor: pointer;
+   color: #00a7e1;
+   border: none;
+   background: transparent;
+   &:hover {
+      background: #f5f5f5;
+   }
 `

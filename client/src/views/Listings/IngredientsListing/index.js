@@ -32,6 +32,7 @@ import {
 const GET_INGREDIENTS = gql`
    {
       ingredients {
+         _id
          name
       }
    }
@@ -103,7 +104,15 @@ const IngredientsListing = () => {
                   {!loading &&
                      !error &&
                      data.ingredients.map(ingredient => (
-                        <TableRow>
+                        <TableRow
+                           onClick={() =>
+                              addTab(
+                                 ingredient.name,
+                                 'ingredient',
+                                 ingredient._id
+                              )
+                           }
+                        >
                            <TableCell>
                               {' '}
                               <Checkbox checked={false} />{' '}

@@ -73,6 +73,19 @@ const INGREDIENT = gql`
          _id
          name
          image
+         processings {
+            _id
+            sachets {
+               _id
+               quantity {
+                  value
+                  unit
+               }
+            }
+            name {
+               title
+            }
+         }
       }
    }
 `
@@ -214,6 +227,7 @@ const IngredientForm = () => {
       variables: { ID: state.current.ID },
       onCompleted: data => {
          setIngredient(data.ingredient)
+         setProcessings(data.ingredient.processings)
       }
    })
 

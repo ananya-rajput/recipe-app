@@ -16,7 +16,19 @@ module.exports = {
    },
    ingredient: async args => {
       try {
-         const ingredient = await Ingredient.findOne({ _id: args.id })
+         const ingredient = await Ingredient.findOne({ _id: args.id }).populate(
+            {
+               path: 'processings',
+               populate: [
+                  {
+                     path: 'sachets'
+                  },
+                  {
+                     path: 'name'
+                  }
+               ]
+            }
+         )
          console.log(ingredient)
          return ingredient
       } catch (err) {

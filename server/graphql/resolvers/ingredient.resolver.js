@@ -117,7 +117,6 @@ module.exports = {
                path: 'name'
             }
          })
-         console.log(updatedIngredient)
          return updatedIngredient
       } catch (err) {
          throw err

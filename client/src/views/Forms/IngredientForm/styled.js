@@ -91,7 +91,7 @@ export const ImageContainer = styled.div`
 `
 
 export const StyledSection = styled.div`
-   display: grid;
+   display: ${props => (props.hasElements ? 'grid' : 'block')};
    grid-template-columns: 20% 80%;
    grid-gap: ${props => (props.spacing === 'md' ? '28px' : '40px')};
 `
@@ -103,6 +103,7 @@ export const StyledListing = styled.div`
 `
 
 export const StyledDisplay = styled.div`
+   display: ${props => (props.hasElements ? 'block' : 'none')}
    background: #fff;
    padding: ${props => (props.contains === 'sachets' ? '0px' : '32px 28px')};
    margin-top: ${props => (props.contains === 'sachets' ? '16px' : '0')};

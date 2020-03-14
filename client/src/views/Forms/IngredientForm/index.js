@@ -606,11 +606,13 @@ const IngredientForm = () => {
                      </Tunnel>
                   </Tunnels>
                </StyledTop>
-               <StyledSection>
+               <StyledSection hasElements={processings.length !== 0}>
                   <StyledListing>
                      <StyledListingHeader>
                         <h3>Processings ({processings.length})</h3>
-                        <AddIcon color='#555B6E' size='18' stroke='2.5' />
+                        <span onClick={() => openProcessingTunnel(1)}>
+                           <AddIcon color='#555B6E' size='18' stroke='2.5' />
+                        </span>
                      </StyledListingHeader>
                      {processings.length > 0 &&
                         processings.map(processing => (
@@ -715,8 +717,11 @@ const IngredientForm = () => {
                         </Tunnel>
                      </Tunnels>
                   </StyledListing>
-                  <StyledDisplay>
-                     <StyledSection spacing='md'>
+                  <StyledDisplay hasElements={processings.length !== 0}>
+                     <StyledSection
+                        spacing='md'
+                        hasElements={currentProcessing?.sachets?.length !== 0}
+                     >
                         {currentProcessing?.sachets?.length > 0 ? (
                            <>
                               <StyledListing>
@@ -725,11 +730,14 @@ const IngredientForm = () => {
                                        Sachets (
                                        {currentProcessing.sachets.length})
                                     </h3>
-                                    <AddIcon
-                                       color='#555B6E'
-                                       size='18'
-                                       stroke='2.5'
-                                    />
+                                    <span>
+                                       <AddIcon
+                                          color='#555B6E'
+                                          size='18'
+                                          stroke='2.5'
+                                          onClick={() => openSachetTunnel(1)}
+                                       />
+                                    </span>
                                  </StyledListingHeader>
                                  {currentProcessing.sachets.map(sachet => (
                                     <StyledListingTile
@@ -743,9 +751,16 @@ const IngredientForm = () => {
                                        <p>Available: 12/40 pkt</p>
                                     </StyledListingTile>
                                  ))}
-                                 <ButtonTile type='primary' size='lg' />
+                                 <ButtonTile
+                                    type='primary'
+                                    size='lg'
+                                    onClick={() => openSachetTunnel(1)}
+                                 />
                               </StyledListing>
-                              <StyledDisplay contains='sachets'>
+                              <StyledDisplay
+                                 contains='sachets'
+                                 hasElements={true}
+                              >
                                  <StyledTabsContainer>
                                     <StyledTab
                                        className={

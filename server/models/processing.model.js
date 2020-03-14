@@ -23,6 +23,7 @@ const ProcessingSchema = new mongoose.Schema(
    }
 )
 
+// This hook doesn't work rn
 ProcessingSchema.pre('remove', async function(next) {
    console.log('Working')
    await Sachet.deleteMany({ _id: { $in: this.sachets } })

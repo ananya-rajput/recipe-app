@@ -105,6 +105,7 @@ const IngredientsListing = () => {
                      !error &&
                      data.ingredients.map(ingredient => (
                         <TableRow
+                           key={ingredient._id}
                            onClick={() =>
                               addTab(
                                  ingredient.name,

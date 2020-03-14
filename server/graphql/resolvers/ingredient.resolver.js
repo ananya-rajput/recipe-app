@@ -123,6 +123,27 @@ module.exports = {
          throw err
       }
    },
+   deleteProcessing: async args => {
+      try {
+         await Processing.deleteOne({ _id: args.input.processingId })
+         const ingredient = await Ingredient.findOne({
+            _id: args.input.ingredientId
+         })
+         const newProcessings = ingredient.processings.filter(
+            processing => processing !== args.input.processingId
+         )
+         ingredient.processings = newProcessings
+         await ingredient.save()
+         return {
+            success: true,
+            message: 'Processing deleted!',
+            // return id from deleted obj, later
+            ID: args.input.processingId
+         }
+      } catch (err) {
+         throw err
+      }
+   },
    addSachet: async args => {
       try {
          const processing = await Processing.findOne({

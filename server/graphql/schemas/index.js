@@ -73,6 +73,12 @@ module.exports = buildSchema(`
         name: String!
     }
 
+    type Response {
+        success: Boolean!
+        message: String!
+        ID: ID
+    }
+
     
     # ---------- Queries ----------
 
@@ -135,10 +141,16 @@ module.exports = buildSchema(`
         labelTemplate: ID
     }
 
+    input DeleteProcessingInput {
+        ingredientId: ID!
+        processingId: ID!
+    }
+
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
         updateIngredient(input: UpdateIngredientInput): Ingredient!
         addProcessings(input: AddProcessingsInput): Ingredient!
+        deleteProcessing(input: DeleteProcessingInput): Response!
         addSachet(input: AddSachetInput): Ingredient!
     }
 

@@ -55,6 +55,7 @@ import {
    StyledDisplay,
    StyledListingHeader,
    StyledListingTile,
+   Actions,
    StyledTabsContainer,
    StyledTab,
    StyledTabContent,
@@ -161,6 +162,16 @@ const ADD_PROCESSINGS = gql`
    }
 `
 
+const DELETE_PROCESSING = gql`
+   mutation DeleteProcessing($input: DeleteProcessingInput) {
+      deleteProcessing(input: $input) {
+         success
+         message
+         ID
+      }
+   }
+`
+
 const ADD_SACHET = gql`
    mutation AddSachet($input: AddSachetInput!) {
       addSachet(input: $input) {
@@ -242,6 +253,17 @@ const IngredientForm = () => {
          setProcessings(data.addProcessings.processings)
       }
    })
+   const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
+      onCompleted: data => {
+         console.log(data.deleteProcessing)
+         if (data.deleteProcessing.success) {
+            const newProcessings = processings.filter(
+               processing => processing._id !== data.deleteProcessing.ID
+            )
+            setProcessings(newProcessings)
+         }
+      }
+   })
    const [addSachet] = useMutation(ADD_SACHET, {
       onCompleted: data => {
          setIngredient(data.addSachet)
@@ -257,13 +279,23 @@ const IngredientForm = () => {
             image: ingredient.image
          }
       })
-      console.log(state.current)
       if (state.current.title !== ingredient.name) {
          dispatch({
             type: 'SET_TITLE',
             payload: { title: ingredient.name, oldTitle: state.current.title }
          })
       }
+   }
+
+   const deleteProcessingHandler = processingId => {
+      deleteProcessing({
+         variables: {
+            input: {
+               ingredientId: ingredient._id,
+               processingId
+            }
+         }
+      })
    }
 
    // Side Effects
@@ -583,11 +615,25 @@ const IngredientForm = () => {
                      {processings.length > 0 &&
                         processings.map(processing => (
                            <StyledListingTile
+                              key={processing._id}
                               active={processing._id === selectedProcessingID}
                               onClick={() =>
                                  setSelectedProcessingID(processing._id)
                               }
                            >
+                              <Actions
+                                 active={
+                                    processing._id === selectedProcessingID
+                                 }
+                              >
+                                 <span
+                                    onClick={() =>
+                                       deleteProcessingHandler(processing._id)
+                                    }
+                                 >
+                                    <DeleteIcon />
+                                 </span>
+                              </Actions>
                               <h3>{processing.name.title}</h3>
                               <p>Sachets: {processing.sachets.length}</p>
                               <p>Recipes: 2000</p>

@@ -130,6 +130,7 @@ export const StyledListingTile = styled.div`
    color: ${props => (props.active ? '#fff' : '#555B6E')};
    padding: 20px 12px;
    cursor: pointer;
+   position: relative;
 
    h3 {
       margin-bottom: 20px;
@@ -146,6 +147,17 @@ export const StyledListingTile = styled.div`
       &:not(:last-child) {
          margin-bottom: 8px;
       }
+   }
+`
+
+export const Actions = styled.div`
+   display: ${props => (props.active ? 'block' : 'none')}
+   position: absolute;
+   top: 20px;
+   right: 0;
+
+   span {
+      margin-right: 12px;
    }
 `
 

@@ -268,6 +268,7 @@ const IngredientForm = () => {
       onCompleted: data => {
          setIngredient(data.addSachet)
          setProcessings(data.addSachet.processings)
+         setCurrentSachet(data.addSachet.processings[0].sachets[0])
       }
    })
 
@@ -386,7 +387,7 @@ const IngredientForm = () => {
    const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
    const [sachetForm, setSachetForm] = React.useState({
       _id: '',
-      quantity: { value: '', unit: '' },
+      quantity: { value: '', unit: '1' },
       tracking: true,
       modes: [
          {
@@ -742,6 +743,9 @@ const IngredientForm = () => {
                                  {currentProcessing.sachets.map(sachet => (
                                     <StyledListingTile
                                        active={sachet._id === selectedSachetID}
+                                       onClick={() =>
+                                          setSelectedSachetID(sachet._id)
+                                       }
                                     >
                                        <h3>
                                           {sachet.quantity.value}{' '}

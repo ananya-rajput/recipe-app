@@ -463,6 +463,31 @@ const IngredientForm = () => {
          }
       })
       closeSachetTunnel(1)
+      setSachetForm({
+         _id: '',
+         quantity: { value: '', unit: '1' },
+         tracking: true,
+         modes: [
+            {
+               isActive: false,
+               type: 'Real Time',
+               station: '',
+               supplierItems: []
+            },
+            {
+               isActive: false,
+               type: 'Co-Packer',
+               station: '',
+               supplierItems: []
+            },
+            {
+               isActive: false,
+               type: 'Planned Lot',
+               station: '',
+               supplierItems: []
+            }
+         ]
+      })
    }
 
    // Mode Ops
@@ -515,6 +540,12 @@ const IngredientForm = () => {
       setSachetForm({ ...copySachetForm })
       closeSachetTunnel(3)
       closeSachetTunnel(2)
+      setModeForm({
+         isActive: false,
+         type: '',
+         station: '',
+         supplierItems: []
+      })
    }
 
    return (

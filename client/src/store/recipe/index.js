@@ -7,7 +7,9 @@ const state = {
    recipeType: { id: 2, title: 'Non-Vegetarian' },
    servings: [{ id: 1, value: 0 }],
    ingredients: [],
-   view: {}
+   sachets: [],
+   view: {},
+   activeServing: {}
 }
 
 const reducers = (state, { type, payload }) => {
@@ -29,7 +31,6 @@ const reducers = (state, { type, payload }) => {
          const updatedServings = [...state.servings]
          updatedServings[index] = match
          return { ...state, servings: updatedServings }
-
       case 'ADD_INGREDIENTS':
          return { ...state, ingredients: [...payload] }
 
@@ -45,6 +46,33 @@ const reducers = (state, { type, payload }) => {
       case 'SET_VIEW':
          return { ...state, view: payload }
 
+      case 'ADD_PROCESSING':
+         const currentIngredient = state.ingredients.find(
+            ing => ing.id === payload.ingredient.id
+         )
+         currentIngredient.processing = payload.processing
+         state.ingredients.splice(
+            state.ingredients.indexOf(state.view),
+            1,
+            currentIngredient
+         )
+         return state
+
+      case 'SET_ACTIVE_SERVING':
+         return { ...state, activeServing: payload }
+      case 'ADD_SACHET':
+         //TODO: bug: not push in the sachets as it will result in many sachets
+         return {
+            ...state,
+            sachets: [
+               ...state.sachets,
+               {
+                  ...payload.sachet,
+                  ingredient: state.view,
+                  serving: state.activeServing
+               }
+            ]
+         }
       default:
          return state
    }

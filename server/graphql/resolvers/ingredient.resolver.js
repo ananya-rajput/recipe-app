@@ -90,12 +90,6 @@ module.exports = {
    },
    addProcessings: async args => {
       try {
-         const ingredient = await Ingredient.findOne({
-            _id: args.input.ingredientId
-         })
-         if (!ingredient) {
-            throw Error('No ingredient found!')
-         }
          const processings = await args.input.processingNames.map(
             processingName => {
                const processing = new Processing({
@@ -106,17 +100,30 @@ module.exports = {
                return processing._id
             }
          )
-         ingredient.processings.push(...processings)
-         await ingredient.save()
-         const updatedIngredient = await Ingredient.findOne({
-            _id: args.input.ingredientId
-         }).populate({
-            path: 'processings',
-            populate: {
-               path: 'name'
+         const ingredient = await Ingredient.findOneAndUpdate(
+            {
+               _id: args.input.ingredientId
+            },
+            {
+               $push: {
+                  processings: { $each: processings }
+               }
+            },
+            {
+               new: true
             }
+         ).populate({
+            path: 'processings',
+            populate: [
+               {
+                  path: 'sachets'
+               },
+               {
+                  path: 'name'
+               }
+            ]
          })
-         return updatedIngredient
+         return ingredient.processings
       } catch (err) {
          throw err
       }
@@ -144,29 +151,28 @@ module.exports = {
    },
    addSachet: async args => {
       try {
-         const processing = await Processing.findOne({
-            _id: args.input.processingId
-         })
-         const sachet = new Sachet(args.input.sachet)
-         await sachet.save()
-         processing.sachets.push(sachet._id)
-         await processing.save()
-         const ingredient = await Ingredient.findOne({
-            _id: args.input.ingredientId
-         }).populate({
-            path: 'processings',
-            populate: [
-               {
-                  path: 'name'
-               },
-               {
-                  path: 'sachets'
+         const sachet = await Sachet.create(args.input.sachet)
+         await Processing.findOneAndUpdate(
+            {
+               _id: args.input.processingId
+            },
+            {
+               $push: {
+                  sachets: sachet._id
                }
-            ]
-         })
-         ingredient.sachetCount += 1
-         await ingredient.save()
-         return ingredient
+            }
+         )
+         await Ingredient.findOneAndUpdate(
+            {
+               _id: args.input.ingredientId
+            },
+            {
+               $push: {
+                  sachets: sachet._id
+               }
+            }
+         )
+         return { ID: args.input.processingId, sachet }
       } catch (err) {
          throw err
       }

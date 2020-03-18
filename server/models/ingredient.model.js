@@ -23,11 +23,12 @@ const IngredientSchema = new mongoose.Schema(
             ref: 'Processing'
          }
       ],
-      sachetCount: {
-         type: Number,
-         default: 0,
-         min: 0
-      }
+      sachets: [
+         {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Sachet'
+         }
+      ]
    },
    {
       timestamps: true

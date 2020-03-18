@@ -86,7 +86,9 @@ const INGREDIENT = gql`
             name {
                title
             }
+            recipes
          }
+         sachets
       }
    }
 `
@@ -143,21 +145,17 @@ const ADD_PROCESSINGS = gql`
          }
       ) {
          _id
-         name
-         image
-         processings {
+         sachets {
             _id
-            sachets {
-               _id
-               quantity {
-                  value
-                  unit
-               }
-            }
-            name {
-               title
+            quantity {
+               value
+               unit
             }
          }
+         name {
+            title
+         }
+         recipes
       }
    }
 `
@@ -175,23 +173,15 @@ const DELETE_PROCESSING = gql`
 const ADD_SACHET = gql`
    mutation AddSachet($input: AddSachetInput!) {
       addSachet(input: $input) {
-         _id
-         name
-         processings {
+         ID
+         sachet {
             _id
-            name {
-               _id
-               title
+            quantity {
+               value
+               unit
             }
-            sachets {
-               _id
-               quantity {
-                  value
-                  unit
-               }
-               modes {
-                  type
-               }
+            modes {
+               type
             }
          }
       }
@@ -232,7 +222,8 @@ const IngredientForm = () => {
    const [ingredient, setIngredient] = React.useState({
       _id: '',
       name: '',
-      image: ''
+      image: '',
+      sachets: []
    })
    const { loading, error, data } = useQuery(INGREDIENT, {
       variables: { ID: state.current.ID },
@@ -244,13 +235,13 @@ const IngredientForm = () => {
 
    const [updateIngredient] = useMutation(UPDATE_INGREDIENT, {
       onCompleted: data => {
-         setIngredient(data.updateIngredient)
+         setIngredient({ ...ingredient, ...data.updateIngredient })
       }
    })
    const [addProcessings] = useMutation(ADD_PROCESSINGS, {
       onCompleted: data => {
-         setIngredient(data.addProcessings)
-         setProcessings(data.addProcessings.processings)
+         console.log(data)
+         setProcessings(data.addProcessings)
       }
    })
    const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
@@ -266,9 +257,16 @@ const IngredientForm = () => {
    })
    const [addSachet] = useMutation(ADD_SACHET, {
       onCompleted: data => {
-         setIngredient(data.addSachet)
-         setProcessings(data.addSachet.processings)
-         setCurrentSachet(data.addSachet.processings[0].sachets[0])
+         console.log(data)
+         let copyProcessings = processings
+         const index = copyProcessings.findIndex(
+            proc => proc._id === data.addSachet.ID
+         )
+         copyProcessings[index].sachets.push(data.addSachet.sachet)
+         setProcessings(copyProcessings)
+         setSelectedSachetID(data.addSachet.sachet._id)
+         const newSachets = [...ingredient.sachets, data.addSachet.sachet._id]
+         setIngredient({ ...ingredient, sachets: newSachets })
       }
    })
 
@@ -582,7 +580,7 @@ const IngredientForm = () => {
                         <p>Processings</p>
                      </StyledStat>
                      <StyledStat>
-                        <h2>0</h2>
+                        <h2>{ingredient.sachets.length}</h2>
                         <p> Sachets </p>
                      </StyledStat>
                   </StyledStatsContainer>
@@ -670,7 +668,7 @@ const IngredientForm = () => {
                               </Actions>
                               <h3>{processing.name.title}</h3>
                               <p>Sachets: {processing.sachets.length}</p>
-                              <p>Recipes: 2000</p>
+                              <p>Recipes: {processing.recipes.length}</p>
                            </StyledListingTile>
                         ))}
                      <ButtonTile

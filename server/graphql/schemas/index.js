@@ -11,7 +11,8 @@ module.exports = buildSchema(`
         name: String!
         image: String
         processings: [Processing!]!
-        sachetCount: Int!
+        # Returning ID rn, as we only need length
+        sachets: [ID!]!
     }
 
     type Processing {
@@ -19,7 +20,8 @@ module.exports = buildSchema(`
         isValid: Boolean!
         name: ProcessingName!
         sachets: [Sachet!]!
-        recipeCount: Int!
+        # Returning ID rn, as we only need length
+        recipes: [ID!]!
     }
 
     type ProcessingName {
@@ -85,6 +87,11 @@ module.exports = buildSchema(`
         success: Boolean!
         message: String!
         ID: ID
+    }
+
+    type AddSachetResponse {
+        ID: ID!
+        sachet: Sachet!
     }
 
     
@@ -158,9 +165,9 @@ module.exports = buildSchema(`
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
         updateIngredient(input: UpdateIngredientInput): Ingredient!
-        addProcessings(input: AddProcessingsInput): Ingredient!
+        addProcessings(input: AddProcessingsInput): [Processing!]!
         deleteProcessing(input: DeleteProcessingInput): Response!
-        addSachet(input: AddSachetInput): Ingredient!
+        addSachet(input: AddSachetInput): AddSachetResponse!
     }
 
 

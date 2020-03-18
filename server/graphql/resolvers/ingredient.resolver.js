@@ -29,7 +29,6 @@ module.exports = {
                ]
             }
          )
-         console.log(ingredient)
          return ingredient
       } catch (err) {
          throw err
@@ -165,6 +164,8 @@ module.exports = {
                }
             ]
          })
+         ingredient.sachetCount += 1
+         await ingredient.save()
          return ingredient
       } catch (err) {
          throw err

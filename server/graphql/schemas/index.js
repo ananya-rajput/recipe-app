@@ -7,9 +7,11 @@ module.exports = buildSchema(`
     type Ingredient {
         _id: ID! 
         isValid: Boolean!
+        isPublished: Boolean!
         name: String!
         image: String
         processings: [Processing!]!
+        sachetCount: Int!
     }
 
     type Processing {
@@ -17,6 +19,7 @@ module.exports = buildSchema(`
         isValid: Boolean!
         name: ProcessingName!
         sachets: [Sachet!]!
+        recipeCount: Int!
     }
 
     type ProcessingName {

@@ -16,7 +16,12 @@ const ProcessingSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Sachet'
          }
-      ]
+      ],
+      recipeCount: {
+         type: Number,
+         default: 0,
+         min: 0
+      }
    },
    {
       timestamps: true

@@ -131,14 +131,16 @@ module.exports = {
    deleteProcessing: async args => {
       try {
          await Processing.deleteOne({ _id: args.input.processingId })
-         const ingredient = await Ingredient.findOne({
-            _id: args.input.ingredientId
-         })
-         const newProcessings = ingredient.processings.filter(
-            processing => processing !== args.input.processingId
+         await Ingredient.findOneAndUpdate(
+            {
+               _id: args.input.ingredientId
+            },
+            {
+               $pull: {
+                  processings: args.input.processingId
+               }
+            }
          )
-         ingredient.processings = newProcessings
-         await ingredient.save()
          return {
             success: true,
             message: 'Processing deleted!',

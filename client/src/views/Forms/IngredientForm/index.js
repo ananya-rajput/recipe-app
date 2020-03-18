@@ -188,6 +188,16 @@ const ADD_SACHET = gql`
    }
 `
 
+const DELETE_SACHET = gql`
+   mutation DeleteSachet($input: DeleteSachetInput!) {
+      deleteSachet(input: $input) {
+         success
+         message
+         ID
+      }
+   }
+`
+
 const IngredientForm = () => {
    const { state, dispatch } = React.useContext(Context)
    const {
@@ -257,7 +267,6 @@ const IngredientForm = () => {
    })
    const [addSachet] = useMutation(ADD_SACHET, {
       onCompleted: data => {
-         console.log(data)
          let copyProcessings = processings
          const index = copyProcessings.findIndex(
             proc => proc._id === data.addSachet.ID
@@ -267,6 +276,31 @@ const IngredientForm = () => {
          setSelectedSachetID(data.addSachet.sachet._id)
          const newSachets = [...ingredient.sachets, data.addSachet.sachet._id]
          setIngredient({ ...ingredient, sachets: newSachets })
+      }
+   })
+   const [deleteSachet] = useMutation(DELETE_SACHET, {
+      onCompleted: data => {
+         console.log(data)
+         let copyProcessings = processings
+         const index = copyProcessings.findIndex(
+            proc => proc._id === selectedProcessingID
+         )
+         let updatedProcessing = copyProcessings[index]
+         updatedProcessing.sachets = updatedProcessing.sachets.filter(
+            sachet => sachet._id !== data.deleteSachet.ID
+         )
+         copyProcessings[index] = updatedProcessing
+         setProcessings(copyProcessings)
+         let copySachets = ingredient.sachets.filter(
+            id => id !== data.deleteSachet.ID
+         )
+         setIngredient({ ...ingredient, sachets: copySachets })
+         if (processings[index].sachets.length) {
+            setSelectedSachetID(
+               processings[index].sachets[processings[index].sachets.length - 1]
+                  ._id
+            )
+         }
       }
    })
 
@@ -292,6 +326,18 @@ const IngredientForm = () => {
             input: {
                ingredientId: ingredient._id,
                processingId
+            }
+         }
+      })
+   }
+
+   const deleteSachetHandler = sachetId => {
+      deleteSachet({
+         variables: {
+            input: {
+               ingredientId: ingredient._id,
+               processingId: selectedProcessingID,
+               sachetId
             }
          }
       })
@@ -776,6 +822,19 @@ const IngredientForm = () => {
                                           setSelectedSachetID(sachet._id)
                                        }
                                     >
+                                       <Actions
+                                          active={
+                                             sachet._id === selectedSachetID
+                                          }
+                                       >
+                                          <span
+                                             onClick={() =>
+                                                deleteSachetHandler(sachet._id)
+                                             }
+                                          >
+                                             <DeleteIcon />
+                                          </span>
+                                       </Actions>
                                        <h3>
                                           {sachet.quantity.value}{' '}
                                           {sachet.quantity.unit}

@@ -176,5 +176,33 @@ module.exports = {
       } catch (err) {
          throw err
       }
+   },
+   deleteSachet: async args => {
+      try {
+         await Sachet.findOneAndDelete({ _id: args.input.sachetId })
+         await Ingredient.findOneAndUpdate(
+            { _id: args.input.ingredientId },
+            {
+               $pull: {
+                  sachets: args.input.sachetId
+               }
+            }
+         )
+         await Processing.findOneAndUpdate(
+            { _id: args.input.processingId },
+            {
+               $pull: {
+                  sachets: args.input.sachetId
+               }
+            }
+         )
+         return {
+            success: true,
+            message: 'Sachet removed!',
+            ID: args.input.sachetId
+         }
+      } catch (err) {
+         throw err
+      }
    }
 }

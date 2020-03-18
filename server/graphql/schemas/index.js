@@ -162,12 +162,19 @@ module.exports = buildSchema(`
         processingId: ID!
     }
 
+    input DeleteSachetInput {
+        ingredientId: ID!
+        processingId: ID!
+        sachetId: ID!
+    }
+
     type RootMutation {
         createIngredient(input: IngredientInput): Ingredient!
         updateIngredient(input: UpdateIngredientInput): Ingredient!
         addProcessings(input: AddProcessingsInput): [Processing!]!
         deleteProcessing(input: DeleteProcessingInput): Response!
         addSachet(input: AddSachetInput): AddSachetResponse!
+        deleteSachet(input: DeleteSachetInput): Response!
     }
 
 

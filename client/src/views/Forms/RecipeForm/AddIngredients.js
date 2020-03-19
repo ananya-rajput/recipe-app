@@ -30,6 +30,7 @@ import SelectProcessing from './SelectProcessing'
 import SelectSachet from './SelectSachet'
 import Servings from './Servings'
 import AddIcon from '../../../assets/icons/Add'
+import EditIcon from '../../../assets/icons/Edit'
 
 export default function AddIngredients() {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -45,7 +46,7 @@ export default function AddIngredients() {
                <SelectIngredients close={closeTunnel} next={closeTunnel} />
             </Tunnel>
             <Tunnel layer={3} size='lg'>
-               <AddSachets close={closeTunnel} openTunnel={openTunnel} />
+               <AddSachets close={closeTunnel} openTunnel={closeTunnel} />
             </Tunnel>
             {/* tunnel 1 -> select processing */}
             <Tunnel layer={4}>
@@ -66,6 +67,11 @@ export default function AddIngredients() {
                <Text as='subtitle'>
                   Ingredients ({recipeState.ingredients.length})
                </Text>
+               {recipeState.ingredients.length > 0 && (
+                  <IconButton type='ghost' onClick={() => openTunnel(2)}>
+                     <EditIcon />
+                  </IconButton>
+               )}
             </Stats>
 
             {recipeState.ingredients.length > 0 ? (
@@ -91,6 +97,7 @@ export default function AddIngredients() {
                               <TableCell>
                                  {ingredient?.processing?.title || (
                                     <IconButton
+                                       type='outline'
                                        onClick={() => {
                                           recipeDispatch({
                                              type: 'SET_VIEW',
@@ -119,12 +126,14 @@ export default function AddIngredients() {
                </IngredientTable>
             ) : null}
 
-            <ButtonTile
-               as='button'
-               type='secondary'
-               text='Select Ingredients'
-               onClick={() => openTunnel(2)}
-            />
+            {recipeState.ingredients.length === 0 && (
+               <ButtonTile
+                  as='button'
+                  type='secondary'
+                  text='Select Ingredients'
+                  onClick={() => openTunnel(2)}
+               />
+            )}
          </IngredientsSection>
       </>
    )

@@ -2,11 +2,12 @@ import React, { useContext } from 'react'
 
 import { Context as RecipeContext } from '../../../store/recipe/index'
 
-import { Text, Input, ButtonTile, HelperText } from '@dailykit/ui'
+import { Text, Input, ButtonTile, HelperText, IconButton } from '@dailykit/ui'
 
 import { TunnelContainer, ServingsInput } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
+import CloseIcon from '../../../assets/icons/Close'
 
 export default function AddServings({ close, next }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -17,11 +18,11 @@ export default function AddServings({ close, next }) {
       recipeDispatch({ type: 'ADD_SERVING' })
    }
 
-   const changeServingsHandler = e => {
-      const index = e.target.name - 1
+   const changeServingsHandler = (serving, e) => {
+      const id = serving.id
       recipeDispatch({
          type: 'CHANGE_SERVINGS',
-         payload: { index, value: e.target.value }
+         payload: { id, value: e.target.value }
       })
    }
 
@@ -42,26 +43,43 @@ export default function AddServings({ close, next }) {
          <Spacer />
          <Text as='subtitle'>Enter Servings:</Text>
          <br />
-         {recipeState.servings.map(serving => (
-            <React.Fragment key={serving.id}>
-               <ServingsInput>
-                  <div>{serving.id}.</div>
-                  <Input
-                     onChange={changeServingsHandler}
-                     type='text'
-                     placeholder='enter'
-                     name={serving.id}
-                     value={serving.value || ''}
-                  />
-               </ServingsInput>
-               {serving.value <= 0 ? (
-                  <HelperText
-                     type='hint'
-                     message='fill this first to continue adding new servings!'
-                  />
-               ) : null}
-            </React.Fragment>
-         ))}
+         <ol>
+            {recipeState.servings.map(serving => (
+               <React.Fragment>
+                  <li key={serving.id}>
+                     <ServingsInput>
+                        <Input
+                           onChange={e => changeServingsHandler(serving, e)}
+                           type='text'
+                           placeholder='enter'
+                           name={serving.id}
+                           value={serving.value || ''}
+                        />
+                        {serving.value > 0 && (
+                           <IconButton
+                              type='outline'
+                              onClick={() => {
+                                 recipeDispatch({
+                                    type: 'REMOVE_SERVING',
+                                    payload: serving
+                                 })
+                              }}
+                           >
+                              <CloseIcon />
+                           </IconButton>
+                        )}
+                     </ServingsInput>
+                  </li>
+
+                  {serving.value <= 0 ? (
+                     <HelperText
+                        type='hint'
+                        message='fill this first to continue adding new servings!'
+                     />
+                  ) : null}
+               </React.Fragment>
+            ))}
+         </ol>
          <br />
          <ButtonTile
             as='button'

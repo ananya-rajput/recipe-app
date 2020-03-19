@@ -38,12 +38,16 @@ const reducers = (state, { type, payload }) => {
          return { ...state, servings: newServings }
 
       case 'CHANGE_SERVINGS':
-         const { index } = payload
-         const match = state.servings[index]
+         const servingId = payload.id
+
+         const match = state.servings.find(serving => serving.id === servingId)
+         const index = state.servings.findIndex(
+            serving => serving.id === servingId
+         )
          match.value = payload.value
          const updatedServings = [...state.servings]
          updatedServings[index] = match
-         return { ...state, servings: updatedServings }
+         return { ...state }
       case 'ADD_INGREDIENTS':
          return { ...state, ingredients: [...payload] }
 

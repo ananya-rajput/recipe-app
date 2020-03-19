@@ -39,7 +39,11 @@ export const StyledTableHeader = styled.div`
    justify-content: space-between;
 `
 
-export const StyledTableActions = styled.div``
+export const StyledTableActions = styled.div`
+   display: grid;
+   grid-auto-flow: column;
+   grid-gap: 16px;
+`
 export const StyledContent = styled.div`
    margin-top: 32px;
 `

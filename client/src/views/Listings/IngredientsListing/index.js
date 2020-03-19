@@ -14,7 +14,11 @@ import {
 import { generateRandomString } from '../../../utils'
 
 // Icons
-import { AddIcon } from '../../../assets/icons'
+import {
+   AddIcon,
+   ChevronLeftIcon,
+   ChevronRightIcon
+} from '../../../assets/icons'
 
 // State
 import { Context } from '../../../store/tabs'
@@ -25,7 +29,8 @@ import {
    StyledTableHeader,
    StyledTableActions,
    StyledHeader,
-   StyledContent
+   StyledContent,
+   StyledPagination
 } from '../styled'
 
 // Queries
@@ -72,7 +77,15 @@ const IngredientsListing = () => {
       <StyledWrapper>
          <StyledHeader>
             <h1>Ingredients</h1>
-            <p> pagination </p>
+            <StyledPagination>
+               {data?.ingredients?.length}
+               <span disabled={true}>
+                  <ChevronLeftIcon />
+               </span>
+               <span>
+                  <ChevronRightIcon />
+               </span>
+            </StyledPagination>
          </StyledHeader>
          <StyledTableHeader>
             <p>filters</p>

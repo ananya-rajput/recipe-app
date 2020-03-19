@@ -10,14 +10,15 @@ import {
    TableHead,
    TableBody,
    TableRow,
-   TableCell
+   TableCell,
+   IconButton
 } from '@dailykit/ui'
 
 import { Context as RecipeContext } from '../../../store/recipe/index'
 
 import {
    IngredientsSection,
-   IngredientStats,
+   Stats,
    IngredientTable,
    SelectButton
 } from './styled'
@@ -27,6 +28,8 @@ import SelectIngredients from './SelectIngredients'
 import AddSachets from './AddSachets'
 import SelectProcessing from './SelectProcessing'
 import SelectSachet from './SelectSachet'
+import Servings from './Servings'
+import AddIcon from '../../../assets/icons/Add'
 
 export default function AddIngredients() {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -36,10 +39,10 @@ export default function AddIngredients() {
       <>
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1}>
-               <AddServings close={closeTunnel} next={openTunnel} />
+               <AddServings close={closeTunnel} next={closeTunnel} />
             </Tunnel>
             <Tunnel layer={2}>
-               <SelectIngredients close={closeTunnel} next={openTunnel} />
+               <SelectIngredients close={closeTunnel} next={closeTunnel} />
             </Tunnel>
             <Tunnel layer={3} size='lg'>
                <AddSachets close={closeTunnel} openTunnel={openTunnel} />
@@ -57,68 +60,70 @@ export default function AddIngredients() {
                />
             </Tunnel>
          </Tunnels>
+         <Servings open={openTunnel} />
          <IngredientsSection>
-            <IngredientStats>
+            <Stats>
                <Text as='subtitle'>
                   Ingredients ({recipeState.ingredients.length})
                </Text>
+            </Stats>
 
-               {recipeState.ingredients.length > 0 ? (
-                  <IngredientTable>
-                     <Table>
-                        <TableHead>
-                           <TableRow>
+            {recipeState.ingredients.length > 0 ? (
+               <IngredientTable>
+                  <Table>
+                     <TableHead>
+                        <TableRow>
+                           <TableCell></TableCell>
+                           <TableCell>Ingredient Name</TableCell>
+                           <TableCell align='center'>Processing</TableCell>
+                           {recipeState.servings.map(serving => (
+                              <TableCell key={serving.id}>
+                                 {serving.value}
+                              </TableCell>
+                           ))}
+                        </TableRow>
+                     </TableHead>
+                     <TableBody>
+                        {recipeState.ingredients.map(ingredient => (
+                           <TableRow key={ingredient.id}>
                               <TableCell></TableCell>
-                              <TableCell>Ingredient Name</TableCell>
-                              <TableCell>Processing</TableCell>
+                              <TableCell>{ingredient.title}</TableCell>
+                              <TableCell>
+                                 {ingredient?.processing?.title || (
+                                    <IconButton
+                                       onClick={() => {
+                                          recipeDispatch({
+                                             type: 'SET_VIEW',
+                                             payload: ingredient
+                                          })
+                                          openTunnel(4)
+                                       }}
+                                    >
+                                       <AddIcon color='#00a7e1' />
+                                    </IconButton>
+                                 )}
+                              </TableCell>
                               {recipeState.servings.map(serving => (
                                  <TableCell key={serving.id}>
-                                    {serving.value}
+                                    <Sachet
+                                       ingredient={ingredient}
+                                       serving={serving}
+                                       openTunnel={openTunnel}
+                                    />
                                  </TableCell>
                               ))}
                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                           {recipeState.ingredients.map(ingredient => (
-                              <TableRow key={ingredient.id}>
-                                 <TableCell></TableCell>
-                                 <TableCell>{ingredient.title}</TableCell>
-                                 <TableCell>
-                                    {ingredient?.processing?.title || (
-                                       <SelectButton
-                                          onClick={() => {
-                                             recipeDispatch({
-                                                type: 'SET_VIEW',
-                                                payload: ingredient
-                                             })
-                                             openTunnel(4)
-                                          }}
-                                       >
-                                          Select Processing
-                                       </SelectButton>
-                                    )}
-                                 </TableCell>
-                                 {recipeState.servings.map(serving => (
-                                    <TableCell key={serving.id}>
-                                       <Sachet
-                                          ingredient={ingredient}
-                                          serving={serving}
-                                          openTunnel={openTunnel}
-                                       />
-                                    </TableCell>
-                                 ))}
-                              </TableRow>
-                           ))}
-                        </TableBody>
-                     </Table>
-                  </IngredientTable>
-               ) : null}
-            </IngredientStats>
+                        ))}
+                     </TableBody>
+                  </Table>
+               </IngredientTable>
+            ) : null}
+
             <ButtonTile
                as='button'
                type='secondary'
-               text='Add Ingredient'
-               onClick={() => openTunnel(1)}
+               text='Select Ingredients'
+               onClick={() => openTunnel(2)}
             />
          </IngredientsSection>
       </>

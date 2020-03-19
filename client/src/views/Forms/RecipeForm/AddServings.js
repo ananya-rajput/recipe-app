@@ -35,8 +35,9 @@ export default function AddServings({ close, next }) {
             }}
             next={() => {
                recipeDispatch({ type: 'REFINE_SERVINGS' })
-               next(2)
+               next(1)
             }}
+            nextAction='Add'
          />
          <Spacer />
          <Text as='subtitle'>Enter Servings:</Text>

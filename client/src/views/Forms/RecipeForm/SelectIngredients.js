@@ -33,8 +33,9 @@ export default function SelectIngredients({ close, next }) {
             close={() => close(2)}
             next={() => {
                recipeDispatch({ type: 'ADD_INGREDIENTS', payload: selected })
-               next(3)
+               next(2)
             }}
+            nextAction='Done'
          />
          <Spacer />
 

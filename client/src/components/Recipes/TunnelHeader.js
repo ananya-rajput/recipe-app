@@ -5,7 +5,7 @@ import { TunnelHeaderContainer } from './styled'
 
 import { CloseIcon } from '../../assets/icons'
 
-export default ({ title, next, close }) => {
+export default ({ title, next, close, nextAction }) => {
    return (
       <TunnelHeaderContainer>
          <div>
@@ -16,7 +16,7 @@ export default ({ title, next, close }) => {
          </div>
 
          <TextButton type='solid' onClick={() => next(2)}>
-            Next
+            {nextAction || 'Next'}
          </TextButton>
       </TunnelHeaderContainer>
    )

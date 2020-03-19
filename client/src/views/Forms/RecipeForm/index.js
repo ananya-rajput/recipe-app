@@ -42,7 +42,7 @@ export default function AddRecipeForm() {
    }
 
    const handleTabNameChange = () => {
-      //TODO: add unique code later to the title
+      //TODO: add utils/generateRandomString() later to the title
       const title = `${recipeState.name}`
 
       if (title.length > 0) {
@@ -115,7 +115,6 @@ export default function AddRecipeForm() {
                   text='Add photos to your recipe'
                   helper='upto 1MB &#8226; only JPGs, PNGs, and PDFs are allowed.'
                />
-
                <AddIngredients />
             </Container>
          </ViewWrapper>

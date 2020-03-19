@@ -24,6 +24,19 @@ const reducers = (state, { type, payload }) => {
          const id = state.servings[state.servings.length - 1].id + 1
          return { ...state, servings: [...state.servings, { id, value: 0 }] }
 
+      case 'REMOVE_SERVING':
+         const servingIndexToRemove = state.servings.findIndex(
+            serving =>
+               serving.id === payload.id && serving.value === payload.value
+         )
+
+         const newServings = [...state.servings]
+         newServings.splice(servingIndexToRemove, 1)
+
+         if (newServings.length === 0) newServings.push({ id: 1, value: 0 })
+
+         return { ...state, servings: newServings }
+
       case 'CHANGE_SERVINGS':
          const { index } = payload
          const match = state.servings[index]

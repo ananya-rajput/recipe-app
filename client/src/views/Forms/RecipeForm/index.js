@@ -21,7 +21,7 @@ export default function AddRecipeForm() {
       initialRecipeState
    )
 
-   const { dispatch } = useContext(Context)
+   const { state, dispatch } = useContext(Context)
 
    const recipeTypeOptions = [
       { id: 1, title: 'Vegetarian' },
@@ -47,13 +47,13 @@ export default function AddRecipeForm() {
 
       if (title.length > 0) {
          dispatch({
-            type: 'SET_RECIPE_TITLE',
-            payload: { title, type: 'forms', view: 'recipe' }
+            type: 'SET_TITLE',
+            payload: { title, oldTitle: state.current.title }
          })
       } else {
          dispatch({
-            type: 'SET_RECIPE_TITLE',
-            payload: { title: 'Untitled Recipe', type: 'forms', view: 'recipe' }
+            type: 'SET_TITLE',
+            payload: { title: 'Untitled Recipe', oldTitle: state.current.title }
          })
       }
    }

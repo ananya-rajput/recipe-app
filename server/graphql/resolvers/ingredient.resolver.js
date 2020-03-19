@@ -130,7 +130,14 @@ module.exports = {
    },
    deleteProcessing: async args => {
       try {
-         await Processing.deleteOne({ _id: args.input.processingId })
+         // This will be done using pre hook later
+         const processing = await Processing.findOne({
+            _id: args.input.processingId
+         })
+         await Sachet.deleteMany({
+            _id: { $in: processing.sachets }
+         })
+         await processing.remove()
          await Ingredient.findOneAndUpdate(
             {
                _id: args.input.ingredientId

@@ -6,6 +6,7 @@ import { Context as RecipeContext } from '../../../store/recipe/index'
 
 import { IngredientsSection, Stats, CustomCrossButton } from './styled'
 import AddIcon from '../../../assets/icons/Add'
+import UserIcon from '../../../assets/icons/User'
 
 export default function Servings({ open }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -36,7 +37,10 @@ export default function Servings({ open }) {
                {recipeState.servings.map(serving =>
                   serving.value !== 0 ? (
                      <Tag key={serving.id}>
-                        {serving.value}
+                        <UserIcon />
+                        <span style={{ marginLeft: '5px' }}>
+                           {serving.value}
+                        </span>
                         <CustomCrossButton
                            onClick={() => ServinRemoveHandler(serving)}
                         >

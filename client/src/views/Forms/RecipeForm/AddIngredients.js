@@ -31,6 +31,7 @@ import SelectSachet from './SelectSachet'
 import Servings from './Servings'
 import AddIcon from '../../../assets/icons/Add'
 import EditIcon from '../../../assets/icons/Edit'
+import UserIcon from '../../../assets/icons/User'
 
 export default function AddIngredients() {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -84,7 +85,10 @@ export default function AddIngredients() {
                            <TableCell align='center'>Processing</TableCell>
                            {recipeState.servings.map(serving => (
                               <TableCell key={serving.id}>
-                                 {serving.value}
+                                 <UserIcon />
+                                 <span style={{ marginLeft: '5px' }}>
+                                    {serving.value}
+                                 </span>
                               </TableCell>
                            ))}
                         </TableRow>

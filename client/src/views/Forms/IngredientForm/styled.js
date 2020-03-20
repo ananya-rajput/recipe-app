@@ -219,8 +219,9 @@ export const StyledTable = styled.table`
          color: #888d9d;
 
          th {
-            padding: 8px 0;
+            padding: 8px 20px;
             font-weight: normal;
+            text-align: left;
          }
       }
    }
@@ -231,6 +232,7 @@ export const StyledTable = styled.table`
          font-size: 14px;
          line-height: 14px;
          color: #888d9d;
+         height: 100px;
 
          &:not(:last-child) {
             td {
@@ -239,7 +241,9 @@ export const StyledTable = styled.table`
          }
 
          td {
-            padding: 20px;
+            padding: 0px 20px;
+            align-items: center;
+            height: inherit;
 
             &:first-child {
                display: flex;

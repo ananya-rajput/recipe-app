@@ -62,7 +62,7 @@ module.exports = {
    },
    packagings: async () => {
       try {
-         const packagings = await packagings.find()
+         const packagings = await Packaging.find()
          return packagings
       } catch (err) {
          throw err

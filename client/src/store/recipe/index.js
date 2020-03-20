@@ -1,8 +1,8 @@
 import React from 'react'
 
-const Context = React.createContext()
+export const Context = React.createContext()
 
-const state = {
+export const state = {
    name: '',
    recipeType: { id: 2, title: 'Non-Vegetarian' },
    servings: [{ id: 1, value: 0 }],
@@ -12,7 +12,7 @@ const state = {
    activeServing: {}
 }
 
-const reducers = (state, { type, payload }) => {
+export const reducers = (state, { type, payload }) => {
    switch (type) {
       case 'RECIPE_NAME_CHANGE':
          return { ...state, name: payload.name }
@@ -94,5 +94,3 @@ const reducers = (state, { type, payload }) => {
          return state
    }
 }
-
-export { Context, state, reducers }

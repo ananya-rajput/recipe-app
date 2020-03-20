@@ -5,6 +5,8 @@ import DeleteIcon from './Delete'
 import AddIcon from './Add'
 import CodeIcon from './Code'
 import UserIcon from './User'
+import ChevronLeftIcon from './ChevronLeft'
+import ChevronRightIcon from './ChevronRight'
 
 export {
    MenuIcon,
@@ -13,5 +15,7 @@ export {
    DeleteIcon,
    AddIcon,
    CodeIcon,
-   UserIcon
+   UserIcon,
+   ChevronLeftIcon,
+   ChevronRightIcon
 }

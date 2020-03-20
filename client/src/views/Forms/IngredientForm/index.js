@@ -18,7 +18,8 @@ import {
    useMultiList,
    Toggle,
    Checkbox,
-   useSingleList
+   useSingleList,
+   RadioGroup
 } from '@dailykit/ui'
 
 // Global State
@@ -114,6 +115,24 @@ const FETCH_STATIONS = gql`
 const FETCH_SUPPLIER_ITEMS = gql`
    {
       supplierItems {
+         _id
+         title
+      }
+   }
+`
+
+const FETCH_PACKAGINGS = gql`
+   {
+      packagings {
+         _id
+         title
+      }
+   }
+`
+
+const FETCH_LABEL_TEMPLATES = gql`
+   {
+      labelTemplates {
          _id
          title
       }
@@ -225,6 +244,24 @@ const IngredientForm = () => {
    } = useQuery(FETCH_SUPPLIER_ITEMS, {
       onCompleted: data => {
          supplierItemsList.push(...data.supplierItems)
+      }
+   })
+   const {
+      loading: packagingsLoading,
+      error: packagingsError,
+      data: packagingsData
+   } = useQuery(FETCH_PACKAGINGS, {
+      onCompleted: data => {
+         packagingList.push(...data.packagings)
+      }
+   })
+   const {
+      loading: labelTemplatesLoading,
+      error: labelTemplateError,
+      data: labelTemplateData
+   } = useQuery(FETCH_LABEL_TEMPLATES, {
+      onCompleted: data => {
+         labelTemplateList.push(...data.labelTemplates)
       }
    })
    const [sachets, setSachets] = React.useState([])
@@ -395,9 +432,15 @@ const IngredientForm = () => {
    const [stationsList, currentStation, selectStation] = useSingleList([])
    const [
       supplierItemsList,
-      selectedSupplierItems,
+      currentSupplierItem,
       selectSupplierItem
-   ] = useMultiList([])
+   ] = useSingleList([])
+   const [packagingList, currentPackaging, selectPackaging] = useSingleList([])
+   const [
+      labelTemplateList,
+      currentLabelTemplate,
+      selectLabelTemplate
+   ] = useSingleList([])
 
    // Photo Tunnel
    const [photoTunnel, openPhotoTunnel, closePhotoTunnel] = useTunnel(1)
@@ -429,6 +472,7 @@ const IngredientForm = () => {
 
    // Sachet Tunnel
    const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
+   const [currentMode, setCurrentMode] = React.useState('')
    const [sachetForm, setSachetForm] = React.useState({
       _id: '',
       quantity: { value: '', unit: '1' },
@@ -438,19 +482,31 @@ const IngredientForm = () => {
             isActive: false,
             type: 'Real Time',
             station: '',
-            supplierItems: []
+            supplierItem: '',
+            accuracy: 0,
+            packaging: '',
+            isLabelled: false,
+            labelTemplate: ''
          },
          {
             isActive: false,
             type: 'Co-Packer',
             station: '',
-            supplierItems: []
+            supplierItem: '',
+            accuracy: 0,
+            packaging: '',
+            isLabelled: false,
+            labelTemplate: ''
          },
          {
             isActive: false,
             type: 'Planned Lot',
             station: '',
-            supplierItems: []
+            supplierItem: '',
+            accuracy: 0,
+            packaging: '',
+            isLabelled: false,
+            labelTemplate: ''
          }
       ]
    })
@@ -459,12 +515,77 @@ const IngredientForm = () => {
       { _id: '2', title: 'kgs' },
       { _id: '3', title: 'lbs' }
    ]
+   const accuracyOptions = [
+      {
+         id: 1,
+         title: 'Above 50%',
+         value: 50
+      },
+      {
+         id: 2,
+         title: 'Above 85%',
+         value: 85
+      },
+      {
+         id: 3,
+         title: "Don't weigh",
+         value: 0
+      }
+   ]
    const [modeForm, setModeForm] = React.useState({
       isActive: false,
       type: '',
       station: '',
-      supplierItems: []
+      supplierItem: ''
    })
+
+   const selectAccuracyHandler = value => {
+      let copySachetForm = sachetForm
+      const index = copySachetForm.modes.findIndex(
+         mode => mode.type === currentMode
+      )
+      copySachetForm.modes[index].accuracy = value
+      setSachetForm({ ...copySachetForm })
+      closeLabelTunnel(1)
+   }
+
+   // Packaging Tunnel
+   const [
+      packagingTunnel,
+      openPackagingTunnel,
+      closePackagingTunnel
+   ] = useTunnel(1)
+   const selectPackagingHandler = packaging => {
+      selectPackaging('_id', packaging._id)
+      let copySachetForm = sachetForm
+      const index = copySachetForm.modes.findIndex(
+         mode => mode.type === currentMode
+      )
+      copySachetForm.modes[index].packaging = packaging
+      setSachetForm({ ...copySachetForm })
+      closePackagingTunnel(1)
+   }
+
+   // Lable Ops and Tunnel
+   const [labelTunnel, openLabelTunnel, closeLabelTunnel] = useTunnel(1)
+   const toggleIsLabelled = checked => {
+      let copySachetForm = sachetForm
+      const index = copySachetForm.modes.findIndex(
+         mode => mode.type === currentMode
+      )
+      copySachetForm.modes[index].isLabelled = checked
+      setSachetForm({ ...copySachetForm })
+   }
+   const selectLabelTemplateHandler = labelTemplate => {
+      let copySachetForm = sachetForm
+      const index = copySachetForm.modes.findIndex(
+         mode => mode.type === currentMode
+      )
+      copySachetForm.modes[index].labelTemplate = labelTemplate
+      setSachetForm({ ...copySachetForm })
+      closeLabelTunnel(1)
+   }
+
    const addSachetHandler = async () => {
       let cleanSachet = {
          quantity: {
@@ -479,24 +600,18 @@ const IngredientForm = () => {
             return mode.station !== ''
          })
          .map(mode => {
-            let cleanSupplierItems = mode.supplierItems.map(item => {
-               return {
-                  item: item.item._id,
-                  accuracy: item.accuracy,
-                  packaging: item.packaging._id,
-                  isLabelled: item.isLabelled,
-                  labelTemplate: item.labelTemplate._id
-               }
-            })
             return {
                type: mode.type,
                isActive: mode.isActive,
                station: mode.station._id,
-               supplierItems: cleanSupplierItems
+               supplierItem: mode.supplierItem._id,
+               accuracy: mode.accuracy,
+               packaging: mode.packaging._id,
+               isLabelled: mode.isLabelled,
+               labelTemplate: mode.labelTemplate._id
             }
          })
       cleanSachet.modes = cleanModes
-      console.log(cleanSachet)
       addSachet({
          variables: {
             input: {
@@ -516,19 +631,28 @@ const IngredientForm = () => {
                isActive: false,
                type: 'Real Time',
                station: '',
-               supplierItems: []
+               supplierItem: '',
+               packaging: '',
+               isLabelled: false,
+               labelTemplate: ''
             },
             {
                isActive: false,
                type: 'Co-Packer',
                station: '',
-               supplierItems: []
+               supplierItem: '',
+               packaging: '',
+               isLabelled: false,
+               labelTemplate: ''
             },
             {
                isActive: false,
                type: 'Planned Lot',
                station: '',
-               supplierItems: []
+               supplierItem: '',
+               packaging: '',
+               isLabelled: false,
+               labelTemplate: ''
             }
          ]
       })
@@ -556,30 +680,15 @@ const IngredientForm = () => {
       selectStation('_id', station._id)
       openSachetTunnel(3)
    }
-   const addModeHandler = () => {
-      const newSupplierItems = selectedSupplierItems.map(item => {
-         return {
-            item,
-            // fields below will be removed, and user will be able to configure these once data gets displayed in the table
-            accuracy: 85,
-            packaging: {
-               _id: '5e691d58495e473a90167f88',
-               title: 'PKG 1'
-            },
-            isLabelled: true,
-            labelTemplate: {
-               _id: '5e691d58495e473a90167f8a',
-               title: 'TEMP 1'
-            }
-         }
-      })
-      // setModeForm({ ...modeForm, supplierItems: newSupplierItems })
+   const selectSupplierItemHandler = item => {
+      selectSupplierItem('_id', item._id)
+      let copyModeForm = modeForm
+      copyModeForm.supplierItem = item
       const index = sachetForm.modes.findIndex(
          mode => mode.type === modeForm.type
       )
       const copySachetForm = sachetForm
-      copySachetForm.modes[index] = modeForm
-      copySachetForm.modes[index].supplierItems = newSupplierItems
+      copySachetForm.modes[index] = copyModeForm
       console.log(copySachetForm)
       setSachetForm({ ...copySachetForm })
       closeSachetTunnel(3)
@@ -588,7 +697,7 @@ const IngredientForm = () => {
          isActive: false,
          type: '',
          station: '',
-         supplierItems: []
+         supplierItem: ''
       })
    }
 
@@ -977,7 +1086,7 @@ const IngredientForm = () => {
                                        <tr>
                                           <th>Mode of fulfillment</th>
                                           <th>Station</th>
-                                          <th>Supplier items</th>
+                                          <th>Supplier item</th>
                                           <th>Accuracy range</th>
                                           <th>Packaging</th>
                                           <th>Label</th>
@@ -985,15 +1094,13 @@ const IngredientForm = () => {
                                     </thead>
                                     <tbody>
                                        {sachetForm.modes.map(mode => (
-                                          <tr key={mode.type}>
-                                             <td
-                                                rowSpan={
-                                                   mode.supplierItems.length
-                                                      ? mode.supplierItems
-                                                           .length
-                                                      : 1
-                                                }
-                                             >
+                                          <tr
+                                             key={mode.type}
+                                             onClick={() =>
+                                                setCurrentMode(mode.type)
+                                             }
+                                          >
+                                             <td>
                                                 <Checkbox
                                                    checked={mode.isActive}
                                                    onChange={val =>
@@ -1002,37 +1109,45 @@ const IngredientForm = () => {
                                                 />
                                                 {mode.type}
                                              </td>
-                                             <td
-                                                rowSpan={
-                                                   mode.supplierItems.length
-                                                      ? mode.supplierItems
-                                                           .length
-                                                      : 1
-                                                }
-                                             >
-                                                {mode.station.title}
+                                             <td>{mode.station.title}</td>
+                                             <td>{mode.supplierItem.title}</td>
+                                             <td>
+                                                <RadioGroup
+                                                   options={accuracyOptions}
+                                                   active={2}
+                                                   onChange={option =>
+                                                      selectAccuracyHandler(
+                                                         option.value
+                                                      )
+                                                   }
+                                                />
                                              </td>
                                              <td>
-                                                <table>
-                                                   {mode.supplierItems.map(
-                                                      (item, index) => (
-                                                         <tr key={index}>
-                                                            <td>
-                                                               {item.item.title}
-                                                            </td>
-                                                            <td>
-                                                               {item.item.title}
-                                                            </td>
-                                                            <td>
-                                                               {item.item.title}
-                                                            </td>
-                                                            <td>
-                                                               {item.item.title}
-                                                            </td>
-                                                         </tr>
-                                                      )
-                                                   )}
-                                                </table>
+                                                <ButtonTile
+                                                   type='secondary'
+                                                   text='Packaging'
+                                                   onClick={() =>
+                                                      openPackagingTunnel(1)
+                                                   }
+                                                />
+                                             </td>
+                                             <td>
+                                                <Toggle
+                                                   checked={mode.isLabelled}
+                                                   setChecked={val =>
+                                                      toggleIsLabelled(val)
+                                                   }
+                                                />
+                                                {mode.isLabelled && (
+                                                   <ButtonTile
+                                                      noIcon
+                                                      type='secondary'
+                                                      text='Select Sub Title'
+                                                      onClick={() =>
+                                                         openLabelTunnel(1)
+                                                      }
+                                                   />
+                                                )}
                                              </td>
                                           </tr>
                                        ))}
@@ -1104,36 +1219,20 @@ const IngredientForm = () => {
                                        {modeForm?.station.title}
                                     </h1>
                                  </div>
-                                 <TextButton
-                                    type='solid'
-                                    onClick={addModeHandler}
-                                 >
-                                    Save
-                                 </TextButton>
                               </StyledTunnelHeader>
                               <StyledTunnelMain>
                                  <List>
-                                    <ListSearch
-                                       onChange={value => setSearch(value)}
-                                       placeholder='type what you’re looking for...'
-                                    />
-                                    {selectedSupplierItems.length > 0 && (
-                                       <TagGroup style={{ margin: '8px 0' }}>
-                                          {selectedSupplierItems.map(option => (
-                                             <Tag
-                                                key={option.id}
-                                                title={option.title}
-                                                onClick={() =>
-                                                   selectSupplierItem(
-                                                      '_id',
-                                                      option._id
-                                                   )
-                                                }
-                                             >
-                                                {option.title}
-                                             </Tag>
-                                          ))}
-                                       </TagGroup>
+                                    {Object.keys(currentSupplierItem).length >
+                                    0 ? (
+                                       <ListItem
+                                          type='SSL1'
+                                          title={currentSupplierItem.title}
+                                       />
+                                    ) : (
+                                       <ListSearch
+                                          onChange={value => setSearch(value)}
+                                          placeholder='type what you’re looking for...'
+                                       />
                                     )}
                                     <ListOptions>
                                        {supplierItemsList
@@ -1144,19 +1243,132 @@ const IngredientForm = () => {
                                           )
                                           .map(option => (
                                              <ListItem
-                                                type='MSL1'
+                                                type='SSL1'
                                                 key={option._id}
                                                 title={option.title}
+                                                isActive={
+                                                   option._id ===
+                                                   currentSupplierItem._id
+                                                }
                                                 onClick={() =>
-                                                   selectSupplierItem(
-                                                      '_id',
-                                                      option._id
+                                                   selectSupplierItemHandler(
+                                                      option
                                                    )
                                                 }
-                                                isActive={selectedSupplierItems.find(
-                                                   item =>
-                                                      item._id === option._id
-                                                )}
+                                             />
+                                          ))}
+                                    </ListOptions>
+                                 </List>
+                              </StyledTunnelMain>
+                           </Tunnel>
+                        </Tunnels>
+                        <Tunnels tunnels={packagingTunnel}>
+                           <Tunnel layer={1}>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closePackagingTunnel(1)}
+                                    />
+                                    <h1>
+                                       Add Packaging for Processing:{' '}
+                                       {currentProcessing?.name?.title}
+                                    </h1>
+                                 </div>
+                              </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <List>
+                                    {Object.keys(currentPackaging).length >
+                                    0 ? (
+                                       <ListItem
+                                          type='SSL1'
+                                          title={currentPackaging.title}
+                                       />
+                                    ) : (
+                                       <ListSearch
+                                          onChange={value => setSearch(value)}
+                                          placeholder='type what you’re looking for...'
+                                       />
+                                    )}
+                                    <ListOptions>
+                                       {packagingList
+                                          .filter(option =>
+                                             option.title
+                                                .toLowerCase()
+                                                .includes(search)
+                                          )
+                                          .map(option => (
+                                             <ListItem
+                                                type='SSL1'
+                                                key={option._id}
+                                                title={option.title}
+                                                isActive={
+                                                   option._id ===
+                                                   currentPackaging._id
+                                                }
+                                                onClick={() =>
+                                                   selectPackagingHandler(
+                                                      option
+                                                   )
+                                                }
+                                             />
+                                          ))}
+                                    </ListOptions>
+                                 </List>
+                              </StyledTunnelMain>
+                           </Tunnel>
+                        </Tunnels>
+                        <Tunnels tunnels={labelTunnel}>
+                           <Tunnel layer={1}>
+                              <StyledTunnelHeader>
+                                 <div>
+                                    <CloseIcon
+                                       size='20px'
+                                       color='#888D9D'
+                                       onClick={() => closeLabelTunnel(1)}
+                                    />
+                                    <h1>
+                                       Add Label Template for Processing:{' '}
+                                       {currentProcessing?.name?.title}
+                                    </h1>
+                                 </div>
+                              </StyledTunnelHeader>
+                              <StyledTunnelMain>
+                                 <List>
+                                    {Object.keys(currentLabelTemplate).length >
+                                    0 ? (
+                                       <ListItem
+                                          type='SSL1'
+                                          title={currentLabelTemplate.title}
+                                       />
+                                    ) : (
+                                       <ListSearch
+                                          onChange={value => setSearch(value)}
+                                          placeholder='type what you’re looking for...'
+                                       />
+                                    )}
+                                    <ListOptions>
+                                       {labelTemplateList
+                                          .filter(option =>
+                                             option.title
+                                                .toLowerCase()
+                                                .includes(search)
+                                          )
+                                          .map(option => (
+                                             <ListItem
+                                                type='SSL1'
+                                                key={option._id}
+                                                title={option.title}
+                                                isActive={
+                                                   option._id ===
+                                                   currentLabelTemplate._id
+                                                }
+                                                onClick={() =>
+                                                   selectLabelTemplateHandler(
+                                                      option
+                                                   )
+                                                }
                                              />
                                           ))}
                                     </ListOptions>

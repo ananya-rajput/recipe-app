@@ -8,13 +8,18 @@ import {
    TableBody,
    TableRow,
    TableCell,
-   Checkbox
+   Checkbox,
+   SearchBox
 } from '@dailykit/ui'
 
 import { generateRandomString } from '../../../utils'
 
 // Icons
-import { AddIcon } from '../../../assets/icons'
+import {
+   AddIcon,
+   ChevronLeftIcon,
+   ChevronRightIcon
+} from '../../../assets/icons'
 
 // State
 import { Context } from '../../../store/tabs'
@@ -25,7 +30,8 @@ import {
    StyledTableHeader,
    StyledTableActions,
    StyledHeader,
-   StyledContent
+   StyledContent,
+   StyledPagination
 } from '../styled'
 
 // Queries
@@ -50,6 +56,8 @@ const CREATE_INGREDIENT = gql`
 const IngredientsListing = () => {
    const { dispatch } = React.useContext(Context)
    const { loading, error, data } = useQuery(GET_INGREDIENTS)
+   const [search, setSearch] = React.useState('')
+
    const addTab = (title, view, ID) => {
       dispatch({ type: 'ADD_TAB', payload: { type: 'forms', title, view, ID } })
    }
@@ -72,11 +80,24 @@ const IngredientsListing = () => {
       <StyledWrapper>
          <StyledHeader>
             <h1>Ingredients</h1>
-            <p> pagination </p>
+            <StyledPagination>
+               {data?.ingredients?.length}
+               <span disabled={true}>
+                  <ChevronLeftIcon />
+               </span>
+               <span>
+                  <ChevronRightIcon />
+               </span>
+            </StyledPagination>
          </StyledHeader>
          <StyledTableHeader>
             <p>filters</p>
             <StyledTableActions>
+               <SearchBox
+                  placeholder='Search'
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+               />
                <IconButton type='solid' onClick={createIngredientHandler}>
                   <AddIcon color='#fff' size={24} />
                </IconButton>

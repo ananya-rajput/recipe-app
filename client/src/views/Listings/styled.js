@@ -33,15 +33,27 @@ export const StyledIcon = styled.div`
 `
 
 export const StyledTableHeader = styled.div`
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+   height: 40px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
 `
 
 export const StyledTableActions = styled.div`
-
+   display: grid;
+   grid-auto-flow: column;
+   grid-gap: 16px;
 `
 export const StyledContent = styled.div`
    margin-top: 32px;
+`
+
+export const StyledPagination = styled.div`
+   color: 555b6e;
+   font-size: 14px;
+
+   span {
+      margin-left: 8px;
+      cursor: pointer;
+   }
 `

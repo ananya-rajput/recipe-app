@@ -51,21 +51,16 @@ module.exports = buildSchema(`
         isActive: Boolean!
         type: String!
         station: Station!
-        supplierItems: [SupplierItem!]!
+        supplierItem: Item!
+        accuracy: Int!
+        packaging: PackagingType!
+        isLabelled: Boolean!
+        labelTemplate: LabelTemplate!
     }
 
     type Station {
         _id: ID!
         title: String!
-    }
-
-    type SupplierItem {
-        type: Item!
-        isWeighable: Boolean!
-        accuracy: Int
-        packaging: PackagingType!
-        isLabelled: Boolean!
-        labelTemplate: LabelTemplate
     }
 
     type Item {
@@ -75,12 +70,12 @@ module.exports = buildSchema(`
 
     type PackagingType {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type LabelTemplate {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type Response {
@@ -104,6 +99,8 @@ module.exports = buildSchema(`
         stations: [Station!]!
         supplierItems: [Item!]!
         units: [Unit!]!
+        packagings: [PackagingType!]!
+        labelTemplates: [LabelTemplate!]!
     }
 
 
@@ -145,16 +142,11 @@ module.exports = buildSchema(`
         isActive: Boolean!
         type: String!
         station: ID!
-        supplierItems: [SupplierItemInput!]!
-    }
-
-    input SupplierItemInput {
-        item: ID!
-        isWeighable: Boolean
-        accuracy: Int
+        supplierItem: ID!
+        accuracy: Int!
         packaging: ID!
         isLabelled: Boolean!
-        labelTemplate: ID
+        labelTemplate: ID!
     }
 
     input DeleteProcessingInput {

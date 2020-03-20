@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 
 import {
    List,
@@ -17,7 +17,7 @@ import { TunnelContainer } from './styled'
 import { TunnelHeader, Spacer } from '../../../components/index'
 
 export default function SelectIngredients({ close, next }) {
-   const { recipeDispatch } = useContext(RecipeContext)
+   const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
    const [list, selected, selectOption] = useMultiList([
       { id: 1, title: 'Potato' },
@@ -25,6 +25,12 @@ export default function SelectIngredients({ close, next }) {
       { id: 3, title: 'Ginger' },
       { id: 4, title: 'Onion' }
    ])
+
+   useEffect(() => {
+      for (const ingredient of recipeState.ingredients) {
+         selectOption('id', ingredient.id)
+      }
+   }, [])
 
    return (
       <TunnelContainer>

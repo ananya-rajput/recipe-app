@@ -2,6 +2,8 @@ const Ingredient = require('../../models/ingredient.model')
 const Processing = require('../../models/processing.model')
 const ProcessingName = require('../../models/processingName.model')
 const Station = require('../../models/station.model')
+const Packaging = require('../../models/packaging.model')
+const LabelTemplate = require('../../models/labelTemplate.model')
 const SupplierItem = require('../../models/item.model')
 const Sachet = require('../../models/sachet.model')
 
@@ -54,6 +56,22 @@ module.exports = {
       try {
          const supplierItems = await SupplierItem.find()
          return supplierItems
+      } catch (err) {
+         throw err
+      }
+   },
+   packagings: async () => {
+      try {
+         const packagings = await packagings.find()
+         return packagings
+      } catch (err) {
+         throw err
+      }
+   },
+   labelTemplates: async () => {
+      try {
+         const templates = LabelTemplate.find()
+         return templates
       } catch (err) {
          throw err
       }

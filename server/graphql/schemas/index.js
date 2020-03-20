@@ -75,12 +75,12 @@ module.exports = buildSchema(`
 
     type PackagingType {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type LabelTemplate {
         _id: ID!
-        name: String!
+        title: String!
     }
 
     type Response {
@@ -104,6 +104,8 @@ module.exports = buildSchema(`
         stations: [Station!]!
         supplierItems: [Item!]!
         units: [Unit!]!
+        packagings: [PackagingType!]!
+        labelTemplates: [LabelTemplate!]!
     }
 
 

@@ -32,6 +32,7 @@ import Servings from './Servings'
 import AddIcon from '../../../assets/icons/Add'
 import EditIcon from '../../../assets/icons/Edit'
 import UserIcon from '../../../assets/icons/User'
+import DeleteIcon from '../../../assets/icons/Delete'
 
 export default function AddIngredients() {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -47,9 +48,9 @@ export default function AddIngredients() {
                <SelectIngredients close={closeTunnel} next={closeTunnel} />
             </Tunnel>
             <Tunnel layer={3} size='lg'>
-               <AddSachets close={closeTunnel} openTunnel={closeTunnel} />
+               <AddSachets close={closeTunnel} openTunnel={openTunnel} />
             </Tunnel>
-            {/* tunnel 1 -> select processing */}
+            {/* tunnel 4 -> select processing */}
             <Tunnel layer={4}>
                <SelectProcessing next={closeTunnel} />
             </Tunnel>
@@ -70,7 +71,7 @@ export default function AddIngredients() {
                </Text>
                {recipeState.ingredients.length > 0 && (
                   <IconButton type='ghost' onClick={() => openTunnel(2)}>
-                     <EditIcon />
+                     <AddIcon />
                   </IconButton>
                )}
             </Stats>
@@ -91,6 +92,7 @@ export default function AddIngredients() {
                                  </span>
                               </TableCell>
                            ))}
+                           <TableCell align='right'></TableCell>
                         </TableRow>
                      </TableHead>
                      <TableBody>
@@ -123,6 +125,32 @@ export default function AddIngredients() {
                                     />
                                  </TableCell>
                               ))}
+                              <TableCell align='right'>
+                                 <span
+                                    style={{
+                                       display: 'flex'
+                                    }}
+                                 >
+                                    <IconButton
+                                       type='solid'
+                                       onClick={() => {
+                                          openTunnel(3)
+                                       }}
+                                    >
+                                       <EditIcon />
+                                    </IconButton>
+                                    <IconButton
+                                       onClick={() => {
+                                          recipeDispatch({
+                                             type: 'DELETE_INGREDIENT',
+                                             payload: ingredient
+                                          })
+                                       }}
+                                    >
+                                       <DeleteIcon color='rgb(255,90,82)' />
+                                    </IconButton>
+                                 </span>
+                              </TableCell>
                            </TableRow>
                         ))}
                      </TableBody>

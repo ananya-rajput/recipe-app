@@ -45,7 +45,7 @@ export default function AddServings({ close, next }) {
          <br />
          <ol>
             {recipeState.servings.map(serving => (
-               <React.Fragment>
+               <React.Fragment key={serving.id}>
                   <li key={serving.id}>
                      <ServingsInput>
                         <Input

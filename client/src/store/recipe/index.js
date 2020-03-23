@@ -87,6 +87,7 @@ export const reducers = (state, { type, payload }) => {
          // 1. check for existing sachets and if found replace
          // 2. if not found then push in the sachets with ref to ingredient and serving.
          // 3. remove below code.
+
          return {
             ...state,
             sachets: [
@@ -98,6 +99,10 @@ export const reducers = (state, { type, payload }) => {
                }
             ]
          }
+      case 'DELETE_INGREDIENT':
+         const newIngredients = [...state.ingredients]
+         newIngredients.splice(state.ingredients.indexOf(payload.ingredient), 1)
+         return { ...state, ingredients: newIngredients }
       default:
          return state
    }

@@ -79,6 +79,14 @@ export const reducers = (state, { type, payload }) => {
          return { ...state, activeServing: payload }
       case 'ADD_SACHET':
          //TODO: bug: not push in the sachets as it will result in many sachets
+         // what we have
+         // 1. payload.sachet -> the current sachet {id, title}
+         // 2. state.activeServing -> the servig to ref.
+         // 3. state.view -> the ingredient to ref.
+         // steps to take here
+         // 1. check for existing sachets and if found replace
+         // 2. if not found then push in the sachets with ref to ingredient and serving.
+         // 3. remove below code.
          return {
             ...state,
             sachets: [

@@ -78,27 +78,36 @@ export const reducers = (state, { type, payload }) => {
       case 'SET_ACTIVE_SERVING':
          return { ...state, activeServing: payload }
       case 'ADD_SACHET':
-         //TODO: bug: not push in the sachets as it will result in many sachets
-         // what we have
-         // 1. payload.sachet -> the current sachet {id, title}
-         // 2. state.activeServing -> the servig to ref.
-         // 3. state.view -> the ingredient to ref.
-         // steps to take here
-         // 1. check for existing sachets and if found replace
-         // 2. if not found then push in the sachets with ref to ingredient and serving.
-         // 3. remove below code.
+         const existingSachet = state.sachets.find(
+            sachet =>
+               sachet.ingredient.id === state.view.id &&
+               sachet.serving.id === state.activeServing.id
+         )
 
-         return {
-            ...state,
-            sachets: [
-               ...state.sachets,
-               {
-                  ...payload.sachet,
-                  ingredient: state.view,
-                  serving: state.activeServing
-               }
-            ]
+         if (existingSachet) {
+            const newState = { ...state }
+            newState.sachets.splice(state.sachets.indexOf(existingSachet), 1, {
+               ...payload.sachet,
+               ingredient: state.view,
+               serving: state.activeServing
+            })
+
+            console.log('newState', newState)
+            return newState
+         } else {
+            return {
+               ...state,
+               sachets: [
+                  ...state.sachets,
+                  {
+                     ...payload.sachet,
+                     ingredient: state.view,
+                     serving: state.activeServing
+                  }
+               ]
+            }
          }
+
       case 'DELETE_INGREDIENT':
          const newIngredients = [...state.ingredients]
          newIngredients.splice(state.ingredients.indexOf(payload.ingredient), 1)

@@ -92,7 +92,6 @@ export const reducers = (state, { type, payload }) => {
                serving: state.activeServing
             })
 
-            console.log('newState', newState)
             return newState
          } else {
             return {
@@ -109,9 +108,23 @@ export const reducers = (state, { type, payload }) => {
          }
 
       case 'DELETE_INGREDIENT':
-         const newIngredients = [...state.ingredients]
-         newIngredients.splice(state.ingredients.indexOf(payload.ingredient), 1)
-         return { ...state, ingredients: newIngredients }
+         const newState = { ...state }
+         const sachetsBelongingToIngredient = newState.sachets.filter(
+            sachet => sachet.ingredient.id === payload.id
+         )
+
+         sachetsBelongingToIngredient.forEach(sachet =>
+            newState.sachets.splice(newState.sachets.indexOf(sachet), 1)
+         )
+
+         newState.ingredients.splice(newState.ingredients.indexOf(payload), 1)
+
+         return {
+            ...newState,
+            activeServing: {},
+            view: {}
+         }
+
       default:
          return state
    }

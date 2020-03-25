@@ -1,5 +1,5 @@
 import { IconButton, Text, Input, ButtonTile } from '@dailykit/ui'
-import React, { useContext, useState } from 'react'
+import React, { useContext } from 'react'
 
 import AddIcon from '../../../assets/icons/Add'
 import { Context as RecipeContext } from '../../../store/recipe/index'

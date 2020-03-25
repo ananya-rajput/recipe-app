@@ -92,3 +92,15 @@ export const CustomCrossButton = styled.button`
       cursor: pointer;
    }
 `
+
+export const DeleteButton = styled.button`
+   border: 0;
+   outline: 0;
+   font-size: 1.2rem;
+   background-color: #fff;
+   margin-left: 10px;
+   &:hover {
+      color: rgb(255, 90, 82);
+      cursor: pointer;
+   }
+`

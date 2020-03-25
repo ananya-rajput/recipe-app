@@ -8,6 +8,13 @@ export const state = {
    servings: [{ id: 1, value: 0 }],
    ingredients: [],
    sachets: [],
+   steps: [
+      {
+         title: '',
+         description: '',
+         photos: [{ caption: '', imageUrl: '' }]
+      }
+   ],
    view: {},
    activeServing: {}
 }
@@ -124,6 +131,25 @@ export const reducers = (state, { type, payload }) => {
             activeServing: {},
             view: {}
          }
+
+      case 'EDIT_COOOKING_PROCESS':
+         const newStepsForEditing = [...state.steps]
+         newStepsForEditing[payload.index][payload.name] = payload.value
+         return { ...state, steps: newStepsForEditing }
+
+      case 'CREATE_COOKING_PROCESS':
+         const newStepsForCreating = [...state.steps]
+         newStepsForCreating.push({
+            title: '',
+            description: '',
+            photos: [{ caption: '', imageUrl: '' }]
+         })
+         return { ...state, steps: newStepsForCreating }
+
+      case 'DELETE_COOKING_PROCESS':
+         const newStepsForDeleting = [...state.steps]
+         newStepsForDeleting.splice(payload.index, 1)
+         return { ...state, steps: newStepsForDeleting }
 
       default:
          return state

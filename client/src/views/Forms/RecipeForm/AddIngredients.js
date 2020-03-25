@@ -33,6 +33,7 @@ import AddIcon from '../../../assets/icons/Add'
 import EditIcon from '../../../assets/icons/Edit'
 import UserIcon from '../../../assets/icons/User'
 import DeleteIcon from '../../../assets/icons/Delete'
+import CookingSteps from './CookingSteps'
 
 export default function AddIngredients() {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -167,6 +168,7 @@ export default function AddIngredients() {
                />
             )}
          </IngredientsSection>
+         <CookingSteps />
       </>
    )
 }

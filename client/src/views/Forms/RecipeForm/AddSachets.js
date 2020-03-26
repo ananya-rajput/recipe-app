@@ -73,13 +73,12 @@ export default function AddSachets({ close, openTunnel }) {
                }}
                next={() => {
                   close(3)
-                  close(2)
-                  close(1)
                   recipeDispatch({
                      type: 'SET_VIEW',
                      payload: {}
                   })
                }}
+               nextAcion='Done'
             />
 
             <Spacer />

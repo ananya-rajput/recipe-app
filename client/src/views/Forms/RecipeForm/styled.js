@@ -4,11 +4,12 @@ export const IngredientsSection = styled.div`
    width: 100%;
    margin-top: 20px;
 `
-export const IngredientStats = styled.div`
+export const Stats = styled.div`
    display: flex;
-   flex-direction: column;
-   align-items: flex-start;
-   justify-content: center;
+   justify-content: space-between;
+   span {
+      margin-bottom: 5px;
+   }
 `
 export const IngredientTable = styled.div`
    display: flex;
@@ -77,5 +78,29 @@ export const SelectButton = styled.button`
    background: transparent;
    &:hover {
       background: #f5f5f5;
+   }
+`
+export const CustomCrossButton = styled.button`
+   border: 0;
+   outline: 0;
+   font-size: 1rem;
+   background-color: #f2f1f3;
+   margin-left: 10px;
+   color: #555b6e;
+   &:hover {
+      color: rgb(255, 90, 82);
+      cursor: pointer;
+   }
+`
+
+export const DeleteButton = styled.button`
+   border: 0;
+   outline: 0;
+   font-size: 1.2rem;
+   background-color: #fff;
+   margin-left: 10px;
+   &:hover {
+      color: rgb(255, 90, 82);
+      cursor: pointer;
    }
 `

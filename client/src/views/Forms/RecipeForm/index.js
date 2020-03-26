@@ -21,7 +21,7 @@ export default function AddRecipeForm() {
       initialRecipeState
    )
 
-   const { dispatch } = useContext(Context)
+   const { state, dispatch } = useContext(Context)
 
    const recipeTypeOptions = [
       { id: 1, title: 'Vegetarian' },
@@ -42,18 +42,18 @@ export default function AddRecipeForm() {
    }
 
    const handleTabNameChange = () => {
-      //TODO: add unique code later to the title
+      //TODO: add utils/generateRandomString() later to the title
       const title = `${recipeState.name}`
 
       if (title.length > 0) {
          dispatch({
-            type: 'SET_RECIPE_TITLE',
-            payload: { title, type: 'forms', view: 'recipe' }
+            type: 'SET_TITLE',
+            payload: { title, oldTitle: state.current.title }
          })
       } else {
          dispatch({
-            type: 'SET_RECIPE_TITLE',
-            payload: { title: 'Untitled Recipe', type: 'forms', view: 'recipe' }
+            type: 'SET_TITLE',
+            payload: { title: 'Untitled Recipe', oldTitle: state.current.title }
          })
       }
    }
@@ -115,7 +115,6 @@ export default function AddRecipeForm() {
                   text='Add photos to your recipe'
                   helper='upto 1MB &#8226; only JPGs, PNGs, and PDFs are allowed.'
                />
-
                <AddIngredients />
             </Container>
          </ViewWrapper>

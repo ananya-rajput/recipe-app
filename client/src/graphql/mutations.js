@@ -25,13 +25,7 @@ export const ADD_PROCESSINGS = gql`
          }
       ) {
          _id
-         sachets {
-            _id
-            quantity {
-               value
-               unit
-            }
-         }
+         sachets
          name {
             title
          }

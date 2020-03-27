@@ -10,7 +10,7 @@ module.exports = buildSchema(`
         isPublished: Boolean!
         name: String!
         image: String
-        processings: [Processing!]!
+        processings: [ID!]!
         # Returning ID rn, as we only need length
         sachets: [ID!]!
     }
@@ -19,7 +19,7 @@ module.exports = buildSchema(`
         _id: ID!
         isValid: Boolean!
         name: ProcessingName!
-        sachets: [Sachet!]!
+        sachets: [ID!]!
         # Returning ID rn, as we only need length
         recipes: [ID!]!
     }
@@ -95,6 +95,7 @@ module.exports = buildSchema(`
     type RootQuery {
         ingredients: [Ingredient!]!
         ingredient(id: ID!): Ingredient!
+        processings(ingredientId: ID!): [Processing!]!
         processingNames: [ProcessingName!]!
         stations: [Station!]!
         supplierItems: [Item!]!

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useLazyQuery, useQuery, useMutation } from '@apollo/react-hooks'
 import {
    Input,
    ComboButton,
@@ -183,10 +183,7 @@ const IngredientForm = () => {
                      </Tunnel>
                   </Tunnels>
                </StyledTop>
-               <Processings
-                  ingredientId={ingredient._id}
-                  data={ingredient.processings}
-               />
+               <Processings ingredientId={ingredient._id} />
             </Container>
          </StyledMain>
       </>

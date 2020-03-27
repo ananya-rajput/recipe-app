@@ -1,5 +1,5 @@
 import React from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import {
    ButtonTile,
    Tunnels,
@@ -26,53 +26,59 @@ import {
    StyledTunnelHeader,
    StyledTunnelMain
 } from '../styled'
-import { ADD_PROCESSINGS, DELETE_PROCESSING } from '../../graphql'
+import {
+   PROCESSINGS,
+   ADD_PROCESSINGS,
+   DELETE_PROCESSING,
+   FETCH_PROCESSING_NAMES
+} from '../../graphql'
 import Sachets from '../Sachets'
 
-const Processings = ({ ingredientId, data }) => {
-   const [processings, setProcessings] = React.useState(data)
+const Processings = ({ ingredientId }) => {
+   // States
+   const [processings, setProcessings] = React.useState([])
+   const [selectedIndex, setSelectedIndex] = React.useState(0)
    const [sachets, setSachets] = React.useState([])
+
+   // Queries and Mutations
+   const [fetchProcessingNames, {}] = useLazyQuery(FETCH_PROCESSING_NAMES, {
+      onCompleted: data => {
+         processingNamesList.length = 0
+         processingNamesList.push(...data.processingNames)
+         openProcessingTunnel(1)
+      }
+   })
+   const [fetchProcessings, {}] = useLazyQuery(PROCESSINGS, {
+      onCompleted: data => {
+         setProcessings(data.processings)
+      }
+   })
+   const [addProcessings] = useMutation(ADD_PROCESSINGS, {
+      onCompleted: data => {
+         console.log(data)
+         setProcessings(data.addProcessings)
+      }
+   })
+   const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
+      onCompleted: data => {
+         console.log(data.deleteProcessing)
+         if (data.deleteProcessing.success) {
+            const newProcessings = processings.filter(
+               processing => processing._id !== data.deleteProcessing.ID
+            )
+            setProcessings(newProcessings)
+         }
+      }
+   })
 
    // Side Effects
    React.useEffect(() => {
-      if (processings.length) {
-         setSelectedProcessingID(processings[0]._id)
-         setSachets(processings[0].sachets)
-      } else {
-         setSelectedProcessingID(undefined)
+      if (ingredientId.length) {
+         fetchProcessings({
+            variables: { ingredientId }
+         })
       }
-   }, [processings])
-   React.useEffect(() => {
-      if (sachets.length) {
-         setSelectedSachetID(sachets[0]._id)
-      } else {
-         setSelectedSachetID(undefined)
-      }
-   }, [sachets])
-
-   const [selectedProcessingID, setSelectedProcessingID] = React.useState(
-      undefined
-   )
-   const [selectedSachetID, setSelectedSachetID] = React.useState(undefined)
-   const [currentProcessing, setCurrentProcessing] = React.useState({})
-   const [currentSachet, setCurrentSachet] = React.useState({})
-
-   React.useEffect(() => {
-      if (selectedProcessingID != undefined) {
-         const processing = processings.find(
-            processing => processing._id === selectedProcessingID
-         )
-         setCurrentProcessing(processing)
-      }
-   }, [selectedProcessingID])
-   React.useEffect(() => {
-      if (setSelectedSachetID != undefined) {
-         const sachet = sachets.find(
-            sachet => sachet._id === setSelectedSachetID
-         )
-         setCurrentSachet(sachet)
-      }
-   }, [selectedSachetID])
+   }, [ingredientId])
 
    //Lists
    const [
@@ -88,6 +94,7 @@ const Processings = ({ ingredientId, data }) => {
       closeProcessingTunnel
    ] = useTunnel(1)
    const [search, setSearch] = React.useState('')
+
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
       addProcessings({
@@ -107,42 +114,23 @@ const Processings = ({ ingredientId, data }) => {
       })
    }
 
-   const [addProcessings] = useMutation(ADD_PROCESSINGS, {
-      onCompleted: data => {
-         console.log(data)
-         setProcessings(data.addProcessings)
-      }
-   })
-
-   const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
-      onCompleted: data => {
-         console.log(data.deleteProcessing)
-         if (data.deleteProcessing.success) {
-            const newProcessings = processings.filter(
-               processing => processing._id !== data.deleteProcessing.ID
-            )
-            setProcessings(newProcessings)
-         }
-      }
-   })
-
    return (
       <StyledSection hasElements={processings.length !== 0}>
          <StyledListing>
             <StyledListingHeader>
                <h3>Processings ({processings.length})</h3>
-               <span onClick={() => openProcessingTunnel(1)}>
+               <span onClick={fetchProcessingNames}>
                   <AddIcon color='#555B6E' size='18' stroke='2.5' />
                </span>
             </StyledListingHeader>
             {processings.length > 0 &&
-               processings.map(processing => (
+               processings.map((processing, i) => (
                   <StyledListingTile
                      key={processing._id}
-                     active={processing._id === selectedProcessingID}
-                     onClick={() => setSelectedProcessingID(processing._id)}
+                     active={i === selectedIndex}
+                     onClick={() => setSelectedIndex(i)}
                   >
-                     <Actions active={processing._id === selectedProcessingID}>
+                     <Actions active={i === selectedIndex}>
                         <span
                            onClick={() =>
                               deleteProcessingHandler(processing._id)
@@ -159,7 +147,7 @@ const Processings = ({ ingredientId, data }) => {
             <ButtonTile
                type='primary'
                size='lg'
-               onClick={() => openProcessingTunnel(1)}
+               onClick={fetchProcessingNames}
             />
             <Tunnels tunnels={processingTunnel}>
                <Tunnel layer={1}>
@@ -222,7 +210,7 @@ const Processings = ({ ingredientId, data }) => {
             </Tunnels>
          </StyledListing>
          <StyledDisplay hasElements={processings.length !== 0}>
-            <Sachets processingId={'currentProcessingid'} data={[]} />
+            {/* <Sachets processingId={processings[selectedIndex]._id} /> */}
          </StyledDisplay>
       </StyledSection>
    )

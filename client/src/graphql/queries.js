@@ -6,21 +6,21 @@ export const INGREDIENT = gql`
          _id
          name
          image
-         processings {
-            _id
-            sachets {
-               _id
-               quantity {
-                  value
-                  unit
-               }
-            }
-            name {
-               title
-            }
-            recipes
-         }
+         processings
          sachets
+      }
+   }
+`
+
+export const PROCESSINGS = gql`
+   query Processings($ingredientId: ID!) {
+      processings(ingredientId: $ingredientId) {
+         _id
+         sachets
+         name {
+            title
+         }
+         recipes
       }
    }
 `

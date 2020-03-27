@@ -18,20 +18,23 @@ module.exports = {
    },
    ingredient: async args => {
       try {
-         const ingredient = await Ingredient.findOne({ _id: args.id }).populate(
-            {
-               path: 'processings',
-               populate: [
-                  {
-                     path: 'sachets'
-                  },
-                  {
-                     path: 'name'
-                  }
-               ]
-            }
-         )
+         const ingredient = await Ingredient.findOne({ _id: args.id })
          return ingredient
+      } catch (err) {
+         throw err
+      }
+   },
+   processings: async args => {
+      try {
+         const ingredient = await Ingredient.findOne({
+            _id: args.ingredientId
+         }).populate({
+            path: 'processings',
+            populate: {
+               path: 'name'
+            }
+         })
+         return ingredient.processings
       } catch (err) {
          throw err
       }
@@ -111,8 +114,8 @@ module.exports = {
          const processings = await args.input.processingNames.map(
             processingName => {
                const processing = new Processing({
-                  name: processingName,
-                  sachets: []
+                  name: processingName
+                  // sachets: []
                })
                processing.save()
                return processing._id
@@ -132,14 +135,9 @@ module.exports = {
             }
          ).populate({
             path: 'processings',
-            populate: [
-               {
-                  path: 'sachets'
-               },
-               {
-                  path: 'name'
-               }
-            ]
+            populate: {
+               path: 'name'
+            }
          })
          return ingredient.processings
       } catch (err) {

@@ -38,7 +38,6 @@ const Processings = ({ ingredientId }) => {
    // States
    const [processings, setProcessings] = React.useState([])
    const [selectedIndex, setSelectedIndex] = React.useState(0)
-   const [sachets, setSachets] = React.useState([])
 
    // Queries and Mutations
    const [fetchProcessingNames, {}] = useLazyQuery(FETCH_PROCESSING_NAMES, {
@@ -87,7 +86,7 @@ const Processings = ({ ingredientId }) => {
       selectProcessingName
    ] = useMultiList([])
 
-   // Processing Tunnel
+   // Tunnels
    const [
       processingTunnel,
       openProcessingTunnel,
@@ -95,6 +94,7 @@ const Processings = ({ ingredientId }) => {
    ] = useTunnel(1)
    const [search, setSearch] = React.useState('')
 
+   // Handlers
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
       addProcessings({
@@ -210,7 +210,11 @@ const Processings = ({ ingredientId }) => {
             </Tunnels>
          </StyledListing>
          <StyledDisplay hasElements={processings.length !== 0}>
-            {/* <Sachets processingId={processings[selectedIndex]._id} /> */}
+            <Sachets
+               ingredientId={ingredientId}
+               processingId={processings[selectedIndex]?._id}
+               processingName={processings[selectedIndex]?.name.title}
+            />
          </StyledDisplay>
       </StyledSection>
    )

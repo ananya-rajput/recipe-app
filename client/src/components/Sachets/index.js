@@ -1,5 +1,5 @@
 import React from 'react'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation } from '@apollo/react-hooks'
 import {
    ButtonTile,
    Tunnels,
@@ -9,12 +9,9 @@ import {
    List,
    ListOptions,
    ListSearch,
-   TagGroup,
-   Tag,
    ListItem,
    Toggle,
    Checkbox,
-   useMultiList,
    useSingleList,
    Input,
    RadioGroup
@@ -39,154 +36,105 @@ import {
    ToggleWrapper
 } from '../styled'
 import {
+   SACHETS,
+   FETCH_UNITS,
    FETCH_SUPPLIER_ITEMS,
    FETCH_STATIONS,
    FETCH_PACKAGINGS,
    FETCH_LABEL_TEMPLATES,
    ADD_SACHET,
-   DELETE_SACHET,
-   ADD_PROCESSINGS,
-   DELETE_PROCESSING
+   DELETE_SACHET
 } from '../../graphql'
 
-const Sachets = ({ ingredientId, data }) => {
-   const [processings, setProcessings] = React.useState(data)
-   const {
-      loading: stationsLoading,
-      error: stationsError,
-      data: stationsData
-   } = useQuery(FETCH_STATIONS, {
-      onCompleted: data => {
-         stationsList.push(...data.stations)
-      }
-   })
-   const {
-      loading: supplierItemsLoading,
-      error: supplierItemsError,
-      data: supplierItemsData
-   } = useQuery(FETCH_SUPPLIER_ITEMS, {
-      onCompleted: data => {
-         supplierItemsList.push(...data.supplierItems)
-      }
-   })
-   const {
-      loading: packagingsLoading,
-      error: packagingsError,
-      data: packagingsData
-   } = useQuery(FETCH_PACKAGINGS, {
-      onCompleted: data => {
-         packagingList.push(...data.packagings)
-      }
-   })
-   const {
-      loading: labelTemplatesLoading,
-      error: labelTemplateError,
-      data: labelTemplateData
-   } = useQuery(FETCH_LABEL_TEMPLATES, {
-      onCompleted: data => {
-         labelTemplateList.push(...data.labelTemplates)
-      }
-   })
+const Sachets = ({ ingredientId, processingId, processingName }) => {
+   // State
    const [sachets, setSachets] = React.useState([])
+   const [selectedIndex, setSelectedIndex] = React.useState(0)
+   const [units, setUnits] = React.useState([])
+   const [selectedView, setSelectedView] = React.useState('modes')
+   const [search, setSearch] = React.useState('')
+
+   // Queries and Mutations
+   const [fetchSachets, {}] = useLazyQuery(SACHETS, {
+      onCompleted: data => {
+         setSachets(data.sachets)
+      }
+   })
+   const [fetchUnits, {}] = useLazyQuery(FETCH_UNITS, {
+      onCompleted: data => {
+         setUnits(data.units)
+         openSachetTunnel(1)
+      }
+   })
+   const [fetchStations, {}] = useLazyQuery(FETCH_STATIONS, {
+      onCompleted: data => {
+         stationsList.length = 0
+         stationsList.push(...data.stations)
+         openSachetTunnel(2)
+      }
+   })
+   const [fetchSupplierItems, {}] = useLazyQuery(FETCH_SUPPLIER_ITEMS, {
+      onCompleted: data => {
+         supplierItemsList.length = 0
+         supplierItemsList.push(...data.supplierItems)
+         openSachetTunnel(3)
+      }
+   })
+   const [fetchPackagings, {}] = useLazyQuery(FETCH_PACKAGINGS, {
+      onCompleted: data => {
+         packagingList.length = 0
+         packagingList.push(...data.packagings)
+         openPackagingTunnel(1)
+      }
+   })
+   const [fetchLabelTemplates, {}] = useLazyQuery(FETCH_LABEL_TEMPLATES, {
+      onCompleted: data => {
+         labelTemplateList.length = 0
+         labelTemplateList.push(...data.labelTemplates)
+         openLabelTunnel(1)
+      }
+   })
    const [addSachet] = useMutation(ADD_SACHET, {
       onCompleted: data => {
-         let copyProcessings = processings
-         const index = copyProcessings.findIndex(
-            proc => proc._id === data.addSachet.ID
-         )
-         copyProcessings[index].sachets.push(data.addSachet.sachet)
-         setProcessings(copyProcessings)
-         setSelectedSachetID(data.addSachet.sachet._id)
-         //  const newSachets = [...ingredient.sachets, data.addSachet.sachet._id]
-         //  setIngredient({ ...ingredient, sachets: newSachets })
+         console.log(data.addSachet)
+         setSachets(data.addSachet)
       }
    })
    const [deleteSachet] = useMutation(DELETE_SACHET, {
       onCompleted: data => {
-         console.log(data)
-         let copyProcessings = processings
-         const index = copyProcessings.findIndex(
-            proc => proc._id === selectedProcessingID
-         )
-         let updatedProcessing = copyProcessings[index]
-         updatedProcessing.sachets = updatedProcessing.sachets.filter(
+         const updatedSachets = sachets.filter(
             sachet => sachet._id !== data.deleteSachet.ID
          )
-         copyProcessings[index] = updatedProcessing
-         setProcessings(copyProcessings)
-         //  let copySachets = ingredient.sachets.filter(
-         //     id => id !== data.deleteSachet.ID
-         //  )
-         //  setIngredient({ ...ingredient, sachets: copySachets })
-         if (processings[index].sachets.length) {
-            setSelectedSachetID(
-               processings[index].sachets[processings[index].sachets.length - 1]
-                  ._id
-            )
-         }
+         setSachets(updatedSachets)
+         if (updatedSachets.length) setSelectedIndex(selectedIndex - 1)
+         else setSelectedIndex(0)
       }
    })
+
+   // Side Effects
+   React.useEffect(() => {
+      if (processingId && processingId.length) {
+         fetchSachets({
+            variables: {
+               processingId
+            }
+         })
+      }
+   }, [processingId])
 
    const deleteSachetHandler = sachetId => {
       deleteSachet({
          variables: {
             input: {
-               ingredientId: ingredientId,
-               processingId: selectedProcessingID,
+               ingredientId,
+               processingId,
                sachetId
             }
          }
       })
    }
 
-   // Side Effects
-   React.useEffect(() => {
-      if (processings.length) {
-         setSelectedProcessingID(processings[0]._id)
-         setSachets(processings[0].sachets)
-      } else {
-         setSelectedProcessingID(undefined)
-      }
-   }, [processings])
-   React.useEffect(() => {
-      if (sachets.length) {
-         setSelectedSachetID(sachets[0]._id)
-      } else {
-         setSelectedSachetID(undefined)
-      }
-   }, [sachets])
-
-   const [selectedView, setSelectedView] = React.useState('modes')
-   const [selectedProcessingID, setSelectedProcessingID] = React.useState(
-      undefined
-   )
-   const [selectedSachetID, setSelectedSachetID] = React.useState(undefined)
-   const [currentProcessing, setCurrentProcessing] = React.useState({})
-   const [currentSachet, setCurrentSachet] = React.useState({})
-
-   React.useEffect(() => {
-      if (selectedProcessingID != undefined) {
-         const processing = processings.find(
-            processing => processing._id === selectedProcessingID
-         )
-         setCurrentProcessing(processing)
-      }
-   }, [selectedProcessingID])
-   React.useEffect(() => {
-      if (setSelectedSachetID != undefined) {
-         const sachet = sachets.find(
-            sachet => sachet._id === setSelectedSachetID
-         )
-         setCurrentSachet(sachet)
-      }
-   }, [selectedSachetID])
-
    //Lists
-   const [
-      processingNamesList,
-      selectedProcessingNames,
-      selectProcessingName
-   ] = useMultiList([])
    const [stationsList, currentStation, selectStation] = useSingleList([])
    const [
       supplierItemsList,
@@ -200,66 +148,58 @@ const Sachets = ({ ingredientId, data }) => {
       selectLabelTemplate
    ] = useSingleList([])
 
-   // Processing Tunnel
-   const [
-      processingTunnel,
-      openProcessingTunnel,
-      closeProcessingTunnel
-   ] = useTunnel(1)
-   const [search, setSearch] = React.useState('')
-   const addProcessingsHandler = () => {
-      const names = selectedProcessingNames.map(item => item._id)
-      addProcessings({
-         variables: { ingredientId, processingNames: names }
-      })
-      closeProcessingTunnel(1)
-   }
-
-   // Sachet Tunnel
+   // Tunnels
    const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
    const [currentMode, setCurrentMode] = React.useState('')
    const [sachetForm, setSachetForm] = React.useState({
       _id: '',
-      quantity: { value: '', unit: '1' },
+      quantity: { value: '', unit: '' },
       tracking: true,
       modes: [
          {
             isActive: false,
             type: 'Real Time',
             station: '',
-            supplierItem: '',
-            accuracy: 0,
-            packaging: '',
-            isLabelled: false,
-            labelTemplate: ''
+            supplierItems: [
+               {
+                  item: '',
+                  accuracy: 0,
+                  packaging: '',
+                  isLabelled: false,
+                  labelTemplate: ''
+               }
+            ]
          },
          {
             isActive: false,
             type: 'Co-Packer',
             station: '',
-            supplierItem: '',
-            accuracy: 0,
-            packaging: '',
-            isLabelled: false,
-            labelTemplate: ''
+            supplierItems: [
+               {
+                  item: '',
+                  accuracy: 0,
+                  packaging: '',
+                  isLabelled: false,
+                  labelTemplate: ''
+               }
+            ]
          },
          {
             isActive: false,
             type: 'Planned Lot',
             station: '',
-            supplierItem: '',
-            accuracy: 0,
-            packaging: '',
-            isLabelled: false,
-            labelTemplate: ''
+            supplierItems: [
+               {
+                  item: '',
+                  accuracy: 0,
+                  packaging: '',
+                  isLabelled: false,
+                  labelTemplate: ''
+               }
+            ]
          }
       ]
    })
-   const units = [
-      { _id: '1', title: 'gms' },
-      { _id: '2', title: 'kgs' },
-      { _id: '3', title: 'lbs' }
-   ]
    const accuracyOptions = [
       {
          id: 1,
@@ -281,7 +221,15 @@ const Sachets = ({ ingredientId, data }) => {
       isActive: false,
       type: '',
       station: '',
-      supplierItem: ''
+      supplierItems: [
+         {
+            item: '',
+            accuracy: 0,
+            packaging: '',
+            isLabelled: false,
+            labelTemplate: ''
+         }
+      ]
    })
 
    const selectAccuracyHandler = value => {
@@ -289,7 +237,7 @@ const Sachets = ({ ingredientId, data }) => {
       const index = copySachetForm.modes.findIndex(
          mode => mode.type === currentMode
       )
-      copySachetForm.modes[index].accuracy = value
+      copySachetForm.modes[index].supplierItems[0].accuracy = value
       setSachetForm({ ...copySachetForm })
       closeLabelTunnel(1)
    }
@@ -306,7 +254,7 @@ const Sachets = ({ ingredientId, data }) => {
       const index = copySachetForm.modes.findIndex(
          mode => mode.type === currentMode
       )
-      copySachetForm.modes[index].packaging = packaging
+      copySachetForm.modes[index].supplierItems[0].packaging = packaging
       setSachetForm({ ...copySachetForm })
       closePackagingTunnel(1)
    }
@@ -318,7 +266,7 @@ const Sachets = ({ ingredientId, data }) => {
       const index = copySachetForm.modes.findIndex(
          mode => mode.type === currentMode
       )
-      copySachetForm.modes[index].isLabelled = checked
+      copySachetForm.modes[index].supplierItems[0].isLabelled = checked
       setSachetForm({ ...copySachetForm })
    }
    const selectLabelTemplateHandler = labelTemplate => {
@@ -326,40 +274,10 @@ const Sachets = ({ ingredientId, data }) => {
       const index = copySachetForm.modes.findIndex(
          mode => mode.type === currentMode
       )
-      copySachetForm.modes[index].labelTemplate = labelTemplate
+      copySachetForm.modes[index].supplierItems[0].labelTemplate = labelTemplate
       setSachetForm({ ...copySachetForm })
       closeLabelTunnel(1)
    }
-
-   const deleteProcessingHandler = processingId => {
-      deleteProcessing({
-         variables: {
-            input: {
-               ingredientId,
-               processingId
-            }
-         }
-      })
-   }
-
-   const [addProcessings] = useMutation(ADD_PROCESSINGS, {
-      onCompleted: data => {
-         console.log(data)
-         setProcessings(data.addProcessings)
-      }
-   })
-
-   const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
-      onCompleted: data => {
-         console.log(data.deleteProcessing)
-         if (data.deleteProcessing.success) {
-            const newProcessings = processings.filter(
-               processing => processing._id !== data.deleteProcessing.ID
-            )
-            setProcessings(newProcessings)
-         }
-      }
-   })
 
    const addSachetHandler = async () => {
       let cleanSachet = {
@@ -375,15 +293,20 @@ const Sachets = ({ ingredientId, data }) => {
             return mode.station !== ''
          })
          .map(mode => {
+            const cleanSupplierItems = mode.supplierItems.map(supplierItem => {
+               return {
+                  item: supplierItem.item._id,
+                  accuracy: supplierItem.accuracy,
+                  packaging: supplierItem.packaging._id,
+                  isLabelled: supplierItem.isLabelled,
+                  labelTemplate: supplierItem.labelTemplate._id
+               }
+            })
             return {
                type: mode.type,
                isActive: mode.isActive,
                station: mode.station._id,
-               supplierItem: mode.supplierItem._id,
-               accuracy: mode.accuracy,
-               packaging: mode.packaging._id,
-               isLabelled: mode.isLabelled,
-               labelTemplate: mode.labelTemplate._id
+               supplierItems: cleanSupplierItems
             }
          })
       cleanSachet.modes = cleanModes
@@ -391,7 +314,7 @@ const Sachets = ({ ingredientId, data }) => {
          variables: {
             input: {
                ingredientId,
-               processingId: selectedProcessingID,
+               processingId,
                sachet: cleanSachet
             }
          }
@@ -399,35 +322,50 @@ const Sachets = ({ ingredientId, data }) => {
       closeSachetTunnel(1)
       setSachetForm({
          _id: '',
-         quantity: { value: '', unit: '1' },
+         quantity: { value: '', unit: '' },
          tracking: true,
          modes: [
             {
                isActive: false,
                type: 'Real Time',
                station: '',
-               supplierItem: '',
-               packaging: '',
-               isLabelled: false,
-               labelTemplate: ''
+               supplierItems: [
+                  {
+                     item: '',
+                     accuracy: 0,
+                     packaging: '',
+                     isLabelled: false,
+                     labelTemplate: ''
+                  }
+               ]
             },
             {
                isActive: false,
                type: 'Co-Packer',
                station: '',
-               supplierItem: '',
-               packaging: '',
-               isLabelled: false,
-               labelTemplate: ''
+               supplierItems: [
+                  {
+                     item: '',
+                     accuracy: 0,
+                     packaging: '',
+                     isLabelled: false,
+                     labelTemplate: ''
+                  }
+               ]
             },
             {
                isActive: false,
                type: 'Planned Lot',
                station: '',
-               supplierItem: '',
-               packaging: '',
-               isLabelled: false,
-               labelTemplate: ''
+               supplierItems: [
+                  {
+                     item: '',
+                     accuracy: 0,
+                     packaging: '',
+                     isLabelled: false,
+                     labelTemplate: ''
+                  }
+               ]
             }
          ]
       })
@@ -446,19 +384,19 @@ const Sachets = ({ ingredientId, data }) => {
          } else {
             // configure it - open tunnel
             setModeForm(sachetForm.modes[index])
-            openSachetTunnel(2)
+            fetchStations()
          }
       }
    }
    const selectStationHandler = station => {
       setModeForm({ ...modeForm, station })
       selectStation('_id', station._id)
-      openSachetTunnel(3)
+      fetchSupplierItems()
    }
    const selectSupplierItemHandler = item => {
       selectSupplierItem('_id', item._id)
       let copyModeForm = modeForm
-      copyModeForm.supplierItem = item
+      copyModeForm.supplierItems[0].item = item
       const index = sachetForm.modes.findIndex(
          mode => mode.type === modeForm.type
       )
@@ -472,35 +410,41 @@ const Sachets = ({ ingredientId, data }) => {
          isActive: false,
          type: '',
          station: '',
-         supplierItem: ''
+         supplierItems: [
+            {
+               item: '',
+               accuracy: 0,
+               packaging: '',
+               isLabelled: false,
+               labelTemplate: ''
+            }
+         ]
       })
    }
 
    return (
-      <StyledSection
-         spacing='md'
-         hasElements={currentProcessing?.sachets?.length !== 0}
-      >
-         {currentProcessing?.sachets?.length > 0 ? (
+      <StyledSection spacing='md' hasElements={sachets.length !== 0}>
+         {sachets.length > 0 ? (
             <>
                <StyledListing>
                   <StyledListingHeader>
-                     <h3>Sachets ({currentProcessing.sachets.length})</h3>
+                     <h3>Sachets ({sachets.length})</h3>
                      <span>
                         <AddIcon
                            color='#555B6E'
                            size='18'
                            stroke='2.5'
-                           onClick={() => openSachetTunnel(1)}
+                           onClick={fetchUnits}
                         />
                      </span>
                   </StyledListingHeader>
-                  {currentProcessing.sachets.map(sachet => (
+                  {sachets.map((sachet, i) => (
                      <StyledListingTile
-                        active={sachet._id === selectedSachetID}
-                        onClick={() => setSelectedSachetID(sachet._id)}
+                        key={sachet._id}
+                        active={i === selectedIndex}
+                        onClick={() => setSelectedIndex(i)}
                      >
-                        <Actions active={sachet._id === selectedSachetID}>
+                        <Actions active={i === selectedIndex}>
                            <span
                               onClick={() => deleteSachetHandler(sachet._id)}
                            >
@@ -508,17 +452,13 @@ const Sachets = ({ ingredientId, data }) => {
                            </span>
                         </Actions>
                         <h3>
-                           {sachet.quantity.value} {sachet.quantity.unit}
+                           {sachet.quantity.value} {sachet.quantity.unit.title}
                         </h3>
                         <p>Active: Real-time</p>
                         <p>Available: 12/40 pkt</p>
                      </StyledListingTile>
                   ))}
-                  <ButtonTile
-                     type='primary'
-                     size='lg'
-                     onClick={() => openSachetTunnel(1)}
-                  />
+                  <ButtonTile type='primary' size='lg' onClick={fetchUnits} />
                </StyledListing>
                <StyledDisplay contains='sachets' hasElements={true}>
                   <StyledTabsContainer>
@@ -551,7 +491,7 @@ const Sachets = ({ ingredientId, data }) => {
                type='primary'
                size='lg'
                text='Add Sachet'
-               onClick={() => openSachetTunnel(1)}
+               onClick={fetchUnits}
             />
          )}
          <Tunnels tunnels={sachetTunnel}>
@@ -563,10 +503,7 @@ const Sachets = ({ ingredientId, data }) => {
                         color='#888D9D'
                         onClick={() => closeSachetTunnel(1)}
                      />
-                     <h1>
-                        Add Sachet for Processing:{' '}
-                        {currentProcessing?.name?.title}
-                     </h1>
+                     <h1>Add Sachet for Processing: {processingName}</h1>
                   </div>
                   <TextButton type='solid' onClick={addSachetHandler}>
                      Save
@@ -643,7 +580,7 @@ const Sachets = ({ ingredientId, data }) => {
                                  {mode.type}
                               </td>
                               <td>{mode.station.title}</td>
-                              <td>{mode.supplierItem.title}</td>
+                              <td>{mode.supplierItems[0].item.title}</td>
                               <td>
                                  <RadioGroup
                                     options={accuracyOptions}
@@ -657,20 +594,20 @@ const Sachets = ({ ingredientId, data }) => {
                                  <ButtonTile
                                     type='secondary'
                                     text='Packaging'
-                                    onClick={() => openPackagingTunnel(1)}
+                                    onClick={fetchPackagings}
                                  />
                               </td>
                               <td>
                                  <Toggle
-                                    checked={mode.isLabelled}
+                                    checked={mode.supplierItems[0].isLabelled}
                                     setChecked={val => toggleIsLabelled(val)}
                                  />
-                                 {mode.isLabelled && (
+                                 {mode.supplierItems[0].isLabelled && (
                                     <ButtonTile
                                        noIcon
                                        type='secondary'
                                        text='Select Sub Title'
-                                       onClick={() => openLabelTunnel(1)}
+                                       onClick={fetchLabelTemplates}
                                     />
                                  )}
                               </td>
@@ -777,10 +714,7 @@ const Sachets = ({ ingredientId, data }) => {
                         color='#888D9D'
                         onClick={() => closePackagingTunnel(1)}
                      />
-                     <h1>
-                        Add Packaging for Processing:{' '}
-                        {currentProcessing?.name?.title}
-                     </h1>
+                     <h1>Add Packaging for Processing: {processingName}</h1>
                   </div>
                </StyledTunnelHeader>
                <StyledTunnelMain>
@@ -822,8 +756,7 @@ const Sachets = ({ ingredientId, data }) => {
                         onClick={() => closeLabelTunnel(1)}
                      />
                      <h1>
-                        Add Label Template for Processing:{' '}
-                        {currentProcessing?.name?.title}
+                        Add Label Template for Processing: {processingName}
                      </h1>
                   </div>
                </StyledTunnelHeader>

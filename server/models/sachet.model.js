@@ -11,7 +11,8 @@ const SachetSchema = new mongoose.Schema({
          required: ['Quantity is required for a sachet.']
       },
       unit: {
-         type: String,
+         type: mongoose.Schema.Types.ObjectId,
+         ref: 'Unit',
          required: ['Quantity unit is required for storing quantity.']
       }
    },
@@ -68,8 +69,7 @@ const SachetSchema = new mongoose.Schema({
                },
                labelTemplate: {
                   type: mongoose.Schema.Types.ObjectId,
-                  ref: 'LabelTemplate',
-                  required: ['Label template is required for a sachet.']
+                  ref: 'LabelTemplate'
                }
             }
          ]

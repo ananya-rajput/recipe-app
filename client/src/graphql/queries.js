@@ -25,9 +25,59 @@ export const PROCESSINGS = gql`
    }
 `
 
+export const SACHETS = gql`
+   query Sachets($processingId: ID!) {
+      sachets(processingId: $processingId) {
+         _id
+         quantity {
+            value
+            unit {
+               _id
+               title
+            }
+         }
+         tracking
+         modes {
+            isActive
+            type
+            station {
+               _id
+               title
+            }
+            supplierItems {
+               isDefault
+               item {
+                  _id
+                  title
+               }
+               accuracy
+               packaging {
+                  _id
+                  title
+               }
+               isLabelled
+               labelTemplate {
+                  _id
+                  title
+               }
+            }
+         }
+      }
+   }
+`
+
 export const FETCH_PROCESSING_NAMES = gql`
    {
       processingNames {
+         _id
+         title
+      }
+   }
+`
+
+export const FETCH_UNITS = gql`
+   {
+      units {
          _id
          title
       }

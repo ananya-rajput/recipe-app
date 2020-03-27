@@ -39,7 +39,7 @@ module.exports = buildSchema(`
 
     type Quantity {
         value: Int!
-        unit: String!
+        unit: Unit!
     }
 
     type Unit {
@@ -51,11 +51,16 @@ module.exports = buildSchema(`
         isActive: Boolean!
         type: String!
         station: Station!
-        supplierItem: Item!
+        supplierItems: [SupplierItem]!
+    }
+
+    type SupplierItem {
+        isDefault: Boolean!
+        item: Item!
         accuracy: Int!
         packaging: PackagingType!
         isLabelled: Boolean!
-        labelTemplate: LabelTemplate!
+        labelTemplate: LabelTemplate
     }
 
     type Station {
@@ -96,10 +101,11 @@ module.exports = buildSchema(`
         ingredients: [Ingredient!]!
         ingredient(id: ID!): Ingredient!
         processings(ingredientId: ID!): [Processing!]!
+        sachets(processingId: ID!): [Sachet!]!
         processingNames: [ProcessingName!]!
+        units: [Unit!]!
         stations: [Station!]!
         supplierItems: [Item!]!
-        units: [Unit!]!
         packagings: [PackagingType!]!
         labelTemplates: [LabelTemplate!]!
     }
@@ -143,11 +149,16 @@ module.exports = buildSchema(`
         isActive: Boolean!
         type: String!
         station: ID!
-        supplierItem: ID!
+        supplierItems: [SupplierItemInput!]!
+    }
+
+    input SupplierItemInput {
+        isDefault: Boolean
+        item: ID!
         accuracy: Int!
         packaging: ID!
         isLabelled: Boolean!
-        labelTemplate: ID!
+        labelTemplate: ID
     }
 
     input DeleteProcessingInput {
@@ -166,7 +177,7 @@ module.exports = buildSchema(`
         updateIngredient(input: UpdateIngredientInput): Ingredient!
         addProcessings(input: AddProcessingsInput): [Processing!]!
         deleteProcessing(input: DeleteProcessingInput): Response!
-        addSachet(input: AddSachetInput): AddSachetResponse!
+        addSachet(input: AddSachetInput): [Sachet!]!
         deleteSachet(input: DeleteSachetInput): Response!
     }
 

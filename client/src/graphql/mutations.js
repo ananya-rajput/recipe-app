@@ -47,15 +47,38 @@ export const DELETE_PROCESSING = gql`
 export const ADD_SACHET = gql`
    mutation AddSachet($input: AddSachetInput!) {
       addSachet(input: $input) {
-         ID
-         sachet {
-            _id
-            quantity {
-               value
-               unit
+         _id
+         quantity {
+            value
+            unit {
+               _id
+               title
             }
-            modes {
-               type
+         }
+         tracking
+         modes {
+            isActive
+            type
+            station {
+               _id
+               title
+            }
+            supplierItems {
+               isDefault
+               item {
+                  _id
+                  title
+               }
+               accuracy
+               packaging {
+                  _id
+                  title
+               }
+               isLabelled
+               labelTemplate {
+                  _id
+                  title
+               }
             }
          }
       }

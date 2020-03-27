@@ -1,6 +1,7 @@
 const Ingredient = require('../../models/ingredient.model')
 const Processing = require('../../models/processing.model')
 const ProcessingName = require('../../models/processingName.model')
+const Unit = require('../../models/unit.model')
 const Station = require('../../models/station.model')
 const Packaging = require('../../models/packaging.model')
 const LabelTemplate = require('../../models/labelTemplate.model')
@@ -39,10 +40,52 @@ module.exports = {
          throw err
       }
    },
+   sachets: async args => {
+      try {
+         const processing = await Processing.findOne({
+            _id: args.processingId
+         }).populate({
+            path: 'sachets',
+            populate: [
+               {
+                  path: 'quantity.unit'
+               },
+               {
+                  path: 'modes.station'
+               },
+               {
+                  path: 'modes.supplierItems',
+                  populate: [
+                     {
+                        path: 'item'
+                     },
+                     {
+                        path: 'packaging'
+                     },
+                     {
+                        path: 'labelTemplate'
+                     }
+                  ]
+               }
+            ]
+         })
+         return processing.sachets
+      } catch (err) {
+         throw err
+      }
+   },
    processingNames: async () => {
       try {
          const processingNames = await ProcessingName.find()
          return processingNames
+      } catch (err) {
+         throw err
+      }
+   },
+   units: async () => {
+      try {
+         const units = await Unit.find()
+         return units
       } catch (err) {
          throw err
       }
@@ -177,7 +220,7 @@ module.exports = {
    addSachet: async args => {
       try {
          const sachet = await Sachet.create(args.input.sachet)
-         await Processing.findOneAndUpdate(
+         const processing = await Processing.findOneAndUpdate(
             {
                _id: args.input.processingId
             },
@@ -185,8 +228,35 @@ module.exports = {
                $push: {
                   sachets: sachet._id
                }
+            },
+            {
+               new: true
             }
-         )
+         ).populate({
+            path: 'sachets',
+            populate: [
+               {
+                  path: 'quantity.unit'
+               },
+               {
+                  path: 'modes.station'
+               },
+               {
+                  path: 'modes.supplierItems',
+                  populate: [
+                     {
+                        path: 'item'
+                     },
+                     {
+                        path: 'packaging'
+                     },
+                     {
+                        path: 'labelTemplate'
+                     }
+                  ]
+               }
+            ]
+         })
          await Ingredient.findOneAndUpdate(
             {
                _id: args.input.ingredientId
@@ -197,7 +267,7 @@ module.exports = {
                }
             }
          )
-         return { ID: args.input.processingId, sachet }
+         return processing.sachets
       } catch (err) {
          throw err
       }

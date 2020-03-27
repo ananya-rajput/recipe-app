@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLazyQuery, useQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import {
    Input,
    ComboButton,
@@ -22,12 +22,7 @@ import {
 } from '../../../assets/icons'
 
 // Styled
-import {
-   StyledWrapper,
-   StyledTunnelHeader,
-   StyledTunnelMain,
-   StyledSelect
-} from '../styled'
+import { StyledWrapper, StyledTunnelHeader, StyledTunnelMain } from '../styled'
 import {
    StyledHeader,
    InputWrapper,
@@ -52,7 +47,7 @@ const IngredientForm = () => {
       image: '',
       sachets: []
    })
-   const { loading, error, data } = useQuery(INGREDIENT, {
+   const {} = useQuery(INGREDIENT, {
       variables: { ID: state.current.ID },
       onCompleted: data => {
          setIngredient(data.ingredient)

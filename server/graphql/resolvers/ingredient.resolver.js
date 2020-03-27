@@ -237,18 +237,13 @@ module.exports = {
                   path: 'modes.station'
                },
                {
-                  path: 'modes.supplierItems',
-                  populate: [
-                     {
-                        path: 'item'
-                     },
-                     {
-                        path: 'packaging'
-                     },
-                     {
-                        path: 'labelTemplate'
-                     }
-                  ]
+                  path: 'modes.supplierItems.item'
+               },
+               {
+                  path: 'modes.supplierItems.packaging'
+               },
+               {
+                  path: 'modes.supplierItems.labelTemplate'
                }
             ]
          })

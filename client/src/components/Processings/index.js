@@ -44,7 +44,6 @@ const Processings = ({ ingredientId }) => {
       onCompleted: data => {
          processingNamesList.length = 0
          processingNamesList.push(...data.processingNames)
-         openProcessingTunnel(1)
       }
    })
    const [fetchProcessings, {}] = useLazyQuery(PROCESSINGS, {
@@ -76,6 +75,7 @@ const Processings = ({ ingredientId }) => {
          fetchProcessings({
             variables: { ingredientId }
          })
+         fetchProcessingNames()
       }
    }, [ingredientId])
 
@@ -119,7 +119,7 @@ const Processings = ({ ingredientId }) => {
          <StyledListing>
             <StyledListingHeader>
                <h3>Processings ({processings.length})</h3>
-               <span onClick={fetchProcessingNames}>
+               <span onClick={() => openProcessingTunnel(1)}>
                   <AddIcon color='#555B6E' size='18' stroke='2.5' />
                </span>
             </StyledListingHeader>
@@ -147,7 +147,7 @@ const Processings = ({ ingredientId }) => {
             <ButtonTile
                type='primary'
                size='lg'
-               onClick={fetchProcessingNames}
+               onClick={() => openProcessingTunnel(1)}
             />
             <Tunnels tunnels={processingTunnel}>
                <Tunnel layer={1}>

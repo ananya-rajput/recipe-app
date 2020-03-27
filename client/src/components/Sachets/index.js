@@ -54,103 +54,6 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    const [units, setUnits] = React.useState([])
    const [selectedView, setSelectedView] = React.useState('modes')
    const [search, setSearch] = React.useState('')
-
-   // Queries and Mutations
-   const [fetchSachets, {}] = useLazyQuery(SACHETS, {
-      onCompleted: data => {
-         setSachets(data.sachets)
-      }
-   })
-   const [fetchUnits, {}] = useLazyQuery(FETCH_UNITS, {
-      onCompleted: data => {
-         setUnits(data.units)
-         openSachetTunnel(1)
-      }
-   })
-   const [fetchStations, {}] = useLazyQuery(FETCH_STATIONS, {
-      onCompleted: data => {
-         stationsList.length = 0
-         stationsList.push(...data.stations)
-         openSachetTunnel(2)
-      }
-   })
-   const [fetchSupplierItems, {}] = useLazyQuery(FETCH_SUPPLIER_ITEMS, {
-      onCompleted: data => {
-         supplierItemsList.length = 0
-         supplierItemsList.push(...data.supplierItems)
-         openSachetTunnel(3)
-      }
-   })
-   const [fetchPackagings, {}] = useLazyQuery(FETCH_PACKAGINGS, {
-      onCompleted: data => {
-         packagingList.length = 0
-         packagingList.push(...data.packagings)
-         openPackagingTunnel(1)
-      }
-   })
-   const [fetchLabelTemplates, {}] = useLazyQuery(FETCH_LABEL_TEMPLATES, {
-      onCompleted: data => {
-         labelTemplateList.length = 0
-         labelTemplateList.push(...data.labelTemplates)
-         openLabelTunnel(1)
-      }
-   })
-   const [addSachet] = useMutation(ADD_SACHET, {
-      onCompleted: data => {
-         console.log(data.addSachet)
-         setSachets(data.addSachet)
-      }
-   })
-   const [deleteSachet] = useMutation(DELETE_SACHET, {
-      onCompleted: data => {
-         const updatedSachets = sachets.filter(
-            sachet => sachet._id !== data.deleteSachet.ID
-         )
-         setSachets(updatedSachets)
-         if (updatedSachets.length) setSelectedIndex(selectedIndex - 1)
-         else setSelectedIndex(0)
-      }
-   })
-
-   // Side Effects
-   React.useEffect(() => {
-      if (processingId && processingId.length) {
-         fetchSachets({
-            variables: {
-               processingId
-            }
-         })
-      }
-   }, [processingId])
-
-   const deleteSachetHandler = sachetId => {
-      deleteSachet({
-         variables: {
-            input: {
-               ingredientId,
-               processingId,
-               sachetId
-            }
-         }
-      })
-   }
-
-   //Lists
-   const [stationsList, currentStation, selectStation] = useSingleList([])
-   const [
-      supplierItemsList,
-      currentSupplierItem,
-      selectSupplierItem
-   ] = useSingleList([])
-   const [packagingList, currentPackaging, selectPackaging] = useSingleList([])
-   const [
-      labelTemplateList,
-      currentLabelTemplate,
-      selectLabelTemplate
-   ] = useSingleList([])
-
-   // Tunnels
-   const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
    const [currentMode, setCurrentMode] = React.useState('')
    const [sachetForm, setSachetForm] = React.useState({
       _id: '',
@@ -233,6 +136,104 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       ]
    })
 
+   // Queries and Mutations
+   const [fetchSachets, {}] = useLazyQuery(SACHETS, {
+      onCompleted: data => {
+         setSachets(data.sachets)
+      }
+   })
+   const [fetchUnits, {}] = useLazyQuery(FETCH_UNITS, {
+      onCompleted: data => {
+         setUnits(data.units)
+      }
+   })
+   const [fetchStations, {}] = useLazyQuery(FETCH_STATIONS, {
+      onCompleted: data => {
+         stationsList.length = 0
+         stationsList.push(...data.stations)
+      }
+   })
+   const [fetchSupplierItems, {}] = useLazyQuery(FETCH_SUPPLIER_ITEMS, {
+      onCompleted: data => {
+         supplierItemsList.length = 0
+         supplierItemsList.push(...data.supplierItems)
+      }
+   })
+   const [fetchPackagings, {}] = useLazyQuery(FETCH_PACKAGINGS, {
+      onCompleted: data => {
+         packagingList.length = 0
+         packagingList.push(...data.packagings)
+      }
+   })
+   const [fetchLabelTemplates, {}] = useLazyQuery(FETCH_LABEL_TEMPLATES, {
+      onCompleted: data => {
+         labelTemplateList.length = 0
+         labelTemplateList.push(...data.labelTemplates)
+      }
+   })
+   const [addSachet] = useMutation(ADD_SACHET, {
+      onCompleted: data => {
+         setSachets(data.addSachet)
+      }
+   })
+   const [deleteSachet] = useMutation(DELETE_SACHET, {
+      onCompleted: data => {
+         const updatedSachets = sachets.filter(
+            sachet => sachet._id !== data.deleteSachet.ID
+         )
+         setSachets(updatedSachets)
+         if (updatedSachets.length) setSelectedIndex(selectedIndex - 1)
+         else setSelectedIndex(0)
+      }
+   })
+
+   // Side Effects
+   React.useEffect(() => {
+      if (processingId && processingId.length) {
+         fetchSachets({
+            variables: {
+               processingId
+            }
+         })
+      }
+   }, [processingId])
+
+   //Lists
+   const [stationsList, currentStation, selectStation] = useSingleList([])
+   const [
+      supplierItemsList,
+      currentSupplierItem,
+      selectSupplierItem
+   ] = useSingleList([])
+   const [packagingList, currentPackaging, selectPackaging] = useSingleList([])
+   const [
+      labelTemplateList,
+      currentLabelTemplate,
+      selectLabelTemplate
+   ] = useSingleList([])
+
+   const deleteSachetHandler = sachetId => {
+      deleteSachet({
+         variables: {
+            input: {
+               ingredientId,
+               processingId,
+               sachetId
+            }
+         }
+      })
+   }
+
+   // Tunnels
+   const [sachetTunnel, openSachetTunnel, closeSachetTunnel] = useTunnel(3)
+   const [
+      packagingTunnel,
+      openPackagingTunnel,
+      closePackagingTunnel
+   ] = useTunnel(1)
+   const [labelTunnel, openLabelTunnel, closeLabelTunnel] = useTunnel(1)
+
+   // Handlers
    const selectAccuracyHandler = value => {
       let copySachetForm = sachetForm
       const index = copySachetForm.modes.findIndex(
@@ -243,12 +244,6 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       closeLabelTunnel(1)
    }
 
-   // Packaging Tunnel
-   const [
-      packagingTunnel,
-      openPackagingTunnel,
-      closePackagingTunnel
-   ] = useTunnel(1)
    const selectPackagingHandler = packaging => {
       selectPackaging('_id', packaging._id)
       let copySachetForm = sachetForm
@@ -260,8 +255,6 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       closePackagingTunnel(1)
    }
 
-   // Lable Ops and Tunnel
-   const [labelTunnel, openLabelTunnel, closeLabelTunnel] = useTunnel(1)
    const toggleIsLabelled = checked => {
       let copySachetForm = sachetForm
       const index = copySachetForm.modes.findIndex(
@@ -284,7 +277,10 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       let cleanSachet = {
          quantity: {
             value: +sachetForm.quantity.value,
-            unit: sachetForm.quantity.unit
+            unit:
+               sachetForm.quantity.unit.length > 0
+                  ? sachetForm.quantity.unit
+                  : units[0]._id
          },
          tracking: sachetForm.tracking
       }
@@ -375,7 +371,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    // Mode Ops
    const toggleMode = (val, type) => {
       let index = sachetForm.modes.findIndex(mode => mode.type === type)
-      sachetForm.modes[index].isActive = !sachetForm.modes[index].isActive
+      const copySachetForm = sachetForm
+      copySachetForm.modes[index].isActive = !sachetForm.modes[index].isActive
+      setSachetForm({ ...copySachetForm })
       if (!val) {
          return
       } else {
@@ -385,14 +383,14 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
          } else {
             // configure it - open tunnel
             setModeForm(sachetForm.modes[index])
-            fetchStations()
+            openSachetTunnel(2)
          }
       }
    }
    const selectStationHandler = station => {
       setModeForm({ ...modeForm, station })
       selectStation('_id', station._id)
-      fetchSupplierItems()
+      openSachetTunnel(3)
    }
    const selectSupplierItemHandler = item => {
       selectSupplierItem('_id', item._id)
@@ -423,6 +421,15 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       })
    }
 
+   const sachetTunnelHandler = () => {
+      fetchUnits()
+      fetchStations()
+      fetchSupplierItems()
+      fetchPackagings()
+      fetchLabelTemplates()
+      openSachetTunnel(1)
+   }
+
    return (
       <StyledSection spacing='md' hasElements={sachets.length !== 0}>
          {sachets.length > 0 ? (
@@ -435,7 +442,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                            color='#555B6E'
                            size='18'
                            stroke='2.5'
-                           onClick={fetchUnits}
+                           onClick={sachetTunnelHandler}
                         />
                      </span>
                   </StyledListingHeader>
@@ -459,7 +466,11 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                         <p>Available: 12/40 pkt</p>
                      </StyledListingTile>
                   ))}
-                  <ButtonTile type='primary' size='lg' onClick={fetchUnits} />
+                  <ButtonTile
+                     type='primary'
+                     size='lg'
+                     onClick={sachetTunnelHandler}
+                  />
                </StyledListing>
                <StyledDisplay contains='sachets' hasElements={true}>
                   <StyledTabsContainer>
@@ -494,7 +505,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                type='primary'
                size='lg'
                text='Add Sachet'
-               onClick={fetchUnits}
+               onClick={sachetTunnelHandler}
             />
          )}
          <Tunnels tunnels={sachetTunnel}>
@@ -582,36 +593,65 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                                  />
                                  {mode.type}
                               </td>
-                              <td>{mode.station.title}</td>
-                              <td>{mode.supplierItems[0].item.title}</td>
                               <td>
-                                 <RadioGroup
-                                    options={accuracyOptions}
-                                    active={2}
-                                    onChange={option =>
-                                       selectAccuracyHandler(option.value)
-                                    }
-                                 />
+                                 {mode.station?.title?.length > 0
+                                    ? mode.station.title
+                                    : '-'}
                               </td>
                               <td>
-                                 <ButtonTile
-                                    type='secondary'
-                                    text='Packaging'
-                                    onClick={fetchPackagings}
-                                 />
+                                 {mode.supplierItems[0].item?.title?.length > 0
+                                    ? mode.supplierItems[0].item.title
+                                    : '-'}
                               </td>
                               <td>
-                                 <Toggle
-                                    checked={mode.supplierItems[0].isLabelled}
-                                    setChecked={val => toggleIsLabelled(val)}
-                                 />
-                                 {mode.supplierItems[0].isLabelled && (
-                                    <ButtonTile
-                                       noIcon
-                                       type='secondary'
-                                       text='Select Sub Title'
-                                       onClick={fetchLabelTemplates}
+                                 {mode.supplierItems[0].item?.title?.length >
+                                 0 ? (
+                                    <RadioGroup
+                                       options={accuracyOptions}
+                                       active={2}
+                                       onChange={option =>
+                                          selectAccuracyHandler(option.value)
+                                       }
                                     />
+                                 ) : (
+                                    '-'
+                                 )}
+                              </td>
+                              <td>
+                                 {mode.supplierItems[0].item?.title?.length >
+                                 0 ? (
+                                    <ButtonTile
+                                       type='secondary'
+                                       text='Packaging'
+                                       onClick={() => openPackagingTunnel(1)}
+                                    />
+                                 ) : (
+                                    '-'
+                                 )}
+                              </td>
+                              <td>
+                                 {mode.supplierItems[0].item?.title?.length >
+                                 0 ? (
+                                    <React.Fragment>
+                                       <Toggle
+                                          checked={
+                                             mode.supplierItems[0].isLabelled
+                                          }
+                                          setChecked={val =>
+                                             toggleIsLabelled(val)
+                                          }
+                                       />
+                                       {mode.supplierItems[0].isLabelled && (
+                                          <ButtonTile
+                                             noIcon
+                                             type='secondary'
+                                             text='Select Sub Title'
+                                             onClick={() => openLabelTunnel(1)}
+                                          />
+                                       )}
+                                    </React.Fragment>
+                                 ) : (
+                                    '-'
                                  )}
                               </td>
                            </tr>

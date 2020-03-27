@@ -45,6 +45,7 @@ import {
    ADD_SACHET,
    DELETE_SACHET
 } from '../../graphql'
+import { Sachet } from '../'
 
 const Sachets = ({ ingredientId, processingId, processingName }) => {
    // State
@@ -477,7 +478,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                   </StyledTabsContainer>
                   <StyledTabContent
                      className={selectedView === 'modes' ? 'active' : ''}
-                  ></StyledTabContent>
+                  >
+                     <Sachet sachet={sachets[selectedIndex]} />
+                  </StyledTabContent>
                   <StyledTabContent
                      className={selectedView === 'inventory' ? 'active' : ''}
                   >
@@ -561,7 +564,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                            <th>Mode of fulfillment</th>
                            <th>Station</th>
                            <th>Supplier item</th>
-                           <th>Accuracy range</th>
+                           <th>Accuracy</th>
                            <th>Packaging</th>
                            <th>Label</th>
                         </tr>

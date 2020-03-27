@@ -32,7 +32,7 @@ import {
    DELETE_PROCESSING,
    FETCH_PROCESSING_NAMES
 } from '../../graphql'
-import Sachets from '../Sachets'
+import { Sachets } from '../'
 
 const Processings = ({ ingredientId }) => {
    // States

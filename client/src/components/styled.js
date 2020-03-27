@@ -15,7 +15,8 @@ export const StyledListing = styled.div`
 export const StyledDisplay = styled.div`
    display: ${props => (props.hasElements ? 'block' : 'none')}
    background: #fff;
-   padding: ${props => (props.contains === 'sachets' ? '0px' : '32px 28px')};
+   padding: ${props =>
+      props.contains === 'sachets' ? '0px 28px 28px 0px' : '32px 28px'};
    margin-top: ${props => (props.contains === 'sachets' ? '16px' : '0')};
 `
 
@@ -157,6 +158,16 @@ export const StyledTable = styled.table`
 
             &:first-child {
                display: flex;
+               position: relative;
+
+               span.badge {
+                  position: absolute;
+                  background: #28c1f6;
+                  text-transform: uppercase;
+                  color: #fff;
+                  padding: 4px;
+                  top: 4px;
+               }
 
                > div {
                   margin-right: 12px;

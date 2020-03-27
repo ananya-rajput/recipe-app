@@ -79,6 +79,6 @@ export const StyledSelect = styled.select`
    font-weight: 500;
    font-size: 14px;
    line-height: 16px;
-   color: #555B6E;
+   color: #555b6e;
    outline: none;
 `

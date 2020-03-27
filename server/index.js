@@ -10,7 +10,8 @@ const app = express()
 // MongoDB Connection
 mongoose
    .connect(
-      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PSWD}@${process.env.DB_URL}/recipe-app?retryWrites=true&w=majority`,
+      // `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PSWD}@${process.env.DB_URL}/recipe-app?retryWrites=true&w=majority`,
+      'mongodb://localhost:27017/recipe-app',
       {
          useUnifiedTopology: true,
          useNewUrlParser: true

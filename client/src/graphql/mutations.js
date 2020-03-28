@@ -1,5 +1,14 @@
 import { gql } from 'apollo-boost'
 
+export const CREATE_INGREDIENT = gql`
+   mutation CreateIngredient($name: String) {
+      createIngredient(name: $name) {
+         _id
+         name
+      }
+   }
+`
+
 export const UPDATE_INGREDIENT = gql`
    mutation UpdateIngredient(
       $ingredientId: ID!
@@ -16,9 +25,9 @@ export const UPDATE_INGREDIENT = gql`
    }
 `
 
-export const ADD_PROCESSINGS = gql`
-   mutation AddProcessings($ingredientId: ID!, $processingNames: [ID!]!) {
-      addProcessings(
+export const CREATE_PROCESSINGS = gql`
+   mutation CreateProcessings($ingredientId: ID!, $processingNames: [ID!]!) {
+      createProcessings(
          input: {
             ingredientId: $ingredientId
             processingNames: $processingNames
@@ -44,9 +53,9 @@ export const DELETE_PROCESSING = gql`
    }
 `
 
-export const ADD_SACHET = gql`
-   mutation AddSachet($input: AddSachetInput!) {
-      addSachet(input: $input) {
+export const CREATE_SACHET = gql`
+   mutation CreateSachet($input: CreateSachetInput!) {
+      createSachet(input: $input) {
          _id
          quantity {
             value

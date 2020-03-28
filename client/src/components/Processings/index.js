@@ -27,8 +27,8 @@ import {
    StyledTunnelMain
 } from '../styled'
 import {
-   PROCESSINGS,
-   ADD_PROCESSINGS,
+   PROCESSINGS_OF_INGREDIENT,
+   CREATE_PROCESSINGS,
    DELETE_PROCESSING,
    FETCH_PROCESSING_NAMES
 } from '../../graphql'
@@ -46,15 +46,15 @@ const Processings = ({ ingredientId }) => {
          processingNamesList.push(...data.processingNames)
       }
    })
-   const [fetchProcessings, {}] = useLazyQuery(PROCESSINGS, {
+   const [fetchProcessings, {}] = useLazyQuery(PROCESSINGS_OF_INGREDIENT, {
       onCompleted: data => {
-         setProcessings(data.processings)
+         setProcessings(data.processingsOfIngredient)
       }
    })
-   const [addProcessings] = useMutation(ADD_PROCESSINGS, {
+   const [createProcessings] = useMutation(CREATE_PROCESSINGS, {
       onCompleted: data => {
          console.log(data)
-         setProcessings(data.addProcessings)
+         setProcessings(data.createProcessings)
       }
    })
    const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
@@ -97,7 +97,7 @@ const Processings = ({ ingredientId }) => {
    // Handlers
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item._id)
-      addProcessings({
+      createProcessings({
          variables: { ingredientId, processingNames: names }
       })
       closeProcessingTunnel(1)
@@ -115,16 +115,16 @@ const Processings = ({ ingredientId }) => {
    }
 
    return (
-      <StyledSection hasElements={processings.length !== 0}>
+      <StyledSection hasElements={processings?.length !== 0}>
          <StyledListing>
             <StyledListingHeader>
-               <h3>Processings ({processings.length})</h3>
+               <h3>Processings ({processings?.length})</h3>
                <span onClick={() => openProcessingTunnel(1)}>
                   <AddIcon color='#555B6E' size='18' stroke='2.5' />
                </span>
             </StyledListingHeader>
-            {processings.length > 0 &&
-               processings.map((processing, i) => (
+            {processings?.length > 0 &&
+               processings?.map((processing, i) => (
                   <StyledListingTile
                      key={processing._id}
                      active={i === selectedIndex}
@@ -209,7 +209,7 @@ const Processings = ({ ingredientId }) => {
                </Tunnel>
             </Tunnels>
          </StyledListing>
-         <StyledDisplay hasElements={processings.length !== 0}>
+         <StyledDisplay hasElements={processings?.length !== 0}>
             <Sachets
                ingredientId={ingredientId}
                processingId={processings[selectedIndex]?._id}

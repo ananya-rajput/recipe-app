@@ -36,13 +36,13 @@ import {
    ToggleWrapper
 } from '../styled'
 import {
-   SACHETS,
+   SACHETS_OF_PROCESSING,
    FETCH_UNITS,
    FETCH_SUPPLIER_ITEMS,
    FETCH_STATIONS,
    FETCH_PACKAGINGS,
    FETCH_LABEL_TEMPLATES,
-   ADD_SACHET,
+   CREATE_SACHET,
    DELETE_SACHET
 } from '../../graphql'
 import { Sachet } from '../'
@@ -137,9 +137,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    })
 
    // Queries and Mutations
-   const [fetchSachets, {}] = useLazyQuery(SACHETS, {
+   const [fetchSachets, {}] = useLazyQuery(SACHETS_OF_PROCESSING, {
       onCompleted: data => {
-         setSachets(data.sachets)
+         setSachets(data.sachetsOfProcessing)
       }
    })
    const [fetchUnits, {}] = useLazyQuery(FETCH_UNITS, {
@@ -171,9 +171,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
          labelTemplateList.push(...data.labelTemplates)
       }
    })
-   const [addSachet] = useMutation(ADD_SACHET, {
+   const [addSachet] = useMutation(CREATE_SACHET, {
       onCompleted: data => {
-         setSachets(data.addSachet)
+         setSachets(data.createSachet)
       }
    })
    const [deleteSachet] = useMutation(DELETE_SACHET, {

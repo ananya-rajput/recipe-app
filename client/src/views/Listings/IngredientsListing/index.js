@@ -33,29 +33,11 @@ import {
    StyledContent,
    StyledPagination
 } from '../styled'
-
-// Queries
-const GET_INGREDIENTS = gql`
-   {
-      ingredients {
-         _id
-         name
-      }
-   }
-`
-
-const CREATE_INGREDIENT = gql`
-   mutation CreateIngredient($ingredient: IngredientInput) {
-      createIngredient(input: $ingredient) {
-         _id
-         name
-      }
-   }
-`
+import { CREATE_INGREDIENT, INGREDIENTS } from '../../../graphql'
 
 const IngredientsListing = () => {
    const { dispatch } = React.useContext(Context)
-   const { loading, error, data } = useQuery(GET_INGREDIENTS)
+   const { loading, error, data } = useQuery(INGREDIENTS)
    const [search, setSearch] = React.useState('')
 
    const addTab = (title, view, ID) => {
@@ -73,7 +55,7 @@ const IngredientsListing = () => {
 
    const createIngredientHandler = async () => {
       let name = 'ingredient-' + generateRandomString()
-      createIngredient({ variables: { ingredient: { name } } })
+      createIngredient({ variables: { name } })
    }
 
    return (

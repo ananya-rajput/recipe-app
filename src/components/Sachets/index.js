@@ -173,17 +173,27 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    })
    const [createSachet] = useMutation(CREATE_SACHET, {
       onCompleted: data => {
-         setSachets([...sachets, data.createSachet])
+         if (data.createSachet.success) {
+            setSachets([...sachets, data.createSachet.sachet])
+         } else {
+            // Fire toast
+            console.log('Sachet not created!')
+         }
       }
    })
    const [deleteSachet] = useMutation(DELETE_SACHET, {
       onCompleted: data => {
-         const updatedSachets = sachets.filter(
-            sachet => sachet.id !== data.deleteSachet.id
-         )
-         setSachets(updatedSachets)
-         if (updatedSachets.length) setSelectedIndex(selectedIndex - 1)
-         else setSelectedIndex(0)
+         if (data.deleteSachet.success) {
+            const updatedSachets = sachets.filter(
+               sachet => sachet.id !== data.deleteSachet.sachet.id
+            )
+            setSachets(updatedSachets)
+            if (updatedSachets.length) setSelectedIndex(selectedIndex - 1)
+            else setSelectedIndex(0)
+         } else {
+            // Fire toast
+            console.log('Sachet could not be deleted!')
+         }
       }
    })
 

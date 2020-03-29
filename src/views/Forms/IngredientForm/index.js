@@ -44,8 +44,7 @@ const IngredientForm = () => {
    const [ingredient, setIngredient] = React.useState({
       id: '',
       name: '',
-      image: '',
-      sachets: []
+      image: ''
    })
    const {} = useQuery(INGREDIENT, {
       variables: { ID: state.current.ID },
@@ -55,7 +54,15 @@ const IngredientForm = () => {
    })
    const [updateIngredient] = useMutation(UPDATE_INGREDIENT, {
       onCompleted: data => {
-         setIngredient({ ...ingredient, ...data.updateIngredient })
+         if (data.updateIngredient.success) {
+            setIngredient({
+               ...ingredient,
+               ...data.updateIngredient.ingredient
+            })
+         } else {
+            // Fire toast
+            console.log(data)
+         }
       }
    })
 

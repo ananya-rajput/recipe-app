@@ -45,11 +45,16 @@ const IngredientsListing = () => {
    }
    const [createIngredient] = useMutation(CREATE_INGREDIENT, {
       onCompleted: data => {
-         addTab(
-            data.createIngredient.name,
-            'ingredient',
-            data.createIngredient.id
-         )
+         if (data.createIngredient.success) {
+            addTab(
+               data.createIngredient.ingredient.name,
+               'ingredient',
+               data.createIngredient.ingredient.id
+            )
+         } else {
+            // Fire toast
+            console.log(data)
+         }
       }
    })
 

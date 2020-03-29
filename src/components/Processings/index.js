@@ -62,9 +62,13 @@ const Processings = ({ ingredientId }) => {
       onCompleted: data => {
          if (data.deleteProcessing.success) {
             const newProcessings = processings.filter(
-               processing => processing.id !== data.deleteProcessing.id
+               processing =>
+                  processing.id !== data.deleteProcessing.processing.id
             )
             setProcessings(newProcessings)
+         } else {
+            // Fire toast
+            console.log('Error while deleting!')
          }
       }
    })

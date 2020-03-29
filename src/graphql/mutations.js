@@ -3,8 +3,12 @@ import { gql } from 'apollo-boost'
 export const CREATE_INGREDIENT = gql`
    mutation CreateIngredient($name: String) {
       createIngredient(name: $name) {
-         id
-         name
+         success
+         message
+         ingredient {
+            id
+            name
+         }
       }
    }
 `
@@ -18,9 +22,13 @@ export const UPDATE_INGREDIENT = gql`
       updateIngredient(
          input: { id: $ingredientId, name: $name, image: $image }
       ) {
-         id
-         name
-         image
+         success
+         message
+         ingredient {
+            id
+            name
+            image
+         }
       }
    }
 `
@@ -52,7 +60,9 @@ export const DELETE_PROCESSING = gql`
       deleteProcessing(input: $input) {
          success
          message
-         id
+         processing {
+            id
+         }
       }
    }
 `
@@ -60,37 +70,41 @@ export const DELETE_PROCESSING = gql`
 export const CREATE_SACHET = gql`
    mutation CreateSachet($input: CreateSachetInput!) {
       createSachet(input: $input) {
-         id
-         quantity {
-            value
-            unit {
-               id
-               title
-            }
-         }
-         tracking
-         modes {
-            isActive
-            type
-            station {
-               id
-               title
-            }
-            supplierItems {
-               isDefault
-               item {
+         success
+         message
+         sachet {
+            id
+            quantity {
+               value
+               unit {
                   id
                   title
                }
-               accuracy
-               packaging {
+            }
+            tracking
+            modes {
+               isActive
+               type
+               station {
                   id
                   title
                }
-               isLabelled
-               labelTemplate {
-                  id
-                  title
+               supplierItems {
+                  isDefault
+                  item {
+                     id
+                     title
+                  }
+                  accuracy
+                  packaging {
+                     id
+                     title
+                  }
+                  isLabelled
+                  labelTemplate {
+                     id
+                     title
+                  }
                }
             }
          }
@@ -103,7 +117,9 @@ export const DELETE_SACHET = gql`
       deleteSachet(input: $input) {
          success
          message
-         id
+         sachet {
+            id
+         }
       }
    }
 `

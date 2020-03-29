@@ -42,7 +42,7 @@ import { INGREDIENT, UPDATE_INGREDIENT } from '../../../graphql'
 const IngredientForm = () => {
    const { state, dispatch } = React.useContext(Context)
    const [ingredient, setIngredient] = React.useState({
-      _id: '',
+      id: '',
       name: '',
       image: '',
       sachets: []
@@ -62,7 +62,7 @@ const IngredientForm = () => {
    const updateIngredientHandler = () => {
       updateIngredient({
          variables: {
-            ingredientId: ingredient._id,
+            ingredientId: ingredient.id,
             name: ingredient.name,
             image: ingredient.image
          }
@@ -80,7 +80,7 @@ const IngredientForm = () => {
    const addPhotoHandler = image => {
       updateIngredient({
          variables: {
-            ingredientId: ingredient._id,
+            ingredientId: ingredient.id,
             name: ingredient.name,
             image
          }
@@ -178,7 +178,7 @@ const IngredientForm = () => {
                      </Tunnel>
                   </Tunnels>
                </StyledTop>
-               <Processings ingredientId={ingredient._id} />
+               <Processings ingredientId={ingredient.id} />
             </Container>
          </StyledMain>
       </>

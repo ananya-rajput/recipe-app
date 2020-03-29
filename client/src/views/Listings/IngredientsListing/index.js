@@ -48,7 +48,7 @@ const IngredientsListing = () => {
          addTab(
             data.createIngredient.name,
             'ingredient',
-            data.createIngredient._id
+            data.createIngredient.id
          )
       }
    })
@@ -108,12 +108,12 @@ const IngredientsListing = () => {
                      !error &&
                      data.ingredients.map(ingredient => (
                         <TableRow
-                           key={ingredient._id}
+                           key={ingredient.id}
                            onClick={() =>
                               addTab(
                                  ingredient.name,
                                  'ingredient',
-                                 ingredient._id
+                                 ingredient.id
                               )
                            }
                         >

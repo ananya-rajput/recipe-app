@@ -3,7 +3,7 @@ import { gql } from 'apollo-boost'
 export const INGREDIENTS = gql`
    {
       ingredients {
-         _id
+         id
          name
       }
    }
@@ -12,62 +12,76 @@ export const INGREDIENTS = gql`
 export const INGREDIENT = gql`
    query Ingredient($ID: ID!) {
       ingredient(id: $ID) {
-         _id
+         id
          name
          image
-         processings
-         sachets
+         processings {
+            id
+         }
+         sachets {
+            id
+         }
       }
    }
 `
 
 export const PROCESSINGS_OF_INGREDIENT = gql`
-   query ProcessingsOfIngredient($ingredientId: ID!) {
-      processingsOfIngredient(id: $ingredientId) {
-         _id
-         sachets
-         name {
-            title
+   query Ingredient($ingredientId: ID!) {
+      ingredient(id: $ingredientId) {
+         id
+         processings {
+            id
+            name {
+               title
+            }
+            sachets {
+               id
+            }
+            recipes {
+               id
+            }
          }
-         recipes
       }
    }
 `
 
 export const SACHETS_OF_PROCESSING = gql`
-   query SachetsOfProcessing($processingId: ID!) {
-      sachetsOfProcessing(id: $processingId) {
-         _id
-         quantity {
-            value
-            unit {
-               _id
-               title
-            }
-         }
-         tracking
-         modes {
-            isActive
-            type
-            station {
-               _id
-               title
-            }
-            supplierItems {
-               isDefault
-               item {
-                  _id
+   query Processing($processingId: ID!) {
+      processing(id: $processingId) {
+         id
+         sachets {
+            id
+            quantity {
+               value
+               unit {
+                  id
                   title
                }
-               accuracy
-               packaging {
-                  _id
+            }
+            tracking
+            modes {
+               isActive
+               type
+               station {
+                  id
                   title
                }
-               isLabelled
-               labelTemplate {
-                  _id
-                  title
+               supplierItems {
+                  isDefault
+                  item {
+                     id
+                     title
+                  }
+                  accuracy
+                  packaging {
+                     id
+                     title
+                  }
+                  isLabelled
+                  labelTemplate {
+                     id
+                     title
+                  }
                }
             }
          }
@@ -78,7 +92,7 @@ export const SACHETS_OF_PROCESSING = gql`
 export const FETCH_PROCESSING_NAMES = gql`
    {
       processingNames {
-         _id
+         id
          title
       }
    }
@@ -87,7 +101,7 @@ export const FETCH_PROCESSING_NAMES = gql`
 export const FETCH_UNITS = gql`
    {
       units {
-         _id
+         id
          title
       }
    }
@@ -96,7 +110,7 @@ export const FETCH_UNITS = gql`
 export const FETCH_STATIONS = gql`
    {
       stations {
-         _id
+         id
          title
       }
    }
@@ -105,7 +119,7 @@ export const FETCH_STATIONS = gql`
 export const FETCH_SUPPLIER_ITEMS = gql`
    {
       supplierItems {
-         _id
+         id
          title
       }
    }
@@ -114,7 +128,7 @@ export const FETCH_SUPPLIER_ITEMS = gql`
 export const FETCH_PACKAGINGS = gql`
    {
       packagings {
-         _id
+         id
          title
       }
    }
@@ -123,7 +137,7 @@ export const FETCH_PACKAGINGS = gql`
 export const FETCH_LABEL_TEMPLATES = gql`
    {
       labelTemplates {
-         _id
+         id
          title
       }
    }

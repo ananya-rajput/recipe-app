@@ -3,7 +3,7 @@ import { gql } from 'apollo-boost'
 export const CREATE_INGREDIENT = gql`
    mutation CreateIngredient($name: String) {
       createIngredient(name: $name) {
-         _id
+         id
          name
       }
    }
@@ -16,9 +16,9 @@ export const UPDATE_INGREDIENT = gql`
       $image: String
    ) {
       updateIngredient(
-         input: { ingredientId: $ingredientId, name: $name, image: $image }
+         input: { id: $ingredientId, name: $name, image: $image }
       ) {
-         _id
+         id
          name
          image
       }
@@ -33,12 +33,16 @@ export const CREATE_PROCESSINGS = gql`
             processingNames: $processingNames
          }
       ) {
-         _id
-         sachets
+         id
+         sachets {
+            id
+         }
          name {
             title
          }
-         recipes
+         recipes {
+            id
+         }
       }
    }
 `
@@ -48,7 +52,7 @@ export const DELETE_PROCESSING = gql`
       deleteProcessing(input: $input) {
          success
          message
-         ID
+         id
       }
    }
 `
@@ -56,11 +60,11 @@ export const DELETE_PROCESSING = gql`
 export const CREATE_SACHET = gql`
    mutation CreateSachet($input: CreateSachetInput!) {
       createSachet(input: $input) {
-         _id
+         id
          quantity {
             value
             unit {
-               _id
+               id
                title
             }
          }
@@ -69,23 +73,23 @@ export const CREATE_SACHET = gql`
             isActive
             type
             station {
-               _id
+               id
                title
             }
             supplierItems {
                isDefault
                item {
-                  _id
+                  id
                   title
                }
                accuracy
                packaging {
-                  _id
+                  id
                   title
                }
                isLabelled
                labelTemplate {
-                  _id
+                  id
                   title
                }
             }
@@ -99,7 +103,7 @@ export const DELETE_SACHET = gql`
       deleteSachet(input: $input) {
          success
          message
-         ID
+         id
       }
    }
 `

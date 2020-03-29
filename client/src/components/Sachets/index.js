@@ -56,7 +56,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    const [search, setSearch] = React.useState('')
    const [currentMode, setCurrentMode] = React.useState('')
    const [sachetForm, setSachetForm] = React.useState({
-      _id: '',
+      id: '',
       quantity: { value: '', unit: '' },
       tracking: true,
       modes: [
@@ -139,7 +139,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    // Queries and Mutations
    const [fetchSachets, {}] = useLazyQuery(SACHETS_OF_PROCESSING, {
       onCompleted: data => {
-         setSachets(data.sachetsOfProcessing)
+         setSachets(data.processing.sachets)
       }
    })
    const [fetchUnits, {}] = useLazyQuery(FETCH_UNITS, {
@@ -171,15 +171,15 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
          labelTemplateList.push(...data.labelTemplates)
       }
    })
-   const [addSachet] = useMutation(CREATE_SACHET, {
+   const [createSachet] = useMutation(CREATE_SACHET, {
       onCompleted: data => {
-         setSachets(data.createSachet)
+         setSachets([...sachets, data.createSachet])
       }
    })
    const [deleteSachet] = useMutation(DELETE_SACHET, {
       onCompleted: data => {
          const updatedSachets = sachets.filter(
-            sachet => sachet._id !== data.deleteSachet.ID
+            sachet => sachet.id !== data.deleteSachet.id
          )
          setSachets(updatedSachets)
          if (updatedSachets.length) setSelectedIndex(selectedIndex - 1)
@@ -245,7 +245,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    }
 
    const selectPackagingHandler = packaging => {
-      selectPackaging('_id', packaging._id)
+      selectPackaging('id', packaging.id)
       let copySachetForm = sachetForm
       const index = copySachetForm.modes.findIndex(
          mode => mode.type === currentMode
@@ -273,14 +273,14 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       closeLabelTunnel(1)
    }
 
-   const addSachetHandler = async () => {
+   const createSachetHandler = async () => {
       let cleanSachet = {
          quantity: {
             value: +sachetForm.quantity.value,
             unit:
                sachetForm.quantity.unit.length > 0
                   ? sachetForm.quantity.unit
-                  : units[0]._id
+                  : units[0].id
          },
          tracking: sachetForm.tracking
       }
@@ -292,22 +292,22 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
          .map(mode => {
             const cleanSupplierItems = mode.supplierItems.map(supplierItem => {
                return {
-                  item: supplierItem.item._id,
+                  item: supplierItem.item.id,
                   accuracy: supplierItem.accuracy,
-                  packaging: supplierItem.packaging._id,
+                  packaging: supplierItem.packaging.id,
                   isLabelled: supplierItem.isLabelled,
-                  labelTemplate: supplierItem.labelTemplate._id
+                  labelTemplate: supplierItem.labelTemplate.id
                }
             })
             return {
                type: mode.type,
                isActive: mode.isActive,
-               station: mode.station._id,
+               station: mode.station.id,
                supplierItems: cleanSupplierItems
             }
          })
       cleanSachet.modes = cleanModes
-      addSachet({
+      createSachet({
          variables: {
             input: {
                ingredientId,
@@ -318,7 +318,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
       })
       closeSachetTunnel(1)
       setSachetForm({
-         _id: '',
+         id: '',
          quantity: { value: '', unit: '' },
          tracking: true,
          modes: [
@@ -389,11 +389,11 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
    }
    const selectStationHandler = station => {
       setModeForm({ ...modeForm, station })
-      selectStation('_id', station._id)
+      selectStation('id', station.id)
       openSachetTunnel(3)
    }
    const selectSupplierItemHandler = item => {
-      selectSupplierItem('_id', item._id)
+      selectSupplierItem('id', item.id)
       let copyModeForm = modeForm
       copyModeForm.supplierItems[0].item = item
       const index = sachetForm.modes.findIndex(
@@ -448,14 +448,12 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                   </StyledListingHeader>
                   {sachets.map((sachet, i) => (
                      <StyledListingTile
-                        key={sachet._id}
+                        key={sachet.id}
                         active={i === selectedIndex}
                         onClick={() => setSelectedIndex(i)}
                      >
                         <Actions active={i === selectedIndex}>
-                           <span
-                              onClick={() => deleteSachetHandler(sachet._id)}
-                           >
+                           <span onClick={() => deleteSachetHandler(sachet.id)}>
                               <DeleteIcon />
                            </span>
                         </Actions>
@@ -519,7 +517,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                      />
                      <h1>Add Sachet for Processing: {processingName}</h1>
                   </div>
-                  <TextButton type='solid' onClick={addSachetHandler}>
+                  <TextButton type='solid' onClick={createSachetHandler}>
                      Save
                   </TextButton>
                </StyledTunnelHeader>
@@ -551,7 +549,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                         }
                      >
                         {units.map(unit => (
-                           <option key={unit._id} value={unit._id}>
+                           <option key={unit.id} value={unit.id}>
                               {unit.title}
                            </option>
                         ))}
@@ -608,7 +606,7 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                                  0 ? (
                                     <RadioGroup
                                        options={accuracyOptions}
-                                       active={2}
+                                       active={3}
                                        onChange={option =>
                                           selectAccuracyHandler(option.value)
                                        }
@@ -689,9 +687,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                            .map(option => (
                               <ListItem
                                  type='SSL1'
-                                 key={option._id}
+                                 key={option.id}
                                  title={option.title}
-                                 isActive={option._id === currentStation._id}
+                                 isActive={option.id === currentStation.id}
                                  onClick={() => selectStationHandler(option)}
                               />
                            ))}
@@ -733,11 +731,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                            .map(option => (
                               <ListItem
                                  type='SSL1'
-                                 key={option._id}
+                                 key={option.id}
                                  title={option.title}
-                                 isActive={
-                                    option._id === currentSupplierItem._id
-                                 }
+                                 isActive={option.id === currentSupplierItem.id}
                                  onClick={() =>
                                     selectSupplierItemHandler(option)
                                  }
@@ -778,9 +774,9 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                            .map(option => (
                               <ListItem
                                  type='SSL1'
-                                 key={option._id}
+                                 key={option.id}
                                  title={option.title}
-                                 isActive={option._id === currentPackaging._id}
+                                 isActive={option.id === currentPackaging.id}
                                  onClick={() => selectPackagingHandler(option)}
                               />
                            ))}
@@ -824,10 +820,10 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                            .map(option => (
                               <ListItem
                                  type='SSL1'
-                                 key={option._id}
+                                 key={option.id}
                                  title={option.title}
                                  isActive={
-                                    option._id === currentLabelTemplate._id
+                                    option.id === currentLabelTemplate.id
                                  }
                                  onClick={() =>
                                     selectLabelTemplateHandler(option)

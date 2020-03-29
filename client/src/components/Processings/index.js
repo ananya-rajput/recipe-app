@@ -1,5 +1,5 @@
 import React from 'react'
-import { useLazyQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useLazyQuery, useMutation } from '@apollo/react-hooks'
 import {
    ButtonTile,
    Tunnels,
@@ -40,44 +40,34 @@ const Processings = ({ ingredientId }) => {
    const [selectedIndex, setSelectedIndex] = React.useState(0)
 
    // Queries and Mutations
-   const [fetchProcessingNames, {}] = useLazyQuery(FETCH_PROCESSING_NAMES, {
+   const _ = useQuery(FETCH_PROCESSING_NAMES, {
       onCompleted: data => {
          processingNamesList.length = 0
          processingNamesList.push(...data.processingNames)
       }
    })
-   const [fetchProcessings, {}] = useLazyQuery(PROCESSINGS_OF_INGREDIENT, {
+   const __ = useQuery(PROCESSINGS_OF_INGREDIENT, {
+      variables: { ingredientId },
       onCompleted: data => {
-         setProcessings(data.processingsOfIngredient)
+         setProcessings(data.ingredient.processings)
       }
    })
+
    const [createProcessings] = useMutation(CREATE_PROCESSINGS, {
       onCompleted: data => {
-         console.log(data)
-         setProcessings(data.createProcessings)
+         setProcessings([...processings, ...data.createProcessings])
       }
    })
    const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
       onCompleted: data => {
-         console.log(data.deleteProcessing)
          if (data.deleteProcessing.success) {
             const newProcessings = processings.filter(
-               processing => processing._id !== data.deleteProcessing.ID
+               processing => processing.id !== data.deleteProcessing.id
             )
             setProcessings(newProcessings)
          }
       }
    })
-
-   // Side Effects
-   React.useEffect(() => {
-      if (ingredientId.length) {
-         fetchProcessings({
-            variables: { ingredientId }
-         })
-         fetchProcessingNames()
-      }
-   }, [ingredientId])
 
    //Lists
    const [
@@ -96,7 +86,8 @@ const Processings = ({ ingredientId }) => {
 
    // Handlers
    const addProcessingsHandler = () => {
-      const names = selectedProcessingNames.map(item => item._id)
+      const names = selectedProcessingNames.map(item => item.id)
+      console.log(names)
       createProcessings({
          variables: { ingredientId, processingNames: names }
       })
@@ -123,27 +114,24 @@ const Processings = ({ ingredientId }) => {
                   <AddIcon color='#555B6E' size='18' stroke='2.5' />
                </span>
             </StyledListingHeader>
-            {processings?.length > 0 &&
-               processings?.map((processing, i) => (
-                  <StyledListingTile
-                     key={processing._id}
-                     active={i === selectedIndex}
-                     onClick={() => setSelectedIndex(i)}
-                  >
-                     <Actions active={i === selectedIndex}>
-                        <span
-                           onClick={() =>
-                              deleteProcessingHandler(processing._id)
-                           }
-                        >
-                           <DeleteIcon />
-                        </span>
-                     </Actions>
-                     <h3>{processing.name.title}</h3>
-                     <p>Sachets: {processing.sachets.length}</p>
-                     <p>Recipes: {processing.recipes.length}</p>
-                  </StyledListingTile>
-               ))}
+            {processings?.map((processing, i) => (
+               <StyledListingTile
+                  key={processing.id}
+                  active={i === selectedIndex}
+                  onClick={() => setSelectedIndex(i)}
+               >
+                  <Actions active={i === selectedIndex}>
+                     <span
+                        onClick={() => deleteProcessingHandler(processing.id)}
+                     >
+                        <DeleteIcon />
+                     </span>
+                  </Actions>
+                  <h3>{processing.name.title}</h3>
+                  <p>Sachets: {processing.sachets.length}</p>
+                  <p>Recipes: {processing.recipes.length}</p>
+               </StyledListingTile>
+            ))}
             <ButtonTile
                type='primary'
                size='lg'
@@ -174,10 +162,10 @@ const Processings = ({ ingredientId }) => {
                            <TagGroup style={{ margin: '8px 0' }}>
                               {selectedProcessingNames.map(option => (
                                  <Tag
-                                    key={option._id}
+                                    key={option.id}
                                     title={option.title}
                                     onClick={() =>
-                                       selectProcessingName('_id', option._id)
+                                       selectProcessingName('id', option.id)
                                     }
                                  >
                                     {option.title}
@@ -193,13 +181,13 @@ const Processings = ({ ingredientId }) => {
                               .map(option => (
                                  <ListItem
                                     type='MSL1'
-                                    key={option._id}
+                                    key={option.id}
                                     title={option.title}
                                     onClick={() =>
-                                       selectProcessingName('_id', option._id)
+                                       selectProcessingName('id', option.id)
                                     }
                                     isActive={selectedProcessingNames.find(
-                                       item => item._id === option._id
+                                       item => item.id === option.id
                                     )}
                                  />
                               ))}
@@ -212,7 +200,7 @@ const Processings = ({ ingredientId }) => {
          <StyledDisplay hasElements={processings?.length !== 0}>
             <Sachets
                ingredientId={ingredientId}
-               processingId={processings[selectedIndex]?._id}
+               processingId={processings[selectedIndex]?.id}
                processingName={processings[selectedIndex]?.name.title}
             />
          </StyledDisplay>

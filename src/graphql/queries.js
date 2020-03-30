@@ -143,6 +143,15 @@ export const FETCH_LABEL_TEMPLATES = gql`
    }
 `
 
+export const RECIPES = gql`
+   {
+      recipes {
+         id
+         name
+      }
+   }
+`
+
 export const RECIPE = gql`
    query Recipe($ID: ID!) {
       recipe(id: $ID) {

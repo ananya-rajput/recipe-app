@@ -26,7 +26,7 @@ import {
    StyledContent
 } from '../styled'
 
-import { CREATE_RECIPE } from '../../../graphql'
+import { RECIPES, CREATE_RECIPE } from '../../../graphql'
 
 const RecipesListing = () => {
    const { state, dispatch } = React.useContext(Context)
@@ -37,6 +37,8 @@ const RecipesListing = () => {
       })
    }
 
+   // Queries and Mutations
+   const { loading, error, data } = useQuery(RECIPES)
    const [createRecipe] = useMutation(CREATE_RECIPE, {
       onCompleted: data => {
          if (data.createRecipe.success) {
@@ -109,20 +111,24 @@ const RecipesListing = () => {
                   </TableRow>
                </TableHead>
                <TableBody>
-                  {recipes.map(recipe => (
-                     <TableRow key={recipe.id}>
+                  {data?.recipes.map(recipe => (
+                     <TableRow
+                        key={recipe.id}
+                        onClick={() => addTab(recipe.name, 'recipe', recipe.id)}
+                     >
                         <TableCell>{recipe.name}</TableCell>
-                        <TableCell>{recipe.author}</TableCell>
+                        <TableCell>{recipe.name}</TableCell>
                         <TableCell>
-                           {recipe.servings.map(serving => (
+                           {/* {recipe.servings.map(serving => (
                               <div key={serving.id}>
                                  {serving.value}
                                  {recipe.servings[recipe.servings.length - 1]
                                     .id !== serving.id && ','}
                               </div>
-                           ))}
+                           ))} */}
+                           {recipe.name}
                         </TableCell>
-                        <TableCell>{recipe.ingredientCount}</TableCell>
+                        <TableCell>{recipe.name}</TableCell>
                      </TableRow>
                   ))}
                </TableBody>

@@ -105,6 +105,7 @@ const IngredientForm = () => {
                <InputWrapper>
                   <Input
                      type='text'
+                     label='Ingredient Name'
                      placeholder='Untitled Ingredient'
                      name='ingredient'
                      value={ingredient.name}

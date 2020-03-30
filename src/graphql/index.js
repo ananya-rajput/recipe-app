@@ -9,6 +9,7 @@ import {
    FETCH_PROCESSING_NAMES,
    FETCH_STATIONS,
    FETCH_SUPPLIER_ITEMS,
+   RECIPES,
    RECIPE
 } from './queries'
 import {
@@ -39,6 +40,7 @@ export {
    CREATE_SACHET,
    DELETE_SACHET,
    DELETE_PROCESSING,
+   RECIPES,
    RECIPE,
    CREATE_RECIPE,
    UPDATE_RECIPE

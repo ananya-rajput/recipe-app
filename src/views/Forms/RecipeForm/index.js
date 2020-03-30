@@ -114,7 +114,7 @@ export default function AddRecipeForm() {
             <Menu>
                <div>
                   <Input
-                     label='Untitled Recipe'
+                     label='Recipe Name'
                      type='text'
                      name='recipeName'
                      value={recipe.name}

@@ -1,5 +1,5 @@
 import React from 'react'
-
+import { useQuery, useMutation } from '@apollo/react-hooks'
 import {
    IconButton,
    Table,
@@ -8,6 +8,8 @@ import {
    TableCell,
    TableBody
 } from '@dailykit/ui'
+
+import { generateRandomString } from '../../../utils'
 
 // Icons
 import { AddIcon } from '../../../assets/icons'
@@ -24,14 +26,31 @@ import {
    StyledContent
 } from '../styled'
 
+import { CREATE_RECIPE } from '../../../graphql'
+
 const RecipesListing = () => {
    const { state, dispatch } = React.useContext(Context)
-   const addTab = (title, view) => {
+   const addTab = (title, view, ID) => {
       dispatch({
          type: 'ADD_TAB',
-         payload: { type: 'forms', title, view, index: state.forms.length }
+         payload: { type: 'forms', title, view, ID }
       })
    }
+
+   const [createRecipe] = useMutation(CREATE_RECIPE, {
+      onCompleted: data => {
+         if (data.createRecipe.success) {
+            addTab(
+               data.createRecipe.recipe.name,
+               'recipe',
+               data.createRecipe.recipe.id
+            )
+         } else {
+            // Fire toast
+            console.log(data)
+         }
+      }
+   })
 
    const recipes = [
       {
@@ -60,6 +79,11 @@ const RecipesListing = () => {
       }
    ]
 
+   const createRecipeHandler = () => {
+      let name = 'recipe-' + generateRandomString()
+      createRecipe({ variables: { name } })
+   }
+
    return (
       <StyledWrapper>
          <StyledHeader>
@@ -69,10 +93,7 @@ const RecipesListing = () => {
          <StyledTableHeader>
             <p>filters</p>
             <StyledTableActions>
-               <IconButton
-                  type='solid'
-                  onClick={() => addTab('Untitled Recipe', 'recipe')}
-               >
+               <IconButton type='solid' onClick={createRecipeHandler}>
                   <AddIcon color='#fff' size={24} />
                </IconButton>
             </StyledTableActions>

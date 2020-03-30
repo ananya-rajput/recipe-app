@@ -123,3 +123,29 @@ export const DELETE_SACHET = gql`
       }
    }
 `
+
+export const CREATE_RECIPE = gql`
+   mutation CreateRecipe($name: String) {
+      createRecipe(name: $name) {
+         success
+         message
+         recipe {
+            id
+            name
+         }
+      }
+   }
+`
+
+export const UPDATE_RECIPE = gql`
+   mutation UpdateRecipe($recipeId: ID!, $name: String!) {
+      updateRecipe(input: { id: $recipeId, name: $name }) {
+         success
+         message
+         recipe {
+            id
+            name
+         }
+      }
+   }
+`

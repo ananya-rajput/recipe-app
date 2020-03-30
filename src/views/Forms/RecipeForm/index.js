@@ -1,6 +1,13 @@
 import React, { useContext, useReducer } from 'react'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 
-import { Input, TextButton, RadioGroup, ButtonTile } from '@dailykit/ui/'
+import {
+   Input,
+   TextButton,
+   RadioGroup,
+   ButtonTile,
+   useMultiList
+} from '@dailykit/ui/'
 
 import { Context } from '../../../store/tabs/index'
 import {
@@ -15,13 +22,57 @@ import { RecipeActions, RecipeType, Container } from './styled'
 import AddIngredients from './AddIngredients'
 import Menu from '../../../components/Menu'
 
+import { RECIPE, UPDATE_RECIPE } from '../../../graphql'
+
 export default function AddRecipeForm() {
    const [recipeState, recipeDispatch] = useReducer(
       recipeReducers,
       initialRecipeState
    )
-
    const { state, dispatch } = useContext(Context)
+
+   // State
+   const [recipe, setRecipe] = React.useState({
+      id: '',
+      name: ''
+   })
+
+   // Queries and Mutations
+   const {} = useQuery(RECIPE, {
+      variables: { ID: state.current.ID },
+      onCompleted: data => {
+         setRecipe(data.recipe)
+      }
+   })
+   const [updateRecipe] = useMutation(UPDATE_RECIPE, {
+      onCompleted: data => {
+         if (data.updateRecipe.success) {
+            setRecipe({ ...recipe, name: data.updateRecipe.recipe.name })
+            if (state.current.title !== data.updateRecipe.recipe.name) {
+               dispatch({
+                  type: 'SET_TITLE',
+                  payload: {
+                     title: data.updateRecipe.recipe.name,
+                     oldTitle: state.current.title
+                  }
+               })
+            }
+         } else {
+            // Fire toast
+            console.log(data)
+         }
+      }
+   })
+
+   // Handlers
+   const updateRecipeHandler = () => {
+      updateRecipe({
+         variables: {
+            recipeId: recipe.id,
+            name: recipe.name
+         }
+      })
+   }
 
    const recipeTypeOptions = [
       { id: 1, title: 'Vegetarian' },
@@ -37,8 +88,7 @@ export default function AddRecipeForm() {
 
    const handleRecipeNameChange = e => {
       const name = e.target.value
-
-      recipeDispatch({ type: 'RECIPE_NAME_CHANGE', payload: { name } })
+      // recipeDispatch({ type: 'RECIPE_NAME_CHANGE', payload: { name } })
    }
 
    const handleTabNameChange = () => {
@@ -67,9 +117,11 @@ export default function AddRecipeForm() {
                      label='Untitled Recipe'
                      type='text'
                      name='recipeName'
-                     value={recipeState.name}
-                     onChange={handleRecipeNameChange}
-                     onBlur={handleTabNameChange}
+                     value={recipe.name}
+                     onChange={e =>
+                        setRecipe({ ...recipe, name: e.target.value })
+                     }
+                     onBlur={updateRecipeHandler}
                   />
                </div>
 

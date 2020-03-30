@@ -59,6 +59,15 @@ const IngredientForm = () => {
                ...ingredient,
                ...data.updateIngredient.ingredient
             })
+            if (state.current.title !== data.updateIngredient.ingredient.name) {
+               dispatch({
+                  type: 'SET_TITLE',
+                  payload: {
+                     title: data.updateIngredient.ingredient.name,
+                     oldTitle: state.current.title
+                  }
+               })
+            }
          } else {
             // Fire toast
             console.log(data)
@@ -74,12 +83,6 @@ const IngredientForm = () => {
             image: ingredient.image
          }
       })
-      if (state.current.title !== ingredient.name) {
-         dispatch({
-            type: 'SET_TITLE',
-            payload: { title: ingredient.name, oldTitle: state.current.title }
-         })
-      }
    }
 
    // Photo Tunnel

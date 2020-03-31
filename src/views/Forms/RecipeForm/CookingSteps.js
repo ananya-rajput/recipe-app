@@ -1,29 +1,52 @@
 import { IconButton, Text, Input, ButtonTile } from '@dailykit/ui'
-import React, { useContext } from 'react'
+import React from 'react'
 
 import AddIcon from '../../../assets/icons/Add'
-import { Context as RecipeContext } from '../../../store/recipe/index'
 import { IngredientsSection, Stats, DeleteButton } from './styled'
 import DeleteIcon from '../../../assets/icons/Delete'
 
-export default function CookingSteps({ open }) {
-   const { recipeState, recipeDispatch } = useContext(RecipeContext)
+export default function CookingSteps() {
+   const [cookingSteps, setCookingSteps] = React.useState([
+      {
+         title: '',
+         description: '',
+         photos: [{ caption: '', imageUrl: '' }]
+      }
+   ])
+
+   const createCookingSteps = () => {
+      const newStepsForCreating = [...cookingSteps]
+      newStepsForCreating.push({
+         title: '',
+         description: '',
+         photos: [{ caption: '', imageUrl: '' }]
+      })
+      setCookingSteps(newStepsForCreating)
+   }
+
+   const deleteCookingStepHandler = index => {
+      const newStepsForDeleting = [...cookingSteps]
+      newStepsForDeleting.splice(index, 1)
+      setCookingSteps(newStepsForDeleting)
+   }
+
+   const editCookingStepHandler = (index, name, value) => {
+      const newStepsForEditing = [...cookingSteps]
+      newStepsForEditing[index][name] = value
+      setCookingSteps(newStepsForEditing)
+   }
+
    return (
       <>
          <IngredientsSection>
             <Stats>
                <Text as='subtitle'>Cooking Process</Text>
-               <IconButton
-                  type='ghost'
-                  onClick={() => {
-                     recipeDispatch({ type: 'CREATE_COOKING_PROCESS' })
-                  }}
-               >
+               <IconButton type='ghost' onClick={createCookingSteps}>
                   <AddIcon />
                </IconButton>
             </Stats>
 
-            {recipeState.steps.map((step, index) => (
+            {cookingSteps.map((step, index) => (
                <div style={{ marginTop: '10px' }} key={index}>
                   <Stats>
                      <Text as='subtitle'>
@@ -32,10 +55,7 @@ export default function CookingSteps({ open }) {
                      {!index || (
                         <DeleteButton
                            onClick={() => {
-                              recipeDispatch({
-                                 type: 'DELETE_COOKING_PROCESS',
-                                 payload: { index }
-                              })
+                              deleteCookingStepHandler(index)
                            }}
                         >
                            <DeleteIcon color='rgb(255,90,82)' />
@@ -50,14 +70,11 @@ export default function CookingSteps({ open }) {
                      name='title'
                      value={step.title}
                      onChange={e => {
-                        recipeDispatch({
-                           type: 'EDIT_COOOKING_PROCESS',
-                           payload: {
-                              index,
-                              name: e.target.name,
-                              value: e.target.value
-                           }
-                        })
+                        editCookingStepHandler(
+                           index,
+                           e.target.name,
+                           e.target.value
+                        )
                      }}
                   />
                   <br />
@@ -68,14 +85,11 @@ export default function CookingSteps({ open }) {
                      rows='3'
                      value={step.description}
                      onChange={e => {
-                        recipeDispatch({
-                           type: 'EDIT_COOOKING_PROCESS',
-                           payload: {
-                              index,
-                              name: e.target.name,
-                              value: e.target.value
-                           }
-                        })
+                        editCookingStepHandler(
+                           index,
+                           e.target.name,
+                           e.target.value
+                        )
                      }}
                   />
                   <ButtonTile
@@ -83,7 +97,9 @@ export default function CookingSteps({ open }) {
                      size='sm'
                      text='Select Photos for this Step'
                      helper='upto 1mb | only JPGs and PNGs are allowed.'
-                     onClick={e => console.log('Tile clicked')}
+                     onClick={() => {
+                        console.log('Tile clicked')
+                     }}
                      style={{ margin: '20px 0' }}
                   />
                </div>
@@ -91,34 +107,4 @@ export default function CookingSteps({ open }) {
          </IngredientsSection>
       </>
    )
-}
-
-{
-   /* <div style={{ marginTop: '20px' }}>
-               <Text as='subtitle'>
-                  <strong>Step {1}</strong>
-               </Text>
-               <Input
-                  type='text'
-                  label='Title'
-                  name='title'
-                  placeholder='Title...'
-                  value='sjfdhk'
-               />
-               <Input
-                  type='textarea'
-                  label='Description'
-                  name='description'
-                  rows='5'
-                  value='jsank'
-               />
-               <ButtonTile
-                  type='primary'
-                  size='sm'
-                  text='Select Photos for this Step'
-                  helper='upto 1mb | only JPGs and PNGs are allowed.'
-                  onClick={e => console.log('Tile clicked')}
-                  style={{ margin: '20px 0' }}
-               />
-            </div> */
 }

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 
 import {
    List,
@@ -8,19 +8,23 @@ import {
    useSingleList
 } from '@dailykit/ui'
 
-import { Context as RecipeContext } from '../../../store/recipe/index'
-
 import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 
-export default function SelectSachet({ next }) {
-   const { recipeDispatch } = useContext(RecipeContext)
+export default function SelectSachet({ next, serving, ingredient }) {
    const [search, setSearch] = useState('')
+   // query for availbale sachets and update the list below.
    const [list, current, selectOption] = useSingleList([
       { id: 1, title: '200gm' },
       { id: 2, title: '800gm' }
    ])
+
+   const addSachetHandler = () => {
+      // fire muation for adding sachet for this ingredient at given serving.
+      // props.serving is the current serving to which this sachet references.
+      // props.ingredient is the current ingredient to which this sachet references.
+   }
 
    return (
       <TunnelContainer>
@@ -28,10 +32,7 @@ export default function SelectSachet({ next }) {
             title='Select Sachet'
             close={() => next(5)}
             next={() => {
-               recipeDispatch({
-                  type: 'ADD_SACHET',
-                  payload: { sachet: current }
-               })
+               addSachetHandler()
 
                next(5)
             }}

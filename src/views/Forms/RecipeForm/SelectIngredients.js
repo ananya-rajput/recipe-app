@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState } from 'react'
 
 import {
    List,
@@ -10,15 +10,15 @@ import {
    Tag
 } from '@dailykit/ui'
 
-import { Context as RecipeContext } from '../../../store/recipe/index'
-
 import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 
 export default function SelectIngredients({ close, next }) {
-   const { recipeState, recipeDispatch } = useContext(RecipeContext)
+   const [ingredients, setIngredients] = React.useState([])
    const [search, setSearch] = useState('')
+
+   // fetch ingredients and put it inside useMultiList
    const [list, selected, selectOption] = useMultiList([
       { id: 1, title: 'Potato' },
       { id: 2, title: 'Tomato' },
@@ -26,19 +26,14 @@ export default function SelectIngredients({ close, next }) {
       { id: 4, title: 'Onion' }
    ])
 
-   useEffect(() => {
-      for (const ingredient of recipeState.ingredients) {
-         selectOption('id', ingredient.id)
-      }
-   }, [])
-
    return (
       <TunnelContainer>
          <TunnelHeader
             title='Add Ingredients'
             close={() => close(2)}
             next={() => {
-               recipeDispatch({ type: 'ADD_INGREDIENTS', payload: selected })
+               // TODO: fire a mutation to update ingredients for this recipe.
+               setIngredients(selected)
                next(2)
             }}
             nextAction='Done'

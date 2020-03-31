@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 
 import {
    Tunnels,
@@ -36,8 +36,17 @@ import DeleteIcon from '../../../assets/icons/Delete'
 import CookingSteps from './CookingSteps'
 
 export default function AddIngredients() {
+   // fire a query to fill this ingredients array.
+   const [ingredients, setIngredients] = useState([])
+   // fire a query to fill servings.
+   const [servings, setServings] = useState([])
+
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [tunnels, openTunnel, closeTunnel] = useTunnel(5)
+
+   const deleteIngredientHandler = ingredient => {
+      // fire a mutation to delete this ingredient. remember to delete all the sachets associated with it
+   }
 
    return (
       <>
@@ -61,31 +70,30 @@ export default function AddIngredients() {
                <SelectSachet
                   next={closeTunnel}
                   serving={recipeState.activeServing}
+                  ingredient={recipeState.view}
                />
             </Tunnel>
          </Tunnels>
          <Servings open={openTunnel} />
          <IngredientsSection>
             <Stats>
-               <Text as='subtitle'>
-                  Ingredients ({recipeState.ingredients.length})
-               </Text>
-               {recipeState.ingredients.length > 0 && (
+               <Text as='subtitle'>Ingredients ({ingredients.length})</Text>
+               {ingredients.length > 0 && (
                   <IconButton type='ghost' onClick={() => openTunnel(2)}>
                      <AddIcon />
                   </IconButton>
                )}
             </Stats>
 
-            {recipeState.ingredients.length > 0 ? (
+            {ingredients.length > 0 ? (
                <IngredientTable>
                   <Table>
                      <TableHead>
                         <TableRow>
-                           <TableCell></TableCell>
+                           <TableCell />
                            <TableCell>Ingredient Name</TableCell>
                            <TableCell align='center'>Processing</TableCell>
-                           {recipeState.servings.map(serving => (
+                           {servings.map(serving => (
                               <TableCell key={serving.id}>
                                  <UserIcon />
                                  <span style={{ marginLeft: '5px' }}>
@@ -93,13 +101,13 @@ export default function AddIngredients() {
                                  </span>
                               </TableCell>
                            ))}
-                           <TableCell align='right'></TableCell>
+                           <TableCell align='right' />
                         </TableRow>
                      </TableHead>
                      <TableBody>
-                        {recipeState.ingredients.map(ingredient => (
+                        {ingredients.map(ingredient => (
                            <TableRow key={ingredient.id}>
-                              <TableCell></TableCell>
+                              <TableCell />
                               <TableCell>{ingredient.title}</TableCell>
                               <TableCell>
                                  {ingredient?.processing?.title || (
@@ -117,7 +125,7 @@ export default function AddIngredients() {
                                     </IconButton>
                                  )}
                               </TableCell>
-                              {recipeState.servings.map(serving => (
+                              {servings.map(serving => (
                                  <TableCell key={serving.id}>
                                     <Sachet
                                        ingredient={ingredient}
@@ -142,10 +150,7 @@ export default function AddIngredients() {
                                     </IconButton>
                                     <IconButton
                                        onClick={() => {
-                                          recipeDispatch({
-                                             type: 'DELETE_INGREDIENT',
-                                             payload: ingredient
-                                          })
+                                          deleteIngredientHandler(ingredient)
                                        }}
                                     >
                                        <DeleteIcon color='rgb(255,90,82)' />
@@ -159,7 +164,7 @@ export default function AddIngredients() {
                </IngredientTable>
             ) : null}
 
-            {recipeState.ingredients.length === 0 && (
+            {ingredients.length === 0 && (
                <ButtonTile
                   as='button'
                   type='secondary'
@@ -174,9 +179,11 @@ export default function AddIngredients() {
 }
 
 function Sachet({ serving, openTunnel, ingredient }) {
-   const { recipeState, recipeDispatch } = useContext(RecipeContext)
+   // query for available sachets for this recipe.
+   const [sachets, setSachets] = useState([])
+   const { recipeDispatch } = useContext(RecipeContext)
 
-   const sachet = recipeState.sachets.find(
+   const sachet = sachets.find(
       sachet =>
          sachet.serving.id === serving.id &&
          sachet.ingredient.id === ingredient.id

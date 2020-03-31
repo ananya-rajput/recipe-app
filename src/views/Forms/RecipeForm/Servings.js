@@ -1,18 +1,16 @@
-import React, { useContext } from 'react'
+import React from 'react'
 
 import { Text, TagGroup, Tag, ButtonTile, IconButton } from '@dailykit/ui'
-
-import { Context as RecipeContext } from '../../../store/recipe/index'
 
 import { IngredientsSection, Stats, CustomCrossButton } from './styled'
 import AddIcon from '../../../assets/icons/Add'
 import UserIcon from '../../../assets/icons/User'
 
 export default function Servings({ open }) {
-   const { recipeState, recipeDispatch } = useContext(RecipeContext)
+   const [servings, setServings] = React.useState([{ id: 1, value: 0 }])
 
    const ServinRemoveHandler = serving => {
-      recipeDispatch({ type: 'REMOVE_SERVING', payload: serving })
+      // fire mutation to delete this serving
    }
 
    return (
@@ -20,21 +18,16 @@ export default function Servings({ open }) {
          <IngredientsSection>
             <Stats>
                <Text as='subtitle'>
-                  Servings (
-                  {recipeState.servings[0].value !== 0
-                     ? recipeState.servings.length
-                     : '0'}
-                  )
+                  Servings ({servings[0].value !== 0 ? servings.length : '0'})
                </Text>
-               {recipeState.servings[0].value !== 0 &&
-                  recipeState.servings.length > 0 && (
-                     <IconButton type='ghost' onClick={() => open(1)}>
-                        <AddIcon />
-                     </IconButton>
-                  )}
+               {servings[0].value !== 0 && servings.length > 0 && (
+                  <IconButton type='ghost' onClick={() => open(1)}>
+                     <AddIcon />
+                  </IconButton>
+               )}
             </Stats>
             <TagGroup>
-               {recipeState.servings.map(serving =>
+               {servings.map(serving =>
                   serving.value !== 0 ? (
                      <Tag key={serving.id}>
                         <UserIcon />

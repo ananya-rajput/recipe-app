@@ -16,10 +16,14 @@ import EditIcon from '../../../assets/icons/Edit'
 import { TunnelHeader, Spacer } from '../../../components/index'
 
 export default function AddSachets({ close, openTunnel }) {
+   // query for sachets and setSachets with the query value. same for ingredients and servings
+   const [sachets, setSachets] = React.useState([])
+   const [ingredients, setIngredients] = React.useState([])
+   const [servings, setServings] = React.useState([{ id: 1, value: 0 }])
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
 
    const renderSachets = serving => {
-      const availableSachet = recipeState.sachets.find(
+      const availableSachet = sachets.find(
          sachet =>
             sachet.serving.id === serving.id &&
             sachet.ingredient.id === recipeState.view.id
@@ -42,21 +46,20 @@ export default function AddSachets({ close, openTunnel }) {
                text={availableSachet.title}
             />
          )
-      } else {
-         return (
-            <ButtonTile
-               onClick={() => {
-                  recipeDispatch({
-                     type: 'SET_ACTIVE_SERVING',
-                     payload: serving
-                  })
-                  openTunnel(5)
-               }}
-               type='secondary'
-               text='Select Sachet'
-            />
-         )
       }
+      return (
+         <ButtonTile
+            onClick={() => {
+               recipeDispatch({
+                  type: 'SET_ACTIVE_SERVING',
+                  payload: serving
+               })
+               openTunnel(5)
+            }}
+            type='secondary'
+            text='Select Sachet'
+         />
+      )
    }
 
    return (
@@ -85,13 +88,11 @@ export default function AddSachets({ close, openTunnel }) {
             <Content>
                <FlexWidth width='1'>
                   {/* TODO: add buttons for adding more ingredients when doing functionality part */}
-                  <Text as='subtitle'>
-                     Ingredients ({recipeState.ingredients.length})
-                  </Text>
+                  <Text as='subtitle'>Ingredients ({ingredients.length})</Text>
 
                   <br />
 
-                  {recipeState.ingredients.map(ingredient => (
+                  {ingredients.map(ingredient => (
                      <div key={ingredient.id}>
                         <CustomButton
                            active={recipeState.view?.id === ingredient.id}
@@ -154,8 +155,8 @@ export default function AddSachets({ close, openTunnel }) {
                               </FlexWidth>
                            </Content>
                            <br />
-                           {recipeState.servings[0].value > 0 &&
-                              recipeState.servings.map(serving => (
+                           {servings[0].value > 0 &&
+                              servings.map(serving => (
                                  <React.Fragment key={serving.id}>
                                     <Content>
                                        <FlexWidth width='1'>

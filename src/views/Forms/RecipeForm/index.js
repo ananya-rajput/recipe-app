@@ -37,6 +37,11 @@ export default function AddRecipeForm() {
       name: ''
    })
 
+   const [recipeType, setRecipeType] = React.useState({
+      id: 2,
+      title: 'Non-Vegetarian'
+   })
+
    // Queries and Mutations
    const {} = useQuery(RECIPE, {
       variables: { ID: state.current.ID },
@@ -149,13 +154,8 @@ export default function AddRecipeForm() {
             <RecipeType>
                <RadioGroup
                   options={recipeTypeOptions}
-                  active={recipeState.recipeType.id}
-                  onChange={type =>
-                     recipeDispatch({
-                        type: 'CHANGE_RECIPE_STATE',
-                        payload: type
-                     })
-                  }
+                  active={recipeType}
+                  onChange={type => setRecipeType(type)}
                />
             </RecipeType>
 

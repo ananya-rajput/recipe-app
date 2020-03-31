@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 
 import {
    List,
@@ -8,19 +8,23 @@ import {
    useSingleList
 } from '@dailykit/ui'
 
-import { Context as RecipeContext } from '../../../store/recipe/index'
-
 import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 
 export default function SelectProcessing({ next }) {
-   const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
+   // fill below list with availbale processings
    const [list, current, selectOption] = useSingleList([
       { id: 1, title: 'Sliced' },
       { id: 2, title: 'Washed' }
    ])
+
+   const addProcessingHandler = () => {
+      // fire mutation here to update the processing for the given ingredient.
+      // 'current' is the selected processing
+      // recipeState.view -> ingredient for which we want to update the processing
+   }
 
    return (
       <TunnelContainer>
@@ -28,11 +32,7 @@ export default function SelectProcessing({ next }) {
             title='Add Ingredients'
             close={() => next(4)}
             next={() => {
-               recipeDispatch({
-                  type: 'ADD_PROCESSING',
-                  payload: { processing: current, ingredient: recipeState.view }
-               })
-
+               addProcessingHandler()
                next(4)
             }}
          />

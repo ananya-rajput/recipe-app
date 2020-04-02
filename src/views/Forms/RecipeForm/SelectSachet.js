@@ -14,13 +14,10 @@ import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 
-export default function SelectSachet({ next }) {
+export default function SelectSachet({ next, sachets }) {
    const { recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
-   const [list, current, selectOption] = useSingleList([
-      { id: 1, title: '200gm' },
-      { id: 2, title: '800gm' }
-   ])
+   const [list, current, selectOption] = useSingleList(sachets)
 
    return (
       <TunnelContainer>

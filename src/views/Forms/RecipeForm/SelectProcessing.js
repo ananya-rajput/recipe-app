@@ -14,13 +14,10 @@ import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
 
-export default function SelectProcessing({ next }) {
+export default function SelectProcessing({ next, procs }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
-   const [list, current, selectOption] = useSingleList([
-      { id: 1, title: 'Sliced' },
-      { id: 2, title: 'Washed' }
-   ])
+   const [list, current, selectOption] = useSingleList(procs)
 
    return (
       <TunnelContainer>

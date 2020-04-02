@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react'
-
 import {
    List,
    ListSearch,
@@ -15,16 +14,12 @@ import { Context as RecipeContext } from '../../../store/recipe/index'
 import { TunnelContainer } from './styled'
 
 import { TunnelHeader, Spacer } from '../../../components/index'
+import { INGREDIENTS } from '../../../graphql'
 
-export default function SelectIngredients({ close, next }) {
+export default function SelectIngredients({ close, next, ings }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
-   const [list, selected, selectOption] = useMultiList([
-      { id: 1, title: 'Potato' },
-      { id: 2, title: 'Tomato' },
-      { id: 3, title: 'Ginger' },
-      { id: 4, title: 'Onion' }
-   ])
+   const [list, selected, selectOption] = useMultiList(ings)
 
    useEffect(() => {
       for (const ingredient of recipeState.ingredients) {

@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { useQuery, useLazyQuery } from '@apollo/react-hooks'
 
 import {
    Tunnels,
@@ -35,9 +36,77 @@ import UserIcon from '../../../assets/icons/User'
 import DeleteIcon from '../../../assets/icons/Delete'
 import CookingSteps from './CookingSteps'
 
+import {
+   INGREDIENTS,
+   PROCESSINGS_OF_INGREDIENT,
+   SACHETS_OF_PROCESSING
+} from '../../../graphql'
+
 export default function AddIngredients() {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [tunnels, openTunnel, closeTunnel] = useTunnel(5)
+   const [ingredients, setIngredients] = React.useState([])
+   const [processings, setProcessings] = React.useState([])
+   const [sachets, setSachets] = React.useState([])
+   const [selected, setSelected] = React.useState({
+      ingredientId: undefined,
+      processingId: undefined
+   })
+
+   //Query
+   useQuery(INGREDIENTS, {
+      onCompleted: async data => {
+         let ings = data.ingredients
+         let updatedIngs = await ings.map(ing => {
+            return {
+               ...ing,
+               title: ing.name
+            }
+         })
+         setIngredients(updatedIngs)
+      }
+   })
+   const [fetchProcessings, {}] = useLazyQuery(PROCESSINGS_OF_INGREDIENT, {
+      onCompleted: async data => {
+         let procs = data.ingredient.processings
+         console.log(procs)
+         let updatedProcs = await procs.map(proc => {
+            return {
+               ...proc,
+               title: proc.name.title
+            }
+         })
+         setProcessings(updatedProcs)
+      }
+   })
+   const [fetchSachets, {}] = useLazyQuery(SACHETS_OF_PROCESSING, {
+      onCompleted: async data => {
+         let sachets = data.processing.sachets
+         console.log(sachets)
+         let updatedSachets = await sachets.map(sachet => {
+            return {
+               ...sachet,
+               title: sachet.quantity.value + sachet.quantity.unit.title + ''
+            }
+         })
+         setSachets(updatedSachets)
+      }
+   })
+
+   React.useEffect(() => {
+      fetchProcessings({
+         variables: {
+            ingredientId: selected.ingredientId
+         }
+      })
+      if (selected.processingId) {
+         fetchSachets({
+            variables: {
+               processingId: selected.processingId
+            }
+         })
+      }
+   }, [selected])
 
    return (
       <>
@@ -46,14 +115,18 @@ export default function AddIngredients() {
                <AddServings close={closeTunnel} next={closeTunnel} />
             </Tunnel>
             <Tunnel layer={2}>
-               <SelectIngredients close={closeTunnel} next={closeTunnel} />
+               <SelectIngredients
+                  close={closeTunnel}
+                  next={closeTunnel}
+                  ings={ingredients}
+               />
             </Tunnel>
             <Tunnel layer={3} size='lg'>
                <AddSachets close={closeTunnel} openTunnel={openTunnel} />
             </Tunnel>
             {/* tunnel 4 -> select processing */}
             <Tunnel layer={4}>
-               <SelectProcessing next={closeTunnel} />
+               <SelectProcessing next={closeTunnel} procs={processings} />
             </Tunnel>
 
             {/* tunnel 5 -> select Sachet */}
@@ -61,6 +134,7 @@ export default function AddIngredients() {
                <SelectSachet
                   next={closeTunnel}
                   serving={recipeState.activeServing}
+                  sachets={sachets}
                />
             </Tunnel>
          </Tunnels>
@@ -98,7 +172,15 @@ export default function AddIngredients() {
                      </TableHead>
                      <TableBody>
                         {recipeState.ingredients.map(ingredient => (
-                           <TableRow key={ingredient.id}>
+                           <TableRow
+                              key={ingredient.id}
+                              onClick={() =>
+                                 setSelected({
+                                    ingredientId: ingredient.id,
+                                    processingId: ingredient?.processing?.id
+                                 })
+                              }
+                           >
                               <TableCell></TableCell>
                               <TableCell>{ingredient.title}</TableCell>
                               <TableCell>

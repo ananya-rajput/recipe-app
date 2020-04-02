@@ -31,32 +31,17 @@ export default function AddRecipeForm() {
    )
    const { state, dispatch } = useContext(Context)
 
-   // State
-   const [recipe, setRecipe] = React.useState({
-      id: '',
-      name: ''
-   })
-
    // Queries and Mutations
    const {} = useQuery(RECIPE, {
       variables: { ID: state.current.ID },
       onCompleted: data => {
-         setRecipe(data.recipe)
+         // set global state after fetching
       }
    })
    const [updateRecipe] = useMutation(UPDATE_RECIPE, {
       onCompleted: data => {
          if (data.updateRecipe.success) {
-            setRecipe({ ...recipe, name: data.updateRecipe.recipe.name })
-            if (state.current.title !== data.updateRecipe.recipe.name) {
-               dispatch({
-                  type: 'SET_TITLE',
-                  payload: {
-                     title: data.updateRecipe.recipe.name,
-                     oldTitle: state.current.title
-                  }
-               })
-            }
+            // set global state after updating
          } else {
             // Fire toast
             console.log(data)
@@ -65,13 +50,19 @@ export default function AddRecipeForm() {
    })
 
    // Handlers
-   const updateRecipeHandler = () => {
-      updateRecipe({
-         variables: {
-            recipeId: recipe.id,
-            name: recipe.name
-         }
-      })
+   const save = state => {
+      // Preparing basic object
+      let recipe = {
+         name: state.name,
+         type: state.recipeType.title,
+         cookingTime: 30,
+         chef: 'Rishi',
+         description: 'Blah Blah Blah',
+         photos: [],
+         utensils: 'Spoon, Plates, Gun'
+      }
+      // Make the whole recipe obj here and fire update mutation, take refernce from ing side
+      console.log(recipe)
    }
 
    const recipeTypeOptions = [
@@ -88,7 +79,7 @@ export default function AddRecipeForm() {
 
    const handleRecipeNameChange = e => {
       const name = e.target.value
-      // recipeDispatch({ type: 'RECIPE_NAME_CHANGE', payload: { name } })
+      recipeDispatch({ type: 'RECIPE_NAME_CHANGE', payload: { name } })
    }
 
    const handleTabNameChange = () => {
@@ -117,11 +108,9 @@ export default function AddRecipeForm() {
                      label='Recipe Name'
                      type='text'
                      name='recipeName'
-                     value={recipe.name}
-                     onChange={e =>
-                        setRecipe({ ...recipe, name: e.target.value })
-                     }
-                     onBlur={updateRecipeHandler}
+                     value={recipeState.name}
+                     onChange={handleRecipeNameChange}
+                     onBlur={handleTabNameChange}
                   />
                </div>
 
@@ -130,7 +119,11 @@ export default function AddRecipeForm() {
                      open in editor
                   </TextButton>
 
-                  <TextButton type='ghost' style={{ margin: '0px 10px' }}>
+                  <TextButton
+                     type='ghost'
+                     style={{ margin: '0px 10px' }}
+                     onClick={() => save(recipeState)}
+                  >
                      save and exit
                   </TextButton>
 

@@ -14,7 +14,8 @@ import {
    Checkbox,
    useSingleList,
    Input,
-   RadioGroup
+   RadioGroup,
+   Tag
 } from '@dailykit/ui'
 
 import { AddIcon, DeleteIcon, CloseIcon } from '../../assets/icons'
@@ -628,11 +629,29 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                               <td>
                                  {mode.supplierItems[0].item?.title?.length >
                                  0 ? (
-                                    <ButtonTile
-                                       type='secondary'
-                                       text='Packaging'
-                                       onClick={() => openPackagingTunnel(1)}
-                                    />
+                                    <>
+                                       {mode.supplierItems[0].packaging
+                                          ?.title ? (
+                                          <Tag
+                                             onClick={() =>
+                                                openPackagingTunnel(1)
+                                             }
+                                          >
+                                             {
+                                                mode.supplierItems[0].packaging
+                                                   .title
+                                             }
+                                          </Tag>
+                                       ) : (
+                                          <ButtonTile
+                                             type='secondary'
+                                             text='Packaging'
+                                             onClick={() =>
+                                                openPackagingTunnel(1)
+                                             }
+                                          />
+                                       )}
+                                    </>
                                  ) : (
                                     '-'
                                  )}
@@ -650,12 +669,30 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
                                           }
                                        />
                                        {mode.supplierItems[0].isLabelled && (
-                                          <ButtonTile
-                                             noIcon
-                                             type='secondary'
-                                             text='Select Sub Title'
-                                             onClick={() => openLabelTunnel(1)}
-                                          />
+                                          <>
+                                             {mode.supplierItems[0]
+                                                .labelTemplate?.title ? (
+                                                <Tag
+                                                   onClick={() =>
+                                                      openLabelTunnel(1)
+                                                   }
+                                                >
+                                                   {
+                                                      mode.supplierItems[0]
+                                                         .labelTemplate.title
+                                                   }
+                                                </Tag>
+                                             ) : (
+                                                <ButtonTile
+                                                   noIcon
+                                                   type='secondary'
+                                                   text='Select Sub Title'
+                                                   onClick={() =>
+                                                      openLabelTunnel(1)
+                                                   }
+                                                />
+                                             )}
+                                          </>
                                        )}
                                     </React.Fragment>
                                  ) : (

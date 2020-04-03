@@ -33,7 +33,7 @@ import {
    StyledContent,
    StyledPagination
 } from '../styled'
-import { CREATE_INGREDIENT, INGREDIENTS } from '../../../graphql'
+import { CREATE_INGREDIENT, INGREDIENTS, INGREDIENT } from '../../../graphql'
 
 const IngredientsListing = () => {
    const { dispatch } = React.useContext(Context)
@@ -55,6 +55,24 @@ const IngredientsListing = () => {
             // Fire toast
             console.log(data)
          }
+      },
+      update: (
+         cache,
+         {
+            data: {
+               createIngredient: { ingredient }
+            }
+         }
+      ) => {
+         console.log(ingredient)
+         const { ingredients } = cache.readQuery({ query: INGREDIENTS })
+         console.log(ingredients)
+         cache.writeQuery({
+            query: INGREDIENTS,
+            data: {
+               ingredients: ingredients.concat([ingredient])
+            }
+         })
       }
    })
 

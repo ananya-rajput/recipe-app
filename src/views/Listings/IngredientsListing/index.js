@@ -64,9 +64,7 @@ const IngredientsListing = () => {
             }
          }
       ) => {
-         console.log(ingredient)
          const { ingredients } = cache.readQuery({ query: INGREDIENTS })
-         console.log(ingredients)
          cache.writeQuery({
             query: INGREDIENTS,
             data: {

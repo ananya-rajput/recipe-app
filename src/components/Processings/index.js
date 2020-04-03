@@ -56,7 +56,35 @@ const Processings = ({ ingredientId }) => {
    const [createProcessings] = useMutation(CREATE_PROCESSINGS, {
       onCompleted: data => {
          setProcessings([...processings, ...data.createProcessings])
-      }
+      },
+      refetchQueries: [
+         {
+            query: PROCESSINGS_OF_INGREDIENT,
+            variables: {
+               ingredientId
+            }
+         }
+      ]
+      // Can do it manually but returning obj has ids instead of populated fields, that creates problem while rendering
+      // update: (cache, { data: { createProcessings } }) => {
+      //    const { ingredient: cached_ingredient } = cache.readQuery({
+      //       query: PROCESSINGS_OF_INGREDIENT,
+      //       variables: { ingredientId }
+      //    })
+      //    console.log(cached_ingredient)
+      //    cache.writeQuery({
+      //       query: PROCESSINGS_OF_INGREDIENT,
+      //       variables: { ingredientId },
+      //       data: {
+      //          ingredient: {
+      //             ...cached_ingredient,
+      //             processings: cached_ingredient.processings.concat([
+      //                createProcessings
+      //             ])
+      //          }
+      //       }
+      //    })
+      // }
    })
    const [deleteProcessing] = useMutation(DELETE_PROCESSING, {
       onCompleted: data => {
@@ -91,7 +119,6 @@ const Processings = ({ ingredientId }) => {
    // Handlers
    const addProcessingsHandler = () => {
       const names = selectedProcessingNames.map(item => item.id)
-      console.log(names)
       createProcessings({
          variables: { ingredientId, processingNames: names }
       })

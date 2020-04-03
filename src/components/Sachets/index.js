@@ -180,7 +180,13 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
             // Fire toast
             console.log('Sachet not created!')
          }
-      }
+      },
+      refetchQueries: [
+         {
+            query: SACHETS_OF_PROCESSING,
+            variables: { processingId }
+         }
+      ]
    })
    const [deleteSachet] = useMutation(DELETE_SACHET, {
       onCompleted: data => {
@@ -195,6 +201,31 @@ const Sachets = ({ ingredientId, processingId, processingName }) => {
             // Fire toast
             console.log('Sachet could not be deleted!')
          }
+      },
+      update: (
+         cache,
+         {
+            data: {
+               deleteSachet: { sachet }
+            }
+         }
+      ) => {
+         const { processing: cached_processing } = cache.readQuery({
+            query: SACHETS_OF_PROCESSING,
+            variables: { processingId }
+         })
+         cache.writeQuery({
+            query: SACHETS_OF_PROCESSING,
+            variables: { processingId },
+            data: {
+               processing: {
+                  ...cached_processing,
+                  sachets: cached_processing.sachets.filter(
+                     sach => sach.id !== sachet.id
+                  )
+               }
+            }
+         })
       }
    })
 

@@ -5,7 +5,7 @@ export const Context = React.createContext()
 export const state = {
    name: '',
    recipeType: { id: 2, title: 'Non-Vegetarian' },
-   servings: [{ id: 1, value: 0 }],
+   servings: [{ id: 1, value: 1 }],
    ingredients: [],
    sachets: [],
    steps: [
@@ -16,20 +16,35 @@ export const state = {
       }
    ],
    view: {},
-   activeServing: {}
+   activeServing: {},
+   pushableState: {
+      type: 'Non-Vegetarian',
+      servings: [{ size: 1, ingredients: [] }]
+   }
 }
 
 export const reducers = (state, { type, payload }) => {
    switch (type) {
       case 'RECIPE_NAME_CHANGE':
-         return { ...state, name: payload.name }
+         return {
+            ...state,
+            name: payload.name,
+            pushableState: { ...state.pushableState, name: payload.name }
+         }
 
-      case 'CHANGE_RECIPE_STATE':
-         return { ...state, recipeType: payload }
+      case 'CHANGE_RECIPE_TYPE':
+         return {
+            ...state,
+            recipeType: payload,
+            pushableState: { ...state.pushableState, type: payload.title }
+         }
 
       case 'ADD_SERVING':
          const id = state.servings[state.servings.length - 1].id + 1
-         return { ...state, servings: [...state.servings, { id, value: 0 }] }
+         return {
+            ...state,
+            servings: [...state.servings, { id, value: 1 }]
+         }
 
       case 'REMOVE_SERVING':
          const servingIndexToRemove = state.servings.findIndex(
@@ -40,9 +55,23 @@ export const reducers = (state, { type, payload }) => {
          const newServings = [...state.servings]
          newServings.splice(servingIndexToRemove, 1)
 
-         if (newServings.length === 0) newServings.push({ id: 1, value: 0 })
+         if (newServings.length === 0) newServings.push({ id: 1, value: 1 })
 
-         return { ...state, servings: newServings }
+         const forPushableState = newServings.map(serving => {
+            return {
+               size: parseInt(serving.value),
+               ingredients: state.ingredients
+            }
+         })
+
+         return {
+            ...state,
+            servings: newServings,
+            pushableState: {
+               ...state.pushableState,
+               servings: forPushableState
+            }
+         }
 
       case 'CHANGE_SERVINGS':
          const servingId = payload.id
@@ -151,6 +180,88 @@ export const reducers = (state, { type, payload }) => {
          newStepsForDeleting.splice(payload.index, 1)
          return { ...state, steps: newStepsForDeleting }
 
+      case 'ADD_SERVINGS_FOR_PUSHABLE':
+         const pushableServings = state.servings.map(serving => {
+            return {
+               size: parseInt(serving.value),
+               ingredients: state.ingredients
+            }
+         })
+         return {
+            ...state,
+            pushableState: {
+               ...state.pushableState,
+               servings: pushableServings
+            }
+         }
+      case 'ADD_INGREDIENTS_FOR_PUSHABLE':
+         const ingredients = payload.map(ingredient => {
+            return { ingredient: ingredient.id }
+         })
+         const servingsWithIngredients = state.pushableState.servings.map(
+            serving => {
+               return { ...serving, ingredients }
+            }
+         )
+         return {
+            ...state,
+            pushableState: {
+               ...state.pushableState,
+               servings: servingsWithIngredients
+            }
+         }
+
+      case 'ADD_PROCESSING_FOR_PUSHABLE':
+         const ingsWithProcessing = state.ingredients(ingredient => {
+            return { ingredient: ingredient.id, processing: payload.id }
+         })
+
+         const servingsWithProcessing = state.pushableState.servings.map(
+            serving => {
+               return { ...serving, ingredients: ingsWithProcessing }
+            }
+         )
+         return {
+            ...state,
+            psuhableState: {
+               ...state.pushableState,
+               servings: servingsWithProcessing
+            }
+         }
+      case 'ADD_SACHET_FOR_PUSHABLE':
+         const newPushableServings = [...state.pushableState.servings]
+         const indexForServing = newPushableServings.findIndex(
+            serving => serving.size === state.activeServing.value
+         )
+
+         const ings = newPushableServings[indexForServing].ingredients.map(
+            ing => {
+               return {
+                  ...ing,
+                  sachet: payload.id
+               }
+            }
+         )
+
+         newPushableServings[indexForServing].ingredients = ings
+
+         return {
+            ...state,
+            psuhableState: {
+               ...state.pushableState,
+               servings: newPushableServings
+            }
+         }
+
+      case 'POPULATE_PUSHABLE':
+         return {
+            ...state,
+            pushableState: {
+               ...state.pushableState,
+               id: payload.id,
+               name: payload.name
+            }
+         }
       default:
          return state
    }

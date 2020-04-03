@@ -8,29 +8,34 @@ import {
    useSingleList
 } from '@dailykit/ui'
 
-import { Context as RecipeContext } from '../../../store/recipe/index'
+import { Context as RecipeContext } from '../../../../store/recipe/index'
 
-import { TunnelContainer } from './styled'
+import { TunnelContainer } from '../styled'
 
-import { TunnelHeader, Spacer } from '../../../components/index'
+import { TunnelHeader, Spacer } from '../../../../components/index'
 
-export default function SelectSachet({ next, sachets }) {
-   const { recipeDispatch } = useContext(RecipeContext)
+export default function SelectProcessing({ next, procs }) {
+   const { recipeState, recipeDispatch } = useContext(RecipeContext)
    const [search, setSearch] = useState('')
-   const [list, current, selectOption] = useSingleList(sachets)
+   const [list, current, selectOption] = useSingleList(procs)
 
    return (
       <TunnelContainer>
          <TunnelHeader
-            title='Select Sachet'
-            close={() => next(5)}
+            title='Add Ingredients'
+            close={() => next(4)}
             next={() => {
                recipeDispatch({
-                  type: 'ADD_SACHET',
-                  payload: { sachet: current }
+                  type: 'ADD_PROCESSING',
+                  payload: { processing: current, ingredient: recipeState.view }
                })
 
-               next(5)
+               recipeDispatch({
+                  type: 'ADD_PROCESSING_FOR_PUSHABLE',
+                  payload: current
+               })
+
+               next(4)
             }}
          />
          <Spacer />

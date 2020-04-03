@@ -1,13 +1,12 @@
 import React, { useContext } from 'react'
-
-import { Context as RecipeContext } from '../../../store/recipe/index'
-
 import { Text, Input, ButtonTile, HelperText, IconButton } from '@dailykit/ui'
 
-import { TunnelContainer, ServingsInput } from './styled'
+import { Context as RecipeContext } from '../../../../store/recipe'
 
-import { TunnelHeader, Spacer } from '../../../components/index'
-import CloseIcon from '../../../assets/icons/Close'
+import { TunnelContainer, ServingsInput } from '../styled'
+
+import { TunnelHeader, Spacer } from '../../../../components/index'
+import CloseIcon from '../../../../assets/icons/Close'
 
 export default function AddServings({ close, next }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -16,14 +15,15 @@ export default function AddServings({ close, next }) {
       if (recipeState.servings[recipeState.servings.length - 1].value <= 0)
          return
       recipeDispatch({ type: 'ADD_SERVING' })
+      recipeDispatch({ type: 'ADD_SERVINGS_FOR_PUSHABLE' })
    }
 
-   const changeServingsHandler = (serving, e) => {
-      const id = serving.id
+   const changeServingsHandler = ({ id }, e) => {
       recipeDispatch({
          type: 'CHANGE_SERVINGS',
          payload: { id, value: e.target.value }
       })
+      recipeDispatch({ type: 'ADD_SERVINGS_FOR_PUSHABLE' })
    }
 
    return (
@@ -32,10 +32,12 @@ export default function AddServings({ close, next }) {
             title='Add Servings'
             close={() => {
                recipeDispatch({ type: 'REFINE_SERVINGS' })
+               recipeDispatch({ type: 'ADD_SERVINGS_FOR_PUSHABLE' })
                close(1)
             }}
             next={() => {
                recipeDispatch({ type: 'REFINE_SERVINGS' })
+               recipeDispatch({ type: 'ADD_SERVINGS_FOR_PUSHABLE' })
                next(1)
             }}
             nextAction='Add'

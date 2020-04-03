@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 
 import { Text, ButtonTile, IconButton } from '@dailykit/ui'
 
-import { Context as RecipeContext } from '../../../store/recipe/index'
+import { Context as RecipeContext } from '../../../../store/recipe/index'
 
 import {
    TunnelContainer,
@@ -10,10 +10,10 @@ import {
    FlexWidth,
    ManageIngredient,
    CustomButton
-} from './styled'
-import EditIcon from '../../../assets/icons/Edit'
+} from '../styled'
+import EditIcon from '../../../../assets/icons/Edit'
 
-import { TunnelHeader, Spacer } from '../../../components/index'
+import { TunnelHeader, Spacer } from '../../../../components/index'
 
 export default function AddSachets({ close, openTunnel }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)

@@ -31,6 +31,13 @@ export default function AddRecipeForm() {
    )
    const { state, dispatch } = useContext(Context)
 
+   React.useEffect(() => {
+      recipeDispatch({
+         type: 'POPULATE_PUSHABLE',
+         payload: { id: state.current.ID, name: state.current.title }
+      })
+   }, [])
+
    // Queries and Mutations
    const {} = useQuery(RECIPE, {
       variables: { ID: state.current.ID },
@@ -73,7 +80,7 @@ export default function AddRecipeForm() {
 
    const handlePublish = () => {
       console.log('%c values', 'color: #28c1f7', {
-         recipeState
+         state: recipeState.pushableState
       })
    }
 
@@ -145,7 +152,7 @@ export default function AddRecipeForm() {
                   active={recipeState.recipeType.id}
                   onChange={type =>
                      recipeDispatch({
-                        type: 'CHANGE_RECIPE_STATE',
+                        type: 'CHANGE_RECIPE_TYPE',
                         payload: type
                      })
                   }

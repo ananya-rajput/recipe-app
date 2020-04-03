@@ -24,11 +24,11 @@ import {
    SelectButton
 } from './styled'
 
-import AddServings from './AddServings'
-import SelectIngredients from './SelectIngredients'
-import AddSachets from './AddSachets'
-import SelectProcessing from './SelectProcessing'
-import SelectSachet from './SelectSachet'
+import AddServings from './Tunnels/AddServings'
+import SelectIngredients from './Tunnels/SelectIngredients'
+import AddSachets from './Tunnels/AddSachets'
+import SelectProcessing from './Tunnels/SelectProcessing'
+import SelectSachet from './Tunnels/SelectSachet'
 import Servings from './Servings'
 import AddIcon from '../../../assets/icons/Add'
 import EditIcon from '../../../assets/icons/Edit'

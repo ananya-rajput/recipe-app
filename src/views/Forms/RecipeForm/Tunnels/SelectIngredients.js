@@ -9,12 +9,12 @@ import {
    Tag
 } from '@dailykit/ui'
 
-import { Context as RecipeContext } from '../../../store/recipe/index'
+import { Context as RecipeContext } from '../../../../store/recipe/index'
 
-import { TunnelContainer } from './styled'
+import { TunnelContainer } from '../styled'
 
-import { TunnelHeader, Spacer } from '../../../components/index'
-import { INGREDIENTS } from '../../../graphql'
+import { TunnelHeader, Spacer } from '../../../../components/index'
+import { INGREDIENTS } from '../../../../graphql'
 
 export default function SelectIngredients({ close, next, ings }) {
    const { recipeState, recipeDispatch } = useContext(RecipeContext)
@@ -34,6 +34,10 @@ export default function SelectIngredients({ close, next, ings }) {
             close={() => close(2)}
             next={() => {
                recipeDispatch({ type: 'ADD_INGREDIENTS', payload: selected })
+               recipeDispatch({
+                  type: 'ADD_INGREDIENTS_FOR_PUSHABLE',
+                  payload: selected
+               })
                next(2)
             }}
             nextAction='Done'

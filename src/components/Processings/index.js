@@ -98,6 +98,31 @@ const Processings = ({ ingredientId }) => {
             // Fire toast
             console.log('Error while deleting!')
          }
+      },
+      update: (
+         cache,
+         {
+            data: {
+               deleteProcessing: { processing }
+            }
+         }
+      ) => {
+         const { ingredient: cached_ingredient } = cache.readQuery({
+            query: PROCESSINGS_OF_INGREDIENT,
+            variables: { ingredientId }
+         })
+         cache.writeQuery({
+            query: PROCESSINGS_OF_INGREDIENT,
+            variables: { ingredientId },
+            data: {
+               ingredient: {
+                  ...cached_ingredient,
+                  processings: cached_ingredient.processings.filter(
+                     proc => proc.id !== processing.id
+                  )
+               }
+            }
+         })
       }
    })
 
